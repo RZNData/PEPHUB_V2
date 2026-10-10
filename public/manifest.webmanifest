@@ -1,0 +1,118 @@
+{
+  "id": "br.com.claro.pephub.regionalnorte",
+  "name": "PEP HUB — Regional Norte",
+  "short_name": "PEP HUB",
+  "description": "Central de Inteligência de Churn, FPD, Qualidade & Performance da Claro Regional Norte",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "any",
+  "background_color": "#0f172a",
+  "theme_color": "#8a0f18",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": [
+    "business",
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Churn Safra D120",
+      "short_name": "Safra",
+      "description": "Painel de Acompanhamento de Desconexões e Maturação Safra D120",
+      "url": "/churn/?source=pwa",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "FPD Regional Norte",
+      "short_name": "FPD",
+      "description": "Diagnóstico Executivo de Inadimplência na 1ª Fatura (FPD 30 e FPD 60)",
+      "url": "/fpd/?source=pwa",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Panorama Market Share",
+      "short_name": "Market Share",
+      "description": "Share Anatel Claro vs Concorrentes & ISPs Municipais",
+      "url": "/panorama-market-share/?source=pwa",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Taxa de Aprovação Crédito",
+      "short_name": "Aprovação",
+      "description": "Esteira de Crédito Residencial PF e Ranking de PDVs",
+      "url": "/aprovacao-credito/?source=pwa",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Auxiliar de PPT",
+      "short_name": "Auxiliar PPT",
+      "description": "Estúdio de Infográficos e Slides para Reuniões Executivas",
+      "url": "/pep-tools/market-share/?source=pwa",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

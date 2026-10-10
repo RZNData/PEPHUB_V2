@@ -1,0 +1,10 @@
+{
+  "id": "market_share_movel",
+  "titulo": "Market Share Móvel",
+  "descricao": "Relatório Executivo Oficial de Market Share Móvel (Anatel · Telefonia Móvel & 5G)",
+  "rota_pephub": "market-share-movel",
+  "categoria": "Market Share",
+  "responsavel": "Regional Norte",
+  "frequencia_atualizacao": "Mensal",
+  "bot_enabled": false
+}

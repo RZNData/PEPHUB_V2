@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="claroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8a0f18"/>
+      <stop offset="26%" stop-color="#c0191f"/>
+      <stop offset="50%" stop-color="#e23a1e"/>
+      <stop offset="74%" stop-color="#f47a1f"/>
+      <stop offset="100%" stop-color="#f9b233"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="110" fill="url(#claroGrad)"/>
+  <circle cx="256" cy="256" r="170" fill="none" stroke="#ffffff" stroke-width="22" opacity="0.95" filter="url(#shadow)"/>
+  <circle cx="256" cy="256" r="140" fill="rgba(0,0,0,0.12)"/>
+  <path d="M336 176 L283 283 L176 336 L229 229 Z" fill="#ffffff" filter="url(#shadow)"/>
+  <circle cx="256" cy="256" r="12" fill="#8a0f18"/>
+</svg>

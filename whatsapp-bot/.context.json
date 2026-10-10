@@ -1,0 +1,9 @@
+{
+  "city_id": "MANAUS",
+  "segment": "TOTAL",
+  "city_name": "Manaus",
+  "month": "2026-09",
+  "month_label": "Set/26",
+  "last_query": "#? como está Manaus?",
+  "last_response": "📊 *MANAUS — BANDA LARGA TOTAL (TOTAL)*\n📅 Ref: *Setembro / 2026* (21/09/2026)\n\n• *Status:* 🔴 *ACIMA DA META*\n• *Realizado:* *4.550,1* desconexões\n• *Orçado:* 4.235,3 (Desvio: +314,8 / +7,4% 🔴)\n• *Vs Mês Anterior (MoM):* -2,0% 🟢\n• *Vs Ano Anterior (YoY):* +18,8% 🔴\n• *Taxa de Churn:* *2,60%* (Orç: 2,39% | Δ +0,21 p.p. 🔴)\n• *Base Ativa:* 174.977 clientes\n\n📈 *Evolução Semanal:*\n  S1: 4508 | S2: 4582 | S3: 4548 | S4: 4550\n\n💡 _Deseja uma análise completa com gráficos e insights de Manaus? Digite *#?sim*_\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🔘 *AÇÕES RÁPIDAS (Digite o comando):*\n• *#?sim* ➔ 📊 Ver Análise Detalhada com Gráficos\n• *#?safra* ➔ 🌱 Ver Churn Safra D120 (Manaus)\n• *#?speech* ➔ 🎧 Motivos de Chamada (Manaus)\n• *#?erro* ➔ ⚠️ Comunicar Erro / Inconsistência"
+}

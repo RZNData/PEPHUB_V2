@@ -1,0 +1,20 @@
+{
+  "bot_name": "Pephub Churn Bot",
+  "allowed_groups": [
+    "*"
+  ],
+  "require_trigger_in_groups": true,
+  "require_trigger_in_private": true,
+  "allow_self_messages": true,
+  "use_pairing_code": true,
+  "pairing_phone": "5591980547171",
+  "trigger_prefixes": [
+    "#?"
+  ],
+  "respond_to_private": true,
+  "typing_delay_ms": 0,
+  "python_executable": "python",
+  "gemini_api_key": "",
+  "gemini_model": "gemini-2.5-flash-lite",
+  "pephub_api_url": "https://pephub.cloud"
+}

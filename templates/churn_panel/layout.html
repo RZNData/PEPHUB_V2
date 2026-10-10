@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE_MAIN}} — Regional Norte | Pephub — Portal de Churn & Qualidade</title>
+<style>
+{{STYLES}}
+</style>
+</head>
+<body>
+</head>
+<body>
+
+<header>
+  <div class="hd-bar">
+    <div class="hd-ico">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3v18h18"/>
+        <path d="m19 9-5 5-4-4-3 3"/>
+      </svg>
+    </div>
+    <h1>
+      <b>{{TITLE_MAIN}}</b>
+      <span>· Regional Norte</span>
+    </h1>
+    <div class="hd-actions">
+      <a href="/" class="hd-btn" title="Ir para a Página Inicial do Portal">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Portal Início
+      </a>
+      <button class="hd-btn" onclick="exportTableCsv()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Exportar CSV
+      </button>
+      <a href="/churn" class="hd-btn" title="Acessar o Relatório de Churn Safra">Painel Safra</a>
+      <a href="/login" class="hd-btn">Sair</a>
+    </div>
+  </div>
+  <div class="hd-sub">
+    <span>Segmento: <b>{{SEGMENT_KEY}}</b></span>
+    <span class="dot"></span>
+    <span>Mês Referência: <b id="subMesRef">Setembro / 2026</b></span>
+    <span class="dot"></span>
+    <span>Data Posição: <b id="subDataPos">21/09/2026</b></span>
+    <span class="dot"></span>
+    <span>Tendência: <b id="subTendencia">4ª Tendência (T4)</b></span>
+    <span class="dot"></span>
+    <span>Modo Ativo: <span class="tag fe" id="activeModeBadge">Desconexão Total</span></span>
+    <div class="hd-right">
+      <span>Pephub · Churn &amp; Qualidade</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- Switcher proeminente de Tipo de Desconexão (Total, Voluntária, Involuntária) -->
+  <div class="type-switch-bar">
+    <div class="type-switch-label">Tipo de Desconexão:</div>
+    <button class="type-btn act" id="btnModeTotal" onclick="setDisconnectionMode('TOTAL')">
+      Desconexão Total
+      <span class="badge-num" id="badgeVolTotal">--</span>
+    </button>
+    <button class="type-btn" id="btnModeVol" onclick="setDisconnectionMode('VOLUNTARIA')">
+      Desconexão Voluntária
+      <span class="badge-num" id="badgeVolVol">--</span>
+    </button>
+    <button class="type-btn" id="btnModeInvol" onclick="setDisconnectionMode('INVOLUNTARIA')">
+      Desconexão Involuntária
+      <span class="badge-num" id="badgeVolInvol">--</span>
+    </button>
+    <button class="hlp" onclick="openHlp('tipo_desconexao', event)" style="margin-left:auto;" title="Entenda as modalidades de desconexão">?</button>
+  </div>
+
+  <!-- Filter Drawer -->
+  <div class="panel" style="margin-bottom:14px;">
+    <h2>
+      <button class="drawer-btn" id="drawerBtn" onclick="toggleDrawer()">
+        Filtros e Parâmetros
+        <span id="drawerArr">▶</span>
+      </button>
+
+      <!-- Chips com Filtros Ativos -->
+      <div class="chips" id="chips"></div>
+
+      <div style="margin-left:auto; display:flex; align-items:center; gap:6px;">
+        <button class="hlp" onclick="openHlp('filtros', event)" title="Entenda os filtros executivos">?</button>
+      </div>
+    </h2>
+    <div class="pbody" id="drawerBody" style="display:none;">
+      <div class="filters">
+        <div class="f">
+          <label>Cluster Mercados <span class="cnt">(GM / MD)</span></label>
+          <div class="f-pills">
+            <button class="f-pill act" id="pillCluster_ALL" onclick="setClusterFilter('ALL', this)">Todos</button>
+            <button class="f-pill" id="pillCluster_GM" onclick="setClusterFilter('GM', this)">Grandes Mercados (GM)</button>
+            <button class="f-pill" id="pillCluster_MD" onclick="setClusterFilter('MD', this)">Mercados em Desenvolvimento (MD)</button>
+          </div>
+        </div>
+
+        <div class="f">
+          <label>Métrica de Exibição <span class="cnt">(Taxa % vs Volume)</span></label>
+          <div class="f-pills">
+            <button class="f-pill f-pill-metric" id="drawerMetric_pct" data-metric="pct" onclick="setMetricMode('pct')">Taxa de Churn (%)</button>
+            <button class="f-pill f-pill-metric act" id="drawerMetric_abs" data-metric="abs" onclick="setMetricMode('abs')">Volume Absoluto</button>
+          </div>
+        </div>
+
+        <div class="f" style="grid-column: span 2;">
+          <label>Foco por Praça / Mercado <span class="cnt">(13 cidades monitoradas)</span></label>
+          <div style="margin-bottom:8px;">
+            <select id="drawerCitySelect" onchange="setCityFilter(this.value)" style="padding:6px 10px; font-size:12px; font-weight:600; border:1px solid var(--line); border-radius:3px; background:#fff; color:var(--ink); width:100%; max-width:320px; cursor:pointer;">
+              <option value="">-- Todas as Praças (Visão Geral Regional) --</option>
+              <optgroup label="Grandes Mercados (GM)">
+                <option value="MANAUS">Manaus (AM)</option>
+                <option value="BELEM">Belém (PA)</option>
+                <option value="SAO_LUIS">São Luís (MA)</option>
+                <option value="ANANINDEUA">Ananindeua (PA)</option>
+                <option value="MACAPA">Macapá (AP)</option>
+                <option value="SANTANA">Santana (AP)</option>
+              </optgroup>
+              <optgroup label="Mercados em Desenvolvimento (MD)">
+                <option value="IMPERATRIZ">Imperatriz (MA)</option>
+                <option value="CASTANHAL">Castanhal (PA)</option>
+                <option value="PARAUAPEBAS">Parauapebas (PA)</option>
+                <option value="MARABA">Marabá (PA)</option>
+                <option value="PARAGOMINAS">Paragominas (PA)</option>
+                <option value="TIMON">Timon (MA)</option>
+                <option value="CAXIAS">Caxias (MA)</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="f-pills" id="cityPills">
+            <button class="f-pill city-pill act" data-city="ALL" onclick="setCityFilter('')">Visão Geral (Todas)</button>
+            <button class="f-pill city-pill" data-city="MANAUS" onclick="setCityFilter('MANAUS')">Manaus</button>
+            <button class="f-pill city-pill" data-city="BELEM" onclick="setCityFilter('BELEM')">Belém</button>
+            <button class="f-pill city-pill" data-city="SAO_LUIS" onclick="setCityFilter('SAO_LUIS')">São Luís</button>
+            <button class="f-pill city-pill" data-city="ANANINDEUA" onclick="setCityFilter('ANANINDEUA')">Ananindeua</button>
+            <button class="f-pill city-pill" data-city="MACAPA" onclick="setCityFilter('MACAPA')">Macapá</button>
+            <button class="f-pill city-pill" data-city="SANTANA" onclick="setCityFilter('SANTANA')">Santana</button>
+            <button class="f-pill city-pill" data-city="IMPERATRIZ" onclick="setCityFilter('IMPERATRIZ')">Imperatriz</button>
+            <button class="f-pill city-pill" data-city="CASTANHAL" onclick="setCityFilter('CASTANHAL')">Castanhal</button>
+            <button class="f-pill city-pill" data-city="PARAUAPEBAS" onclick="setCityFilter('PARAUAPEBAS')">Parauapebas</button>
+            <button class="f-pill city-pill" data-city="MARABA" onclick="setCityFilter('MARABA')">Marabá</button>
+            <button class="f-pill city-pill" data-city="PARAGOMINAS" onclick="setCityFilter('PARAGOMINAS')">Paragominas</button>
+            <button class="f-pill city-pill" data-city="TIMON" onclick="setCityFilter('TIMON')">Timon</button>
+            <button class="f-pill city-pill" data-city="CAXIAS" onclick="setCityFilter('CAXIAS')">Caxias</button>
+          </div>
+        </div>
+      </div>
+      <div class="fbar">
+        <button class="primary" onclick="applyFilters()">Fechar Painel de Filtros</button>
+        <button onclick="resetAllFilters()">Redefinir Filtros</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Executive KPIs Ribbon -->
+  <div class="panel">
+    <h2>
+      Síntese Executiva de Desconexões (Setembro / 2026 - T4)
+      <span class="tag fe" id="kpiScopeTag">Regional Norte (Consolidado)</span>
+      <span class="note">Valores absolutos inteiros · Comparativos vs Orçamento, MoM, YoY e YTD 26 x 25</span>
+      <div style="margin-left:auto; display:flex; align-items:center; gap:6px;">
+        <span class="tabs">
+          <button type="button" data-m="pct" onclick="setMetricMode('pct')">%</button>
+          <button type="button" data-m="abs" class="on" onclick="setMetricMode('abs')">Absoluto</button>
+        </span>
+        <button class="hlp" onclick="openHlp('kpis', event)">?</button>
+      </div>
+    </h2>
+    <div class="kpis">
+      <div class="kpi destaque">
+        <div class="k">Realizado Mês (T4)</div>
+        <div class="v" id="kpiReal">--</div>
+        <div class="d" id="kpiMomDelta">--</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Orçado Mês</div>
+        <div class="v" id="kpiOrc">--</div>
+        <div class="d" id="kpiOrcBaseNote">Desafio Orçamentário</div>
+      </div>
+      <div class="kpi desafio">
+        <div class="k">Realizado vs Orçado (RxO)</div>
+        <div class="v" id="kpiRxo">--</div>
+        <div class="d" id="kpiRxoPct">--</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Taxa de Churn (%)</div>
+        <div class="v" id="kpiTaxa">--</div>
+        <div class="d" id="kpiTaxaDelta">--</div>
+      </div>
+      <div class="kpi ytd-box">
+        <div class="k">Acumulado YTD 2026</div>
+        <div class="v" id="kpiYtdReal">--</div>
+        <div class="d">Orçado: <b id="kpiYtdOrc" style="color:var(--ink);">--</b></div>
+      </div>
+      <div class="kpi ytd-box">
+        <div class="k">Vs Orçamento (RxO YTD)</div>
+        <div class="v" id="kpiYtdRxo">--</div>
+        <div class="d" id="kpiYtdRxoPct">--</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Comparativo YTD 26 x YTD 25</div>
+        <div class="v" id="kpiYtdYoy">--</div>
+        <div class="d" id="kpiYtd25">--</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACESSÓRIO 1: PAINEL DE INTELIGÊNCIA CALL CENTER (Exibido na Desconexão Voluntária) -->
+  <div class="panel accessory-section" id="accCallcenter">
+    <h2>
+      Inteligência de Atendimento &amp; Retenção Call Center (Desconexões Voluntárias)
+      <span class="tag fe" id="ccScopeBadge">Regional Norte (Consolidado)</span>
+      <span class="note">Fonte: Sumário Call Center S4 · Análise dos 6 Motivos de Procura URA, Taxa de Geração de OS, Divergência e Histórico de 21 Meses</span>
+      <div style="margin-left:auto; display:flex; align-items:center; gap:6px;">
+        <span class="tabs">
+          <button type="button" data-m="pct" onclick="setMetricMode('pct')">%</button>
+          <button type="button" data-m="abs" class="on" onclick="setMetricMode('abs')">Absoluto</button>
+        </span>
+        <button class="hlp" onclick="openHlp('callcenter', event)">?</button>
+      </div>
+    </h2>
+    <div class="pbody">
+      <!-- KPIs do Callcenter -->
+      <div class="kpis" style="border:1px solid var(--line2); border-radius:3px; margin-bottom:14px;">
+        <div class="kpi">
+          <div class="k">Total Atendidas</div>
+          <div class="v" id="ccAtend">--</div>
+          <div class="d" id="ccUnicas">--</div>
+        </div>
+        <div class="kpi">
+          <div class="k">URA Retenção (Opção 7)</div>
+          <div class="v" id="ccUra">--</div>
+          <div class="d" id="ccMix">--</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Taxa de OS Total</div>
+          <div class="v" id="ccTxOs">--</div>
+          <div class="d">OS sobre ligações</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Lead Único Retenção</div>
+          <div class="v" id="ccLead">--</div>
+          <div class="d">Demandas de cancelamento</div>
+        </div>
+        <div class="kpi">
+          <div class="k">OS Geradas (Cancelamento)</div>
+          <div class="v" id="ccOs">--</div>
+          <div class="d">Ordens de serviço emitidas</div>
+        </div>
+        <div class="kpi acc">
+          <div class="k">Performance de Retenção</div>
+          <div class="v" id="ccPerf">--</div>
+          <div class="d" style="color:var(--green); font-weight:600;">Sucesso na reversão</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Taxa OS s/ Base Real</div>
+          <div class="v" id="ccTaxaBase" style="color:var(--red);">--</div>
+          <div class="d" id="ccBaseTotal">Taxa de Churn Call Center</div>
+        </div>
+      </div>
+
+      <!-- 2 Gráficos de Linha Históricos: Motivos de Procura e Taxa de OS por Motivo -->
+      <div class="grid2" style="margin-bottom:14px;">
+        <div style="border:1px solid var(--line2); border-radius:3px; padding:12px 14px; background:#fff;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; gap:8px;">
+            <h3 style="margin:0; font-size:11.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--ink2); font-weight:700;">
+              Histórico dos Motivos de Procura (% Mix de Chamadas URA)
+            </h3>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span class="tabs">
+                <button type="button" data-m="pct" onclick="setMetricMode('pct')">%</button>
+                <button type="button" data-m="abs" class="on" onclick="setMetricMode('abs')">Absoluto</button>
+              </span>
+              <button class="hlp" onclick="openHlp('cc_motivos_hist', event)" title="Entenda o histórico de mix de procura">?</button>
+            </div>
+          </div>
+          <div style="font-size:11px; color:var(--ink3); margin-bottom:8px;">Evolução de 21 meses (Jan/2025 a Set/2026) · Participação de cada demanda na URA</div>
+          <div class="timeline-box" id="ccMotivosLineChart" style="min-height:240px;"></div>
+          <div class="lgd" style="padding:8px 0 0; border-top:1px solid var(--line2); margin-top:8px;">
+            <span><i style="background:#2a5d8f; border-radius:50%;"></i>Financeiro</span>
+            <span><i style="background:#c0392b; border-radius:50%;"></i>Canc. Automático</span>
+            <span><i style="background:#c98a15; border-radius:50%;"></i>Concorrência</span>
+            <span><i style="background:#8a0f18; border-radius:50%;"></i>Mudança Endereço</span>
+            <span><i style="background:#516173; border-radius:50%;"></i>Técnico</span>
+            <span><i style="background:#6b4b8a; border-radius:50%;"></i>Atendimento</span>
+          </div>
+        </div>
+
+        <div style="border:1px solid var(--line2); border-radius:3px; padding:12px 14px; background:#fff;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; gap:8px;">
+            <h3 style="margin:0; font-size:11.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--ink2); font-weight:700;">
+              Histórico da Taxa de Geração de OS por Motivo (%)
+            </h3>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span class="tabs">
+                <button type="button" data-m="pct" onclick="setMetricMode('pct')">%</button>
+                <button type="button" data-m="abs" class="on" onclick="setMetricMode('abs')">Absoluto</button>
+              </span>
+              <button class="hlp" onclick="openHlp('cc_taxa_os_hist', event)" title="Entenda a taxa de geração de OS por motivo">?</button>
+            </div>
+          </div>
+          <div style="font-size:11px; color:var(--ink3); margin-bottom:8px;">Evolução de 21 meses (Jan/2025 a Set/2026) · Percentual de chamadas que viraram ordem de cancelamento</div>
+          <div class="timeline-box" id="ccTaxaOsLineChart" style="min-height:240px;"></div>
+          <div class="lgd" style="padding:8px 0 0; border-top:1px solid var(--line2); margin-top:8px;">
+            <span><i style="background:#8a0f18; border-radius:50%;"></i>Mudança Endereço (Crítico)</span>
+            <span><i style="background:#c0392b; border-radius:50%;"></i>Canc. Automático (Alto)</span>
+            <span><i style="background:#516173; border-radius:50%;"></i>Técnico</span>
+            <span><i style="background:#c98a15; border-radius:50%;"></i>Concorrência</span>
+            <span><i style="background:#6b4b8a; border-radius:50%;"></i>Atendimento</span>
+            <span><i style="background:#2a5d8f; border-radius:50%;"></i>Financeiro (Menor Tx)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Matriz Analítica de Motivos de Procura vs Taxa de OS, Taxa sobre Base e Divergência -->
+      <div style="border:1px solid var(--line2); border-radius:3px; padding:12px 14px; background:#fff; margin-bottom:14px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; gap:8px;">
+          <h3 style="margin:0; font-size:11.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--ink2); font-weight:700;">
+            Matriz de Inteligência de Atendimento: Participação (Quadro 1) vs Conversão em OS &amp; Taxa s/ Base (Quadro 2) &amp; Divergência
+          </h3>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span class="tabs">
+              <button type="button" data-m="pct" onclick="setMetricMode('pct')">%</button>
+              <button type="button" data-m="abs" class="on" onclick="setMetricMode('abs')">Absoluto</button>
+            </span>
+            <button class="hlp" onclick="openHlp('cc_matriz', event)" title="Entenda a matriz de motivos de procura">?</button>
+          </div>
+        </div>
+        <div style="font-size:11px; color:var(--ink3); margin-bottom:10px;">
+          Comparativo entre o volume de procura, taxa efetiva de conversão em OS, taxa de churn sobre a base realizada e crescimento MoM/YoY
+        </div>
+        <div class="scroll" style="max-height:360px;">
+          <table id="tblCcMatriz">
+            <thead>
+              <tr>
+                <th rowspan="2" class="l">Motivo de Procura (URA Retenção)</th>
+                <th colspan="3" class="sub-hd col-sep">Quadro 1: Participação Motivos (Mix)</th>
+                <th colspan="5" class="sub-hd col-sep">Quadro 2: Taxa de Geração de OS, Retenção &amp; Taxa s/ Base</th>
+                <th colspan="3" class="sub-hd col-sep">Quadro 3: Divergência &amp; Diagnóstico de Risco</th>
+              </tr>
+              <tr>
+                <th class="col-sep">Ligações</th>
+                <th>Mix %</th>
+                <th>MoM / YoY (p.p.)</th>
+                <th class="col-sep">OS Geradas</th>
+                <th>Taxa OS %</th>
+                <th>Retenção %</th>
+                <th>Taxa s/ Base %</th>
+                <th>MoM / YoY (p.p.)</th>
+                <th class="col-sep">Diferença (Taxa OS - Mix)</th>
+                <th class="l">Dinâmica Operacional</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="tblCcMatrizBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Speech Analytics: Gráfico Histórico de Linha (9 Meses) + Tabela Comparativa MoM/YTD -->
+      <div style="border:1px solid var(--line2); border-radius:3px; padding:12px 14px; background:#fff;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h3 style="margin:0 0 3px; font-size:12px; text-transform:uppercase; letter-spacing:.5px; color:var(--ink2); font-weight:700;">
+              Speech Analytics — Evolução Histórica dos Argumentos de Cancelamento (Jan/2026 a Set/2026)
+            </h3>
+            <div style="font-size:11px; color:var(--ink3);">
+              Histórico contínuo de 9 meses com transcrição de argumentos na URA e comparativo MoM (vs Ago/26) e YTD (vs Jan/26)
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div class="lgd" id="ccSpeechLegend" style="margin:0; font-size:10.5px;"></div>
+            <span class="tabs">
+              <button type="button" data-m="pct" onclick="setMetricMode('pct')">%</button>
+              <button type="button" data-m="abs" class="on" onclick="setMetricMode('abs')">Absoluto</button>
+            </span>
+            <button class="hlp" onclick="openHlp('cc_speech_hist', event)" title="Entenda o speech analytics de cancelamento">?</button>
+          </div>
+        </div>
+        <div class="grid2" style="align-items:start;">
+          <div class="timeline-box" id="ccSpeechLineChart" style="min-height:380px;"></div>
+          <div style="border:1px solid var(--line2); border-radius:3px; min-height:430px; overflow:visible; height:100%; background:#fff;">
+            <table id="tblSpeechCompare" style="width:100%;">
+              <thead>
+                <tr>
+                  <th class="l">Argumento Transcrito (Speech)</th>
+                  <th>Set/26 (%)</th>
+                  <th>MoM (vs Ago)</th>
+                  <th>YTD (vs Jan)</th>
+                  <th>Tendência</th>
+                </tr>
+              </thead>
+              <tbody id="tblSpeechCompareBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACESSÓRIO 2: MODELO PROJEÇÃO RESIDENCIAL - ABERTURA INVOLUNTÁRIA (Exibido na Desconexão Involuntária) -->
+  <div class="panel accessory-section" id="accInvoluntaria">
+    <h2>
+      Detalhamento e Origem das Desconexões Involuntárias (Modelo Projeção)
+      <span class="tag fe" id="involScopeBadge">Regional Norte (Consolidado)</span>
+      <span class="note">Fonte: Modelo Projeção Residencial S4 · Seção Banda Larga · Aberturas por Base, FPD, Opção e Fraude SSI · Histórico de 21 Meses</span>
+      <div style="margin-left:auto; display:flex; align-items:center; gap:6px;">
+        <span class="tabs">
+          <button type="button" data-m="pct" onclick="setMetricMode('pct')">%</button>
+          <button type="button" data-m="abs" class="on" onclick="setMetricMode('abs')">Absoluto</button>
+        </span>
+        <button class="hlp" onclick="openHlp('proj_invol', event)">?</button>
+      </div>
+    </h2>
+    <div class="pbody">
+      <!-- 4 Pilares da Involuntária com Volume e Taxa de Churn sobre a Base -->
+      <div class="kpis" style="border:1px solid var(--line2); border-radius:3px; margin-bottom:14px;">
+        <div class="kpi destaque">
+          <div class="k">Involuntária Base</div>
+          <div class="v" id="involBase">--</div>
+          <div class="d" id="involBasePct">--</div>
+        </div>
+        <div class="kpi acc">
+          <div class="k">FPD (First Payment Default)</div>
+          <div class="v" id="involFpd">--</div>
+          <div class="d" id="involFpdPct">--</div>
+        </div>
+        <div class="kpi desafio">
+          <div class="k">Opção (Involuntária)</div>
+          <div class="v" id="involOpcao">--</div>
+          <div class="d" id="involOpcaoPct">--</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Fraude SSI</div>
+          <div class="v" id="involFraude">--</div>
+          <div class="d" id="involFraudePct">--</div>
+        </div>
+      </div>
+
+      <!-- Gráfico de Linha Histórico das Aberturas do Involuntário -->
+      <div style="border:1px solid var(--line2); border-radius:3px; padding:12px 14px; background:#fff; margin-bottom:14px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:4px;">
+          <div>
+            <h3 style="margin:0 0 4px; font-size:11.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--ink2); font-weight:700;">
+              Evolução Histórica das Aberturas Involuntárias (Jan/2025 a Set/2026)
+            </h3>
+            <div style="font-size:11px; color:var(--ink3);">
+              Histórico de 21 meses das 4 componentes: Involuntária Base, FPD (1º Pagamento), Opção e Fraude SSI
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="tabs">
+              <button type="button" data-m="pct" onclick="setMetricMode('pct')">%</button>
+              <button type="button" data-m="abs" class="on" onclick="setMetricMode('abs')">Absoluto</button>
+            </span>
+            <button class="hlp" onclick="openHlp('invol_hist_pilares', event)">?</button>
+          </div>
+        </div>
+        <div class="timeline-box" id="involHistoryChart" style="min-height:250px;"></div>
+        <div class="lgd" style="padding:8px 0 0; border-top:1px solid var(--line2); margin-top:8px;">
+          <span><i style="background:#2a5d8f; border-radius:50%;"></i>Involuntária Base</span>
+          <span><i style="background:#6b4b8a; border-radius:50%;"></i>FPD (First Payment Default)</span>
+          <span><i style="background:#c98a15; border-radius:50%;"></i>Opção (Involuntária)</span>
+          <span><i style="background:#c0392b; border-radius:50%;"></i>Fraude SSI</span>
+        </div>
+      </div>
+
+      <!-- Gráfico de Linha Histórico das Cidades no Involuntário (Requisito 7) -->
+      <div style="border:1px solid var(--line2); border-radius:3px; padding:12px 14px; background:#fff; margin-bottom:14px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:4px;">
+          <div>
+            <h3 style="margin:0 0 4px; font-size:11.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--ink2); font-weight:700;">
+              Evolução Histórica das Cidades no Involuntário (Jan/2025 a Set/2026)
+            </h3>
+            <div style="font-size:11px; color:var(--ink3);">
+              Histórico de 21 meses das 13 praças monitoradas · Desconexões involuntárias por cidade
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="tabs">
+              <button type="button" data-m="pct" onclick="setMetricMode('pct')">%</button>
+              <button type="button" data-m="abs" class="on" onclick="setMetricMode('abs')">Absoluto</button>
+            </span>
+            <button class="hlp" onclick="openHlp('invol_cidades', event)">?</button>
+          </div>
+        </div>
+        <div class="timeline-box" id="involCitiesHistoryChart" style="min-height:270px;"></div>
+        <div class="lgd" id="involCitiesLegend" style="padding:8px 0 0; border-top:1px solid var(--line2); margin-top:8px;"></div>
+      </div>
+
+      <!-- Tabela Completa de Abertura Involuntária por Praça com Participações, Taxas de Churn, MoM e YoY -->
+      <div class="scroll" style="max-height:360px;">
+        <table id="tblInvolProj">
+          <thead>
+            <tr>
+              <th rowspan="2" class="l">Praça / Mercado</th>
+              <th rowspan="2" class="l">Cluster</th>
+              <th rowspan="2">Base Clientes</th>
+              <th colspan="5" class="sub-hd col-sep">Volume Realizado (Set/26)</th>
+              <th colspan="4" class="sub-hd col-sep">% Participação nas Involuntárias</th>
+              <th colspan="5" class="sub-hd col-sep">Taxa de Churn (% da Base)</th>
+              <th colspan="5" class="sub-hd col-sep">Variação MoM vs Ago/26 (%)</th>
+              <th colspan="5" class="sub-hd col-sep">Variação YoY vs Set/25 (%)</th>
+            </tr>
+            <tr>
+              <th class="col-sep">Base</th>
+              <th>FPD</th>
+              <th>Opção</th>
+              <th>Fraude</th>
+              <th>Total</th>
+              <th class="col-sep">% Base</th>
+              <th>% FPD</th>
+              <th>% Opção</th>
+              <th>% Fraude</th>
+              <th class="col-sep">Tx Base</th>
+              <th>Tx FPD</th>
+              <th>Tx Opção</th>
+              <th>Tx Fraude</th>
+              <th>Tx Total</th>
+              <th class="col-sep">Base</th>
+              <th>FPD</th>
+              <th>Opção</th>
+              <th>Fraude</th>
+              <th>Total</th>
+              <th class="col-sep">Base</th>
+              <th>FPD</th>
+              <th>Opção</th>
+              <th>Fraude</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="tblInvolProjBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grid with Scatter Bubble Chart & Timeline -->
+  <div class="grid2">
+    <!-- Scatter Plot (MoM vs YoY) with Bubble Size = Volume -->
+    <div class="panel">
+      <h2>
+        Dispersão MoM (%) vs YoY (%) por Praça
+        <span class="tag fe" id="scatterScopeTag" style="display:none;"></span>
+        <span class="note" id="scatterNote">Tamanho da bolha = Volume de Desconexões · Clique na praça para isolar</span>
+        <span class="tabs" id="tabsScatterMetric" style="margin-left:auto;">
+          <button type="button" data-m="pct" onclick="setMetricMode('pct')">%</button>
+          <button type="button" data-m="abs" class="on" onclick="setMetricMode('abs')">Absoluto</button>
+        </span>
+        <button class="hlp" onclick="openHlp('dispersao', event)">?</button>
+      </h2>
+      <div class="pbody" style="padding-bottom:4px;">
+        <div class="scatter-box" id="scatterContainer"></div>
+      </div>
+      <div class="lgd">
+        <span><i style="background:#2a5d8f; border-radius:50%;"></i>Grandes Mercados (GM)</span>
+        <span><i style="background:#c98a15; border-radius:50%;"></i>Mercados em Desenvolvimento (MD)</span>
+        <span style="margin-left:auto;"><i style="background:#fdece9; border:1px solid #e8b4ab;"></i>Sup. Dir: Ofensores Críticos (MoM+ / YoY+)</span>
+        <span><i style="background:#eaf2ec; border:1px solid #c9dfd2;"></i>Inf. Esq: Melhora Geral (MoM- / YoY-)</span>
+      </div>
+    </div>
+
+    <!-- Complete 33-Month Historical Timeline -->
+    <div class="panel">
+      <h2>
+        Timeline Histórica de Desconexões (Jan/2024 a Set/2026)
+        <span class="tag fe" id="timelineScopeTag" style="display:none;"></span>
+        <span class="note" id="timelineNote">33 meses · Comparativo Realizado vs Orçamento</span>
+        <span class="tabs" id="tabsTimelineMetric" style="margin-left:auto;">
+          <button type="button" data-m="pct" onclick="setMetricMode('pct')">%</button>
+          <button type="button" data-m="abs" class="on" onclick="setMetricMode('abs')">Absoluto</button>
+        </span>
+        <button class="hlp" onclick="openHlp('timeline', event)">?</button>
+      </h2>
+      <div class="pbody" style="padding-bottom:4px;">
+        <div class="timeline-box" id="timelineContainer"></div>
+      </div>
+      <div class="lgd">
+        <span><i style="background:#c0392b;"></i>Realizado Total Regional</span>
+        <span><i style="background:#2a5d8f; border-top:2px dashed #2a5d8f; height:0;"></i>Orçamento Regional</span>
+        <span><i style="background:#516173;"></i>Grandes Mercados (GM)</span>
+        <span><i style="background:#c98a15;"></i>Mercados em Desenvolvimento (MD)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Complete Analytical Table with RxO, YTD, Tendências & Churn Rate -->
+  <div class="panel">
+    <h2>
+      Acompanhamento Analítico por Praça (Separado por Cluster)
+      <span class="note">Grandes Mercados (GM) e Mercados em Desenvolvimento (MD) segregados · Valores absolutos inteiros</span>
+      <div style="margin-left:auto; display:flex; align-items:center; gap:6px;">
+        <span class="tabs" id="tabsTableMetric">
+          <button type="button" data-m="pct" onclick="setMetricMode('pct')">%</button>
+          <button type="button" data-m="abs" class="on" onclick="setMetricMode('abs')">Absoluto</button>
+        </span>
+        <button class="hlp" onclick="openHlp('tabela', event)">?</button>
+      </div>
+    </h2>
+    <div class="scroll">
+      <table id="tblMain">
+        <thead>
+          <tr>
+            <th rowspan="2" class="l sortable" onclick="sortTable('nome')">Praça / Mercado</th>
+            <th rowspan="2" class="l sortable" onclick="sortTable('uf')">UF</th>
+            <th colspan="2" class="sub-hd col-sep">Base de Clientes</th>
+            <th colspan="7" class="sub-hd col-sep">Setembro / 2026 (Mês Atual - T4)</th>
+            <th colspan="6" class="sub-hd col-sep">Acumulado do Ano (YTD 2026 x YTD 2025 &amp; Orçamento)</th>
+            <th colspan="4" class="sub-hd col-sep">Evolução Tendências (T1 a T4)</th>
+            <th colspan="3" class="sub-hd col-sep">Taxa de Churn (%)</th>
+          </tr>
+          <tr>
+            <th class="sortable col-sep" onclick="sortTable('base_real')">Base Real</th>
+            <th class="sortable" onclick="sortTable('base_orc')">Base Orç</th>
+
+            <th class="sortable col-sep" id="thVolReal" onclick="sortTable('vol_real')">Real (T4)</th>
+            <th class="sortable" id="thVolOrc" onclick="sortTable('vol_orc')">Orçado</th>
+            <th class="sortable" id="thRxoDelta" onclick="sortTable('rxo_delta')">Δ RxO</th>
+            <th class="sortable" id="thRxoVar" onclick="sortTable('rxo_pct')">Var %</th>
+            <th class="sortable" id="thMomVar" onclick="sortTable('mom_pct')">MoM %</th>
+            <th id="thVolSep25">Set/25</th>
+            <th class="sortable" id="thYoyVar" onclick="sortTable('yoy_pct')">YoY %</th>
+
+            <th class="sortable col-sep" id="thYtdReal" onclick="sortTable('ytd_real')">YTD 2026</th>
+            <th id="thYtd2025">YTD 2025</th>
+            <th id="thYtdDelta">Δ 26x25</th>
+            <th class="sortable" id="thYtdVar" onclick="sortTable('ytd_26x25_pct')">Var %</th>
+            <th id="thYtdOrc">YTD Orç</th>
+            <th class="sortable" id="thYtdRxo" onclick="sortTable('ytd_rxo_pct')">RxO YTD %</th>
+
+            <th class="col-sep" id="thT1">T1</th>
+            <th id="thT2">T2</th>
+            <th id="thT3">T3</th>
+            <th class="sortable" id="thT4" onclick="sortTable('t4')">T4</th>
+
+            <th class="sortable col-sep" onclick="sortTable('taxa_real')">Taxa Real</th>
+            <th>Taxa Orç</th>
+            <th class="sortable" onclick="sortTable('taxa_delta_pp')">Δ p.p.</th>
+          </tr>
+        </thead>
+        <tbody id="tblBody"></tbody>
+        <tfoot id="tblFoot"></tfoot>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- Tooltip Container -->
+<div class="gtip" id="gtip"></div>
+
+<!-- Modal de Ajuda Contextual -->
+<div class="modal" id="hlpModal" onclick="closeHlp(event)">
+  <div class="box" onclick="event.stopPropagation()">
+    <div class="hd">
+      <h3 id="hlpTitle">Ajuda e Metodologia</h3>
+      <button onclick="closeHlp()">×</button>
+    </div>
+    <div class="bd" id="hlpBody"></div>
+  </div>
+</div>
+
+
+<script>
+const RAW_DATA = {{RAW_DATA_JSON}};
+
+{{APP_JS}}
+</script>
+</body>
+</html>

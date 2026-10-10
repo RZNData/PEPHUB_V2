@@ -1,0 +1,33 @@
+name = "pephub-regional"
+main = "worker/index.js"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+# Rotas do domínio oficial
+routes = [
+  { pattern = "pephub.cloud/*", zone_name = "pephub.cloud" },
+  { pattern = "www.pephub.cloud/*", zone_name = "pephub.cloud" }
+]
+
+# Banco de Dados D1
+[[d1_databases]]
+binding = "DB"
+database_name = "pephub-db"
+database_id = "a6ec52b0-2131-47a1-b075-8b5062f9ffbd"
+
+# Variáveis públicas de ambiente
+[vars]
+PUBLIC_BASE_URL = "https://pephub.cloud"
+ADMIN_EMAIL = "arthur.rezende.analista@gmail.com"
+MAIL_FROM = "Pephub Regional <notificacoes@pephub.cloud>"
+MAIL_REPLY_TO = "arthur.rezende.analista@gmail.com"
+
+# Servir os arquivos estáticos (Portal / e Módulo /churn)
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = true
+not_found_handling = "single-page-application"
+
+

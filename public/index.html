@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pephub — Portal de Churn & Qualidade | Regional Norte</title>
+
+<!-- PWA & Mobile Web App Meta Tags -->
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#8a0f18">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PEP HUB">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon.png">
+<link rel="stylesheet" href="/css/app-mobile.css">
+<script>
+  /* PEP HUB — Antecipação Síncrona de Permissões (Elimina Flicker Visual) */
+  (function() {
+    try {
+      var raw = sessionStorage.getItem('pephub_portal_perms_cache') || localStorage.getItem('pephub_portal_perms_cache');
+      if (!raw) return;
+      var c = JSON.parse(raw);
+      if (c && !c.isAdmin) {
+        var allowed = Array.isArray(c.userAllowed) ? c.userAllowed.map(function(s){ return String(s).trim().toLowerCase(); }) : [];
+        if (!allowed.includes('all')) {
+          var known = [
+            { id: 'fpd', href: '/fpd/' },
+            { id: 'churn', href: '/churn/' },
+            { id: 'churn-bl-total', href: 'churn-bl-total' },
+            { id: 'churn-bl-pme', href: 'churn-bl-pme' },
+            { id: 'market-share-movel', href: 'market-share-movel' },
+            { id: 'market-share-residencial', href: 'market-share-residencial' },
+            { id: 'aprovacao-credito', href: 'aprovacao-credito' },
+            { id: 'divulgacao', href: 'pep-tools' },
+            { id: 'podcast', href: 'podcast' },
+            { id: 'tv', href: '/tv/' }
+          ];
+          var css = [];
+          known.forEach(function(item) {
+            var has = allowed.includes(item.id) || 
+                      (item.id === 'churn' && allowed.includes('churn_safra')) ||
+                      (item.id === 'churn-bl-total' && allowed.includes('churn_bl_total')) ||
+                      (item.id === 'churn-bl-pme' && allowed.includes('churn_bl_pme')) ||
+                      (item.id === 'market-share-movel' && allowed.includes('market_share_movel')) ||
+                      (item.id === 'market-share-residencial' && allowed.includes('market_share_residencial')) ||
+                      (item.id === 'aprovacao-credito' && allowed.includes('aprovacao_credito')) ||
+                      (item.id === 'divulgacao' && (allowed.includes('pep_tools') || allowed.includes('divulgacao')));
+            if (!has) {
+              css.push('.card:has(a[href*="' + item.href + '"]) { opacity: 0.72; border-color: #e5e7eb; }');
+              css.push('.card:has(a[href*="' + item.href + '"]) .card-footer a { display: none !important; }');
+            }
+          });
+          if (css.length) {
+            var st = document.createElement('style');
+            st.id = 'pephub-anticipate-perms';
+            st.textContent = css.join('\n');
+            document.head.appendChild(st);
+          }
+        }
+      }
+    } catch (_) {}
+  })();
+</script>
+<style>
+:root{
+  --bg:#f4f5f7; --panel:#fff; --ink:#1c2430; --ink2:#5b6675; --ink3:#8b95a3;
+  --line:#dfe3e8; --line2:#eceef1; --nav:#1b2430; --nav2:#27323f;
+  --red:#c0392b; --amber:#c98a15; --green:#2f7d5d; --blue:#2a5d8f; --purple:#6b4b8a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 "Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+header{background:#fff;border-bottom:1px solid var(--line)}
+.hd-bar{background:linear-gradient(90deg,#8a0f18 0%,#c0191f 26%,#e23a1e 50%,#f47a1f 74%,#f9b233 100%);
+  display:flex;align-items:center;gap:16px;padding:16px 28px}
+.hd-ico{width:46px;height:46px;min-width:46px;border-radius:50%;border:2.4px solid rgba(255,255,255,.95);
+  display:flex;align-items:center;justify-content:center}
+.hd-bar h1{margin:0;color:#fff;font-size:28px;font-weight:400;letter-spacing:-.4px;line-height:1.1;
+  display:flex;align-items:baseline;gap:11px;flex-wrap:wrap}
+.hd-bar h1 b{font-weight:800;letter-spacing:-1px}
+.hd-bar h1 span{font-weight:300;font-size:23px;color:rgba(255,255,255,.93)}
+.hd-sub{background:var(--nav);color:#aab4c0;font-size:11.5px;padding:8px 28px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hd-sub b{color:#e8edf3;font-weight:600}
+.hd-sub .dot{width:3px;height:3px;border-radius:50%;background:#5b6675;display:inline-block}
+.hd-sub .hd-right{margin-left:auto}
+
+.wrap{padding:28px 28px 48px;max-width:1440px;margin:0 auto}
+
+.intro{background:#fff;border:1px solid var(--line);border-radius:4px;padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.intro-text h2{margin:0 0 6px;font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.intro-text p{margin:0;color:var(--ink2);font-size:13px;max-width:780px}
+.intro-badges{display:flex;gap:8px;flex-wrap:wrap}
+.ibadge{display:inline-flex;align-items:center;gap:6px;background:#f7f8fa;border:1px solid var(--line);border-radius:3px;padding:5px 10px;font-size:11px;color:var(--ink2)}
+.ibadge b{color:var(--ink)}
+
+.section-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--ink2);margin:0 0 16px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--line)}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px;margin-bottom:32px}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:4px;display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s,border-color .15s;overflow:hidden;position:relative}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.06);border-color:#b9c2cc}
+.card-header{padding:18px 20px 14px;border-bottom:1px solid var(--line2);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.card-title{margin:0;font-size:16px;font-weight:700;color:var(--ink);letter-spacing:-.2px}
+.card-tag{display:inline-block;padding:3px 9px;border-radius:3px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.card-tag.active{background:#eaf2ec;color:#235c44;border:1px solid #c9dfd2}
+.card-tag.soon{background:#fdf3e2;color:#8a5d06;border:1px solid #f0dcb4}
+.card-tag.plan{background:#f0f2f5;color:#5b6675;border:1px solid var(--line)}
+
+.card-body{padding:18px 20px;flex:1}
+.card-desc{color:var(--ink2);font-size:12.5px;line-height:1.6;margin:0 0 16px}
+.card-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#fcfcfd;border:1px solid var(--line2);border-radius:3px;padding:10px 12px;font-size:11.5px}
+.card-meta div span{color:var(--ink3);display:block;font-size:10px;text-transform:uppercase;letter-spacing:.4px}
+.card-meta div strong{color:var(--ink);font-weight:600}
+
+.card-footer{padding:14px 20px;background:#fafbfc;border-top:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.btn-primary{display:inline-flex;align-items:center;gap:7px;background:var(--nav);color:#fff;text-decoration:none;padding:8px 16px;border-radius:3px;font-size:12px;font-weight:600;transition:background .15s}
+.btn-primary:hover{background:var(--nav2);color:#fff}
+.btn-secondary{display:inline-flex;align-items:center;gap:5px;background:#fff;color:var(--ink2);text-decoration:none;padding:7px 12px;border:1px solid var(--line);border-radius:3px;font-size:11px;font-weight:600;transition:background .15s,color .15s}
+.btn-secondary:hover{background:#f0f2f5;color:var(--ink)}
+
+.footer-notes{background:#fff;border:1px solid var(--line);border-radius:4px;padding:18px 22px;color:var(--ink3);font-size:11.5px;line-height:1.6}
+.footer-notes strong{color:var(--ink2)}
+
+@media(max-width:768px){
+  .hd-bar{padding:12px 18px}
+  .hd-bar h1{font-size:22px}
+  .wrap{padding:18px 18px 36px}
+  .cards{grid-template-columns:1fr}
+}
+
+.quick-kpis {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.kpi-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .2px;
+  background: #f1f3f5;
+  color: var(--ink2);
+  border: 1px solid var(--line);
+}
+.kpi-tag.blue,
+.kpi-tag.green,
+.kpi-tag.red,
+.kpi-tag.amber,
+.kpi-tag.purple {
+  background: #f1f3f5;
+  color: var(--ink2);
+  border: 1px solid var(--line);
+}
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd-bar">
+    <div class="hd-ico">
+      <svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true">
+        <circle cx="24" cy="24" r="21" fill="none" stroke="#fff" stroke-width="2.6"/>
+        <path d="M31.5 16.5 L26.5 26.5 L16.5 31.5 L21.5 21.5 Z" fill="#fff"/>
+      </svg>
+    </div>
+    <h1><b>Pephub</b> <span>Portal de Churn & Qualidade · Regional Norte</span></h1>
+    <div class="hd-actions" id="userWidget" style="margin-left:auto;display:flex;align-items:center;gap:10px">
+      <button class="drawer-btn hlp" data-h="risco" style="display:none">?</button>
+      <button id="btnPwaInstallHeader" onclick="triggerPwaInstall()" style="display:none;background:#c0191f;color:#fff;border:1px solid rgba(255,255,255,.4);padding:6px 13px;border-radius:3px;font-size:11.5px;font-weight:700;cursor:pointer;align-items:center;gap:6px;transition:all .15s" title="Instalar aplicativo no dispositivo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Instalar App</button>
+      <a href="/login/" id="btnAuth" style="background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.35);padding:6px 14px;border-radius:3px;font-size:11.5px;font-weight:600;text-decoration:none;transition:background .15s">Entrar / Login</a>
+    </div>
+  </div>
+  <div class="hd-sub">
+    <span><b>Pephub</b></span>
+    <span class="dot"></span>
+    <a href="#paineis" style="color:#e8edf3;text-decoration:none;font-weight:600">Painéis Analíticos</a>
+    <span class="dot"></span>
+    <a href="#pep-tools" style="color:#f9b233;text-decoration:none;font-weight:700">PeP Tools</a>
+    <span class="dot"></span>
+    <a href="/pep-tools/divulgacao/" style="color:#aab4c0;text-decoration:none">Divulgação Corporativa</a>
+    <span class="dot"></span>
+    <span>Regional Norte (AM · PA · MA · AP · RR)</span>
+    <span class="hd-right">
+      <a href="/tv" target="_blank" style="color:#f9b233;text-decoration:none;font-weight:700;margin-right:16px">Player TV (16:9)</a>
+      pephub.cloud
+    </span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="intro">
+    <div class="intro-text">
+      <h2>Central de Inteligência de Churn & Qualidade — Regional Norte</h2>
+      <p>Plataforma estratégica integrada para monitoramento de desconexões (voluntárias e involuntárias), indicadores de qualidade e Call Center, safras e sobrevivência de base.</p>
+    </div>
+    <div class="intro-badges">
+      <div class="ibadge"><b>5</b> Estados Atendidos</div>
+      <div class="ibadge"><b>133</b> Cidades Monitoradas</div>
+      <div class="ibadge"><b>100%</b> Autocontido & Offline</div>
+    </div>
+  </div>
+
+  <div class="section-title" id="paineis">Painéis e Indicadores Analíticos</div>
+
+  <div class="cards">
+
+    <!-- Card 1: Churn Safra -->
+    <div class="card" style="border-top: 3px solid var(--red);">
+      <div class="card-header">
+        <h3 class="card-title">Churn Safra — Regional Norte</h3>
+        <span class="card-tag active">Ativo</span>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Análise de desconexão precoce de instalações nas janelas D30 a D150. Acompanhamento rigoroso da responsabilidade do parceiro (janela oficial D120), curva de maturação, inadimplência inicial (Nunca Pagou), mapa de calor e ranking hierárquico comercial.</p>
+        <div class="card-meta">
+          <div><span>Universo da Base</span><strong>348.866 instalações</strong></div>
+          <div><span>Período Observado</span><strong>13 safras (set/25 – set/26)</strong></div>
+          <div><span>Data de Posição</span><strong>21/09/2026</strong></div>
+          <div><span>Maturidade</span><strong>Avaliada por contrato</strong></div>
+        </div>
+        <div class="quick-kpis">
+          <span class="kpi-tag red">Janelas D30 a D150</span>
+          <span class="kpi-tag blue">Responsabilidade D120</span>
+          <span class="kpi-tag green">Sobrevivência & Maturação</span>
+          <span class="kpi-tag amber">Nunca Pagou (Inad. Inicial)</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="./churn/" class="btn-primary">Acessar Painel Online →</a>
+        
+      </div>
+    </div>
+
+    <!-- Card 2: Panorama FPD -->
+    <div class="card" style="border-top: 3px solid var(--red);">
+      <div class="card-header">
+        <h3 class="card-title">Panorama FPD — Regional Norte</h3>
+        <span class="card-tag active">Ativo</span>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Diagnóstico analítico completo de adimplência na 1ª fatura (marco oficial FPD 60 Claro e FPD 30 Onboarding). Aberturas multidimensionais por Parceiro credenciado, Safra de venda, Vendedor, Praça IBGE, Canal de Venda e Faixas de Risco de Crédito. Visão geoespacial interativa com densidade urbana, mapa de calor e laço livre.</p>
+        <div class="card-meta">
+          <div><span>Universo de Instalações</span><strong>143.527 domicílios</strong></div>
+          <div><span>Safras Observadas</span><strong>13 safras (Mai/25 a Mai/26)</strong></div>
+          <div><span>Taxa FPD 60 (Safra Foco)</span><strong>26,48% (2.585 inad.)</strong></div>
+          <div><span>Taxa FPD 30 (Onboarding)</span><strong>58,50% (5.711 inad.)</strong></div>
+        </div>
+        <div class="quick-kpis">
+          <span class="kpi-tag red">1. Instalações</span>
+          <span class="kpi-tag amber">2. FPD 60 Oficial</span>
+          <span class="kpi-tag blue">3. FPD 30 Pré-FPD</span>
+          <span class="kpi-tag green">4. Adimplência & Risco</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="./fpd/" class="btn-primary">Acessar Painel Online →</a>
+      </div>
+    </div>
+
+    <!-- Card 2B: FPD Executivo -->
+    <div class="card" style="border-top: 3px solid var(--red);">
+      <div class="card-header">
+        <h3 class="card-title">FPD Executivo (Residencial)</h3>
+        <span class="card-tag active">Oficial</span>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Relatório Executivo Oficial de FPD 60 da Fixa. Confronto direto entre Regional Norte e Benchmark Brasil por Canal de Venda (Presencial vs Remoto), Praças/Cidades (Grandes Mercados e Mercados em Desenvolvimento) e Parceiros com filtros dependentes e reatividade instantânea.</p>
+        <div class="card-meta">
+          <div><span>Visão Foco</span><strong>Junho / 2026</strong></div>
+          <div><span>Benchmark Brasil</span><strong>17,35% (% FPD 60)</strong></div>
+          <div><span>Abas Especializadas</span><strong>6 Visões Estratégicas</strong></div>
+          <div><span>Métricas Oficiais</span><strong>FPD 60, FPD 30 e Volumes</strong></div>
+        </div>
+        <div class="quick-kpis">
+          <span class="kpi-tag red">1. % FPD 60 Dias</span>
+          <span class="kpi-tag amber">2. % FPD 30 Prevenção</span>
+          <span class="kpi-tag blue">3. Inadimplentes & Vendas</span>
+          <span class="kpi-tag green">4. Benchmark Brasil & Gap</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="/fpd-residencial/" class="btn-primary">Acessar Painel Online →</a>
+      </div>
+    </div>
+
+    <!-- Card 3: Churn Banda Larga Total -->
+    <div class="card" style="border-top: 3px solid var(--red);">
+      <div class="card-header">
+        <h3 class="card-title">Painel Churn Banda Larga Total</h3>
+        <span class="card-tag active">Ativo</span>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Acompanhamento horizontal das desconexões da banda larga na Regional Norte. Confronto das 4 Tendências semanais (T1 a T4), comparativos de fechamento com Mês Anterior (MoM), Ano Anterior (YoY), Desafio/Orçamento e YTD.</p>
+        <div class="card-meta">
+          <div><span>Ciclo Observado</span><strong>Setembro / 2026</strong></div>
+          <div><span>Tendência Atual</span><strong>4ª Tendência (T4)</strong></div>
+          <div><span>Desconexões Totais</span><strong>9.844 desconexões (2,34%)</strong></div>
+          <div><span>Vs Orçamento (RxO)</span><strong>+176 desc. (+1,8% vs meta)</strong></div>
+        </div>
+        <div class="quick-kpis">
+          <span class="kpi-tag blue">Tendências T1 a T4</span>
+          <span class="kpi-tag red">Fechamento MoM & YoY</span>
+          <span class="kpi-tag green">Metas Orçadas (RxO)</span>
+          <span class="kpi-tag amber">Abertura por Praça</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="/churn-bl-total/" class="btn-primary">Acessar Painel Online →</a>
+        
+      </div>
+    </div>
+
+    <!-- Card 4: Churn Banda Larga PME -->
+    <div class="card" style="border-top: 3px solid var(--red);">
+      <div class="card-header">
+        <h3 class="card-title">Painel Churn Banda Larga PME</h3>
+        <span class="card-tag active">Ativo</span>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Visão especializada de churn para o segmento empresarial (PME / B2B). Projeções semanais de fechamento (T1 a T4), comparativo com metas orçadas, evolução da taxa de churn (%) por praça e histórico de retenção.</p>
+        <div class="card-meta">
+          <div><span>Segmento Foco</span><strong>PME / Empresarial</strong></div>
+          <div><span>Ciclo Observado</span><strong>Setembro / 2026 (T4)</strong></div>
+          <div><span>Desconexões Totais</span><strong>969 desconexões (2,35%)</strong></div>
+          <div><span>Comparativo MoM</span><strong>-157 desc. (-14,0% vs Ago)</strong></div>
+        </div>
+        <div class="quick-kpis">
+          <span class="kpi-tag blue">B2B & PME Empresarial</span>
+          <span class="kpi-tag green">Projeções Semanais</span>
+          <span class="kpi-tag amber">Histórico de Retenção</span>
+          <span class="kpi-tag red">Desconexões por Praça</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="/churn-bl-pme/" class="btn-primary">Acessar Painel Online →</a>
+        
+      </div>
+    </div>
+
+    <!-- Card 5: Panorama Market Share Móvel e Residencial -->
+    <div class="card" style="border-top: 3px solid var(--red);">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Panorama Market Share — Móvel & Residencial</h3>
+          <span style="font-size:11px;color:var(--ink3)">Regional Norte · Share Claro vs Concorrentes & ISPs</span>
+        </div>
+        <span class="card-tag active">Novo! Jul/2026</span>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Panorama executivo e estratégico do share de mercado da Claro e das competidoras (Vivo, TIM, Brisanet, ISPs regionais). Acompanhamento de net adds, evolução de base, saldo do líder, provedores individualizados, mapas de liderança municipal e comparadores de convergência móvel × fixa na Regional Norte.</p>
+        <div class="card-meta">
+          <div><span>Posição Oficial</span><strong>Julho / 2026 (Anatel)</strong></div>
+          <div><span>Abrangência</span><strong>Regional Norte (AM, AP, MA, PA, PI, RR)</strong></div>
+          <div><span>Segmentos</span><strong>Móvel (Pós/Pré) & Banda Larga</strong></div>
+          <div><span>Granularidade</span><strong>UF, DDD, Município e ISP</strong></div>
+        </div>
+        <div class="quick-kpis">
+          <span class="kpi-tag red">Liderança Municipal</span>
+          <span class="kpi-tag blue">Net Adds & Saldo</span>
+          <span class="kpi-tag green">ISPs Individualizados</span>
+          <span class="kpi-tag amber">Convergência Móvel × Fixa</span>
+        </div>
+      </div>
+      <div class="card-footer" style="flex-wrap:wrap;gap:8px;">
+        <a href="/panorama-market-share/" class="btn-primary">Acessar Panorama Online →</a>
+        <a href="/market-share-residencial/" class="btn-secondary" title="Relatório Oficial de Market Share Residencial e Banda Larga">MS Residencial (Oficial) →</a>
+        <a href="/market-share-movel/" class="btn-secondary" title="Relatório Oficial de Market Share Móvel e 5G">MS Móvel & 5G (Oficial) →</a>
+        <a href="/pep-tools/market-share/" class="btn-secondary" title="Abrir ferramenta de suporte a apresentações Auxiliar de PPT">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Auxiliar de PPT
+        </a>
+      </div>
+    </div>
+
+    <!-- Card 6: Taxa de Aprovação Residencial PF -->
+    <div class="card" style="border-top: 3px solid var(--red);">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Taxa de Aprovação de Crédito PF — Residencial</h3>
+          <span style="font-size:11px;color:var(--ink3)">Cidade e PDV · Risco, Fraudes e Limiares de Entrada</span>
+        </div>
+        <span class="card-tag active">Novo! Ago/2026</span>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Painel executivo de direcionamento para política de concessão de crédito residencial pessoa física. Análise de limiares de aprovação de entrada de clientes, curvas de risco de inadimplência, fraudes, ranking por canais e pontos de venda (PDVs), e árvore de carteirização da Regional Norte.</p>
+        <div class="card-meta">
+          <div><span>Posição Oficial</span><strong>Agosto / 2026</strong></div>
+          <div><span>Escopo</span><strong>Residencial Pessoa Física (PF)</strong></div>
+          <div><span>Granularidade</span><strong>Cidade, PDV, Canal e Rede</strong></div>
+          <div><span>Direcionamento</span><strong>Limiar de Aprovação & Risco</strong></div>
+        </div>
+        <div class="quick-kpis">
+          <span class="kpi-tag green">Taxa de Aprovação</span>
+          <span class="kpi-tag red">Risco de Inadimplência</span>
+          <span class="kpi-tag blue">Ranking de PDVs</span>
+          <span class="kpi-tag amber">Prevenção a Fraudes</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="/aprovacao-credito/" class="btn-primary">Acessar Painel de Crédito →</a>
+        <a href="/aprovacao-credito/#tab4" class="btn-secondary" title="Ver ranking detalhado de PDVs e ofensores de aprovação">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Ranking PDVs
+        </a>
+      </div>
+    </div>
+
+    <!-- Card: Market Share Residencial (Oficial) -->
+    <div class="card" style="border-top: 3px solid var(--red);">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Market Share Residencial — Relatório Oficial</h3>
+          <span style="font-size:11px;color:var(--ink3)">Banda Larga Fixa & Fibra · Posição Executiva de Entrega</span>
+        </div>
+        <span class="card-tag active">Oficial Ago/26</span>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Relatório oficial executivo de entrega da banda larga fixa e fibra na Regional Norte. Acompanhamento rigoroso de base de clientes, market share e net adds com aberturas consolidadas por DDD, municípios polo e ranking detalhado dos 10 maiores ISPs regionais.</p>
+        <div class="card-meta">
+          <div><span>Posição Oficial</span><strong>Agosto / 2026 (Anatel)</strong></div>
+          <div><span>Base Claro</span><strong>433.793 acessos (23,04%)</strong></div>
+          <div><span>Saldo Mensal</span><strong>+588 Net Adds no mês</strong></div>
+          <div><span>Competição</span><strong>Top 10 ISPs Regionais</strong></div>
+        </div>
+        <div class="quick-kpis">
+          <span class="kpi-tag red">Abertura por DDD</span>
+          <span class="kpi-tag blue">Municípios Polo</span>
+          <span class="kpi-tag green">Top 10 Provedores ISPs</span>
+          <span class="kpi-tag amber">Exportação CSV</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="/market-share-residencial/" class="btn-primary">Acessar Relatório Oficial →</a>
+      </div>
+    </div>
+
+    <!-- Card: Market Share Móvel & 5G (Oficial) -->
+    <div class="card" style="border-top: 3px solid var(--red);">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Market Share Móvel & 5G — Relatório Oficial</h3>
+          <span style="font-size:11px;color:var(--ink3)">Telefonia Móvel SMP & Adoção 5G · Liderança Regional</span>
+        </div>
+        <span class="card-tag active">Líder RNO Ago/26</span>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Relatório executivo consolidado de telefonia celular na Regional Norte. A Claro lidera o mercado regional com 37,04% de participação e +27.120 adições líquidas no mês. Inclui acompanhamento especializado da migração e penetração da tecnologia 5G por DDD.</p>
+        <div class="card-meta">
+          <div><span>Posição Oficial</span><strong>Agosto / 2026 (Anatel)</strong></div>
+          <div><span>Base Claro Móvel</span><strong>2.211.446 clientes (37,04%)</strong></div>
+          <div><span>Saldo Mensal</span><strong>+27.120 Net Adds (Líder!)</strong></div>
+          <div><span>Base 5G Claro</span><strong>974.849 clientes (44,1%)</strong></div>
+        </div>
+        <div class="quick-kpis">
+          <span class="kpi-tag green">Liderança Geral RNO</span>
+          <span class="kpi-tag blue">Penetração 5G</span>
+          <span class="kpi-tag red">Share por DDD</span>
+          <span class="kpi-tag amber">Exportação CSV</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="/market-share-movel/" class="btn-primary">Acessar Relatório Oficial →</a>
+      </div>
+    </div>
+
+    <!-- Card 7: Podcast Deep Dive (Google NotebookLM Style) -->
+    <div class="card" style="border-top: 3px solid var(--red);">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Podcast Deep Dive — PEP HUB</h3>
+          <span style="font-size:11px;color:var(--ink3)">Visão Executiva, Arquitetura e Decisões de Engenharia</span>
+        </div>
+        <span class="card-tag active">Áudio Overview</span>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Bate-papo executivo e técnico entre a Carol (Inovação & Negócios) e o Lucas (Engenharia de Software) detalhando do zero por que a arquitetura do Pephub é superior às soluções tradicionais: offline-first, edge computing, segurança e inteligência com RAG.</p>
+        <div class="card-meta">
+          <div><span>Apresentadores</span><strong>Carol & Lucas</strong></div>
+          <div><span>Duração</span><strong>~8 minutos</strong></div>
+          <div><span>Formato</span><strong>Vozes Neurais pt-BR</strong></div>
+          <div><span>Recursos</span><strong>Transcrição Sincronizada</strong></div>
+        </div>
+        <div class="quick-kpis">
+          <span class="kpi-tag red">Deep Dive Explicativo</span>
+          <span class="kpi-tag blue">Arquitetura & Segurança</span>
+          <span class="kpi-tag green">Offline-First & D1</span>
+          <span class="kpi-tag amber">Vozes Neurais pt-BR</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="/podcast/" class="btn-primary">Ouvir Podcast Online →</a>
+        <a href="/podcast/pephub_deepdive_podcast.mp3" download="pephub_podcast.mp3" class="btn-secondary" title="Baixar arquivo MP3 completo">
+          ⬇ Baixar MP3
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SEÇÃO PEP TOOLS -->
+  <div class="section-title" id="pep-tools" style="margin-top:36px">PeP Tools · Soluções de Suporte & Produtividade Operacional</div>
+
+  <div class="cards">
+
+    <!-- Card: Gerador de Cards de Aniversário -->
+    <div class="card" style="border-top: 3px solid var(--red);">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Gerador de Card de Aniversário — TV 16:9</h3>
+          <span style="font-size:11px;color:var(--ink3)">Auxiliar de Produção Visual para Telas da Regional</span>
+        </div>
+        <span class="card-tag active">Novo! PeP Tool</span>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Ferramenta dedicada para criação instantânea de homenagens e cards de aniversário para os colaboradores da Regional Norte. Permite upload de foto com enquadramento fino, data, nome estilizado e mensagem personalizada com arraste livre, gerando a imagem em resolução oficial Full HD (1920x1080p 16:9) pronta para transmissão.</p>
+        <div class="card-meta">
+          <div><span>Formato de Saída</span><strong>JPG 1080p (1920x1080)</strong></div>
+          <div><span>Proporção Oficial</span><strong>16:9 Widescreen TV</strong></div>
+          <div><span>Interatividade</span><strong>Arraste Livre & Recorte</strong></div>
+          <div><span>Destino</span><strong>Curadoria de TVs PeP</strong></div>
+        </div>
+        <div class="quick-kpis">
+          <span class="kpi-tag red">TV 16:9 Full HD</span>
+          <span class="kpi-tag blue">Upload & Enquadramento</span>
+          <span class="kpi-tag amber">Arraste Interativo</span>
+          <span class="kpi-tag green">100% Autocontido</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="/pep-tools/aniversario/" class="btn-primary">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Criar Card de Aniversário →
+        </a>
+        <a href="/pep-tools/divulgacao/" class="btn-secondary" title="Acessar painel de envio de mídias para as TVs">
+          Enviar para TV
+        </a>
+      </div>
+    </div>
+
+    <!-- Card: Auxiliar de PPT (Antigo Market Share Studio) -->
+    <div class="card" style="border-top: 3px solid var(--red);">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Auxiliar de PPT — Estúdio de Infográficos & Apresentações</h3>
+          <span style="font-size:11px;color:var(--ink3)">Estúdio de Criação de Gráficos, Matrizes e Slides para Apresentações Executivas</span>
+        </div>
+        <span class="card-tag active">Novo! PeP Tool</span>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Assistente executivo completo para concepção de infográficos, gráficos de share, matrizes comparativas e organogramas prontos para PowerPoint e reuniões executivas. Suporta importação direta de arquivos Excel (XLSX), visualização em tempo real e exportação em SVG vetorial e PNG de alta resolução.</p>
+        <div class="card-meta">
+          <div><span>Formatos Gráficos</span><strong>Pizza, Donut, Barras, Org</strong></div>
+          <div><span>Importação</span><strong>Planilhas Excel (.xlsx)</strong></div>
+          <div><span>Exportação</span><strong>SVG Puro, PNG & Clipboard</strong></div>
+          <div><span>Uso Direto</span><strong>PowerPoint & Apresentações</strong></div>
+        </div>
+        <div class="quick-kpis">
+          <span class="kpi-tag blue">Infográficos Telecom</span>
+          <span class="kpi-tag green">Importação Excel (.xlsx)</span>
+          <span class="kpi-tag red">Exportação SVG & PNG</span>
+          <span class="kpi-tag amber">PowerPoint & Slides</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="/pep-tools/market-share/" class="btn-primary">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Abrir Auxiliar de PPT →
+        </a>
+        <a href="/pep-tools/divulgacao/" class="btn-secondary" title="Usar imagem em slide nas TVs">
+          Usar em Slide de TV
+        </a>
+      </div>
+    </div>
+
+    <!-- Card: Divulgação Corporativa -->
+    <div class="card" style="border-top: 3px solid var(--red);">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Divulgação Corporativa — TVs da Regional</h3>
+          <span style="font-size:11px;color:var(--ink3)">Central de Cadastro, Curadoria & Transmissão</span>
+        </div>
+        <span class="card-tag active">Ativo</span>
+      </div>
+      <div class="card-body">
+        <p class="card-desc">Plataforma estratégica de cadastro, validação técnica e curadoria das mídias veiculadas nas TVs corporativas da Regional Norte. Exclusivo para imagens e vídeos em formato Widescreen 16:9 em alta resolução (mínimo 1920x1080p), com captura facilitada por colagem direta (Ctrl+V) ou upload de arquivos. Possui fluxo de aprovação com aviso por e-mail, gestão de delegação de curadores, suspensão instantânea de mídias e player widescreen fullscreen com contador circular de tempo.</p>
+        <div class="card-meta">
+          <div><span>Formato Obrigatório</span><strong>16:9 Widescreen (1080p)</strong></div>
+          <div><span>Duração Padrão</span><strong>10s (Imagens) / Vídeo Integral</strong></div>
+          <div><span>Governança</span><strong>Curadoria & Delegações</strong></div>
+          <div><span>Exibição</span><strong>Player com Timer Circular</strong></div>
+        </div>
+        <div class="quick-kpis">
+          <span class="kpi-tag red">Widescreen 16:9 1080p</span>
+          <span class="kpi-tag blue">Curadoria & Aprovação</span>
+          <span class="kpi-tag green">Player com Timer Circular</span>
+          <span class="kpi-tag amber">Transmissão Instantânea</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="/pep-tools/divulgacao/" class="btn-primary">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+          Acessar Divulgação Corporativa →
+        </a>
+        <a href="/tv" target="_blank" class="btn-secondary" title="Abrir o Player Fullscreen de exibição nas TVs da Regional">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><polygon points="10 11 15 14 10 17"/><line x1="8" y1="3" x2="16" y2="3"/></svg>
+          Abrir Player TV (16:9)
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer-notes">
+    <strong>Diretrizes de Compartilhamento & Uso Operacional:</strong> Os relatórios hospedados no Pephub são concebidos com arquitetura <em>zero-dependency</em>. Cada módulo pode ser utilizado online na nuvem ou baixado em arquivo único para distribuição direta via e-mail corporativo. A data de posição e os parâmetros metodológicos respeitam o critério de maturidade individual por contrato (janela oficial de 120 dias).
+  </div>
+
+</div>
+
+<!-- Modal Obrigatório de Atualização Cadastral -->
+<div class="modal" id="modalCompleteProfile" style="display:none;position:fixed;inset:0;background:rgba(20,28,38,.85);z-index:9999;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)">
+  <div style="background:#fff;border-radius:4px;border:1px solid #dfe3e8;max-width:480px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.25);overflow:hidden">
+    <div style="background:linear-gradient(90deg,#8a0f18 0%,#c0191f 26%,#e23a1e 50%,#f47a1f 74%,#f9b233 100%);padding:16px 20px;color:#fff">
+      <div style="font-size:10.5px;text-transform:uppercase;letter-spacing:1px;font-weight:700;opacity:.9">Regional Norte · Governança de Acessos</div>
+      <h3 style="margin:4px 0 0;font-size:16px;font-weight:700">Atualização Cadastral Obrigatória</h3>
+    </div>
+    <div style="padding:20px;color:#1c2430;font-size:12.5px;line-height:1.5">
+      <p style="margin-top:0;color:#5b6675">
+        A governança da Regional Norte atualizou os requisitos cadastrais da plataforma. Para prosseguir com o acesso aos relatórios e ferramentas corporativas, por favor preencha os dados pendentes abaixo:
+      </p>
+      <form id="completeProfileForm" onsubmit="submitCompleteProfile(event)">
+        <div id="completeProfileFields" style="display:flex;flex-direction:column;gap:12px;margin:16px 0"></div>
+        <div id="completeProfileError" style="display:none;color:#9b1c1c;background:#fdece9;border:1px solid #f6c8c2;padding:8px 12px;border-radius:3px;font-size:11.5px;font-weight:600;margin-bottom:12px"></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px">
+          <button type="submit" id="btnSubmitCompleteProfile" style="background:#1b2430;color:#fff;border:none;padding:9px 18px;border-radius:3px;font:600 12px 'Segoe UI',Arial;cursor:pointer;transition:background .15s">
+            Salvar e Continuar Navegação →
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="/js/header-widget.js"></script>
+<script>
+let currentMissingFields = [];
+
+function showCompleteProfileModal(missingFields) {
+  currentMissingFields = missingFields;
+  const container = document.getElementById('completeProfileFields');
+  if (!container) return;
+
+  container.innerHTML = missingFields.map(f => `
+    <div>
+      <label style="display:block;font-size:11px;font-weight:700;color:#5b6675;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">
+        ${escapeHtml(f.label)} *
+      </label>
+      <input 
+        type="${f.field_type || 'text'}" 
+        id="input_field_${escapeHtml(f.key)}" 
+        data-field-key="${escapeHtml(f.key)}"
+        placeholder="${escapeHtml(f.placeholder || '')}"
+        style="width:100%;border:1px solid #dfe3e8;border-radius:3px;padding:8px 10px;font:12.5px 'Segoe UI',Arial;box-sizing:border-box"
+        required
+      >
+    </div>
+  `).join('');
+
+  document.getElementById('modalCompleteProfile').style.display = 'flex';
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+async function submitCompleteProfile(e) {
+  e.preventDefault();
+  const errBox = document.getElementById('completeProfileError');
+  errBox.style.display = 'none';
+
+  const payload = {};
+  for (const f of currentMissingFields) {
+    const input = document.getElementById(`input_field_${f.key}`);
+    if (input) {
+      const val = input.value.trim();
+      if (!val) {
+        errBox.textContent = `Por favor, preencha o campo "${f.label}".`;
+        errBox.style.display = 'block';
+        return;
+      }
+      payload[f.key] = val;
+    }
+  }
+
+  const btn = document.getElementById('btnSubmitCompleteProfile');
+  btn.disabled = true;
+  btn.textContent = 'Salvando…';
+
+  try {
+    const res = await fetch('/api/auth/complete-profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (res.ok) {
+      document.getElementById('modalCompleteProfile').style.display = 'none';
+      window.location.reload();
+    } else {
+      errBox.textContent = data.error || 'Erro ao atualizar dados cadastrais.';
+      errBox.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Salvar e Continuar Navegação →';
+    }
+  } catch (err) {
+    errBox.textContent = 'Erro de comunicação com o servidor.';
+    errBox.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Salvar e Continuar Navegação →';
+  }
+}
+
+async function checkUser() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('denied')) {
+    const mod = urlParams.get('denied');
+    const msg = document.createElement('div');
+    msg.style.cssText = 'background:#fdece9;border:1px solid #f6c8c2;color:#9b1c1c;padding:12px 20px;border-radius:4px;margin:16px auto;max-width:1440px;font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:10px';
+    msg.innerHTML = `<span><strong>Acesso Restrito:</strong> Seu usuário não possui permissão liberada para o relatório solicitado (${escapeHtml(mod)}). Solicite a ativação via toggle ao Administrador da ferramenta.</span>`;
+    document.querySelector('.wrap').prepend(msg);
+  }
+
+  try {
+    const res = await fetch('/api/auth/me');
+    if (res.ok) {
+      const user = await res.json();
+      const widget = document.getElementById('userWidget');
+      const firstName = user.nome_completo ? user.nome_completo.split(' ')[0] : 'Colaborador';
+      widget.innerHTML = `
+        <span style="color:#fff;font-size:12px;font-weight:600">Olá, ${escapeHtml(firstName)} (${escapeHtml(user.area || 'Regional')})</span>
+        ${user.is_admin ? '<span id="portalOnlineHost" data-pephub-online></span>' : ''}
+        ${user.is_admin ? '<a href="/admin/" style="background:rgba(255,255,255,.25);color:#fff;border:1px solid rgba(255,255,255,.4);padding:5px 10px;border-radius:3px;font-size:11px;font-weight:700;text-decoration:none">Admin</a>' : ''}
+        <button id="btnLogoutPortal" style="background:none;border:1px solid rgba(255,255,255,.3);color:#fff;padding:4px 10px;border-radius:3px;font-size:11px;cursor:pointer">Sair</button>
+      `;
+
+      if (user.is_admin && window.pephubMountOnlineWidget) {
+        window.pephubMountOnlineWidget(document.getElementById('portalOnlineHost'));
+      }
+
+      const btnLogout = document.getElementById('btnLogoutPortal');
+      if (btnLogout) {
+        btnLogout.addEventListener('click', async (e) => {
+          e.preventDefault();
+          btnLogout.disabled = true;
+          btnLogout.textContent = 'Saindo...';
+          try {
+            if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+              navigator.serviceWorker.controller.postMessage({ type: 'LOGOUT' });
+            }
+            if ('caches' in window) {
+              const keys = await caches.keys();
+              await Promise.all(keys.map(k => caches.delete(k)));
+            }
+            sessionStorage.clear();
+            localStorage.clear();
+            await fetch('/api/auth/logout', { method: 'POST' });
+          } catch (err) {}
+          window.location.replace('/login/?logout=1');
+        });
+      }
+
+      // Se há requisitos pendentes de cadastro, aciona o modal obrigatório
+      if (user.needs_profile_completion && user.missing_profile_fields && user.missing_profile_fields.length > 0) {
+        showCompleteProfileModal(user.missing_profile_fields);
+      }
+    } else {
+      window.location.replace('/login/');
+    }
+  } catch (err) {
+    window.location.replace('/login/');
+  }
+}
+
+  function normalizeModuleId(id) {
+    if (!id) return '';
+    const clean = String(id).trim().toLowerCase();
+    if (clean === 'churn' || clean === 'churn_safra' || clean === 'churn-safra') return 'churn';
+    if (clean === 'churn-bl-total' || clean === 'churn_bl_total' || clean === 'bl-total') return 'churn-bl-total';
+    if (clean === 'churn-bl-pme' || clean === 'churn_bl_pme' || clean === 'bl-pme') return 'churn-bl-pme';
+    if (clean === 'fpd' || clean === 'fpd_regional_norte' || clean === 'fpd-regional-norte') return 'fpd';
+    if (clean === 'fpd-residencial' || clean === 'fpd_residencial' || clean === 'fpd-executivo') return 'fpd-residencial';
+    if (clean === 'divulgacao' || clean === 'pep_tools_divulgacao' || clean === 'peptools_divulgacao') return 'divulgacao';
+    if (clean === 'tv' || clean === 'player_tv' || clean === 'tv_player') return 'tv';
+    if (clean === 'panorama-market-share' || clean === 'panorama_market_share' || clean === 'market-share-panorama') return 'panorama-market-share';
+    if (clean === 'market-share-residencial' || clean === 'market_share_residencial' || clean === 'mkt-share-residencial') return 'market-share-residencial';
+    if (clean === 'market-share-movel' || clean === 'market_share_movel' || clean === 'mkt-share-movel') return 'market-share-movel';
+    if (clean === 'aprovacao-credito' || clean === 'aprovacao_credito' || clean === 'credito') return 'aprovacao-credito';
+    return clean;
+  }
+
+  // Estado compartilhado de permissões e solicitações pendentes
+  let _perm = { mods: [], allowed: [], isAdmin: false };
+  let _pendingByModule = {};
+
+  function injectRequestStyles() {
+    if (document.getElementById('reqAccessStyles')) return;
+    const st = document.createElement('style');
+    st.id = 'reqAccessStyles';
+    st.textContent = `
+      .btn-request-access{display:inline-flex;align-items:center;gap:6px;background:#c0191f;color:#fff;border:1px solid #c0191f;padding:8px 16px;border-radius:3px;font:700 12px "Segoe UI",Roboto,sans-serif;cursor:pointer;transition:background .15s}
+      .btn-request-access:hover{background:#8a0f18;border-color:#8a0f18}
+      .req-pending-chip{display:inline-flex;align-items:center;gap:6px;background:#fdf3e2;color:#8a5d06;border:1px solid #f0dcb4;padding:7px 14px;border-radius:3px;font:700 11.5px "Segoe UI",Roboto,sans-serif}
+      .req-hint{font-size:11px;color:#5b6675}
+      #reqAccessModal{display:none;position:fixed;inset:0;background:rgba(28,36,48,.6);backdrop-filter:blur(3px);z-index:99998;align-items:center;justify-content:center;font-family:"Segoe UI",Roboto,sans-serif}
+      #reqAccessModal.on{display:flex}
+      .req-box{background:#fff;width:92%;max-width:520px;border-radius:4px;overflow:hidden;border:1px solid #dfe3e8;box-shadow:0 24px 50px rgba(0,0,0,.35)}
+      .req-box::before{content:'';display:block;height:4px;background:linear-gradient(90deg,#8a0f18 0%,#c0191f 26%,#e23a1e 50%,#f47a1f 74%,#f9b233 100%)}
+      .req-hd{background:#1c2430;color:#fff;padding:14px 18px}
+      .req-hd h3{margin:0;font-size:14.5px;font-weight:700}
+      .req-hd small{display:block;color:#aab4c0;font-size:11px;margin-top:2px}
+      .req-bd{padding:16px 18px}
+      .req-bd label{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:#5b6675;font-weight:700;margin-bottom:5px}
+      .req-bd textarea{width:100%;box-sizing:border-box;border:1px solid #cfd6de;border-radius:3px;padding:9px 10px;font:13px "Segoe UI",Roboto,sans-serif;min-height:110px;resize:vertical;color:#1c2430}
+      .req-bd textarea:focus{outline:none;border-color:#c0191f;box-shadow:0 0 0 2px rgba(192,25,31,.12)}
+      .req-meta{display:flex;justify-content:space-between;font-size:11px;color:#7b8794;margin-top:5px}
+      .req-err{display:none;background:#fdece9;border:1px solid #f6c8c2;color:#9b1c1c;font-size:12px;padding:8px 10px;border-radius:3px;margin-top:10px}
+      .req-ft{padding:12px 18px;background:#fafbfc;border-top:1px solid #e6e9ed;display:flex;justify-content:flex-end;gap:8px}
+      .req-ft button{border-radius:3px;padding:8px 18px;font:700 12px "Segoe UI",Roboto,sans-serif;cursor:pointer}
+      .req-cancel{background:#fff;color:#1c2430;border:1px solid #cfd6de}
+      .req-cancel:hover{background:#f0f2f5}
+      .req-send{background:#c0191f;color:#fff;border:1px solid #c0191f}
+      .req-send:hover{background:#8a0f18}
+      .req-send:disabled{opacity:.6;cursor:wait}
+      .portal-toast{position:fixed;bottom:24px;right:24px;z-index:999999;background:#137333;color:#fff;padding:12px 18px;border-radius:4px;font:700 13px "Segoe UI",Roboto,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.25);max-width:380px}
+      .portal-toast.err{background:#c0191f}
+    `;
+    document.head.appendChild(st);
+  }
+
+  function portalToast(msg, isErr) {
+    const t = document.createElement('div');
+    t.className = 'portal-toast' + (isErr ? ' err' : '');
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 5000);
+  }
+
+  function ensureRequestModal() {
+    injectRequestStyles();
+    let modal = document.getElementById('reqAccessModal');
+    if (modal) return modal;
+    modal = document.createElement('div');
+    modal.id = 'reqAccessModal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.innerHTML = `
+      <div class="req-box">
+        <div class="req-hd"><h3>Solicitar acesso ao relatório</h3><small id="reqModuleName"></small></div>
+        <div class="req-bd">
+          <label for="reqJustification">Justificativa</label>
+          <textarea id="reqJustification" maxlength="1000" placeholder="Explique para que você precisa deste relatório (ex.: acompanhamento semanal da carteira da minha praça)."></textarea>
+          <div class="req-meta"><span>Mínimo de 10 caracteres. O pedido segue por e-mail ao responsável pela ferramenta.</span><span id="reqCounter">0/1000</span></div>
+          <div class="req-err" id="reqError"></div>
+        </div>
+        <div class="req-ft">
+          <button type="button" class="req-cancel" id="reqCancel">Cancelar</button>
+          <button type="button" class="req-send" id="reqSend">Enviar solicitação</button>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+    const close = () => modal.classList.remove('on');
+    modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+    document.getElementById('reqCancel').onclick = close;
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    const ta = document.getElementById('reqJustification');
+    ta.addEventListener('input', () => { document.getElementById('reqCounter').textContent = ta.value.length + '/1000'; });
+    return modal;
+  }
+
+  function openRequestModal(mod) {
+    const modal = ensureRequestModal();
+    const ta = document.getElementById('reqJustification');
+    const err = document.getElementById('reqError');
+    const send = document.getElementById('reqSend');
+    document.getElementById('reqModuleName').textContent = mod.name;
+    ta.value = '';
+    document.getElementById('reqCounter').textContent = '0/1000';
+    err.style.display = 'none';
+    send.disabled = false;
+    send.textContent = 'Enviar solicitação';
+    modal.classList.add('on');
+    setTimeout(() => ta.focus(), 50);
+
+    send.onclick = async () => {
+      const justification = ta.value.trim();
+      if (justification.length < 10) {
+        err.textContent = 'Descreva a justificativa com pelo menos 10 caracteres.';
+        err.style.display = 'block';
+        return;
+      }
+      err.style.display = 'none';
+      send.disabled = true;
+      send.textContent = 'Enviando…';
+      try {
+        const res = await fetch('/api/access-requests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ module_id: normalizeModuleId(mod.id), justification })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok) {
+          modal.classList.remove('on');
+          _pendingByModule[normalizeModuleId(mod.id)] = true;
+          applyCardPrivileges(_perm.mods, _perm.allowed, _perm.isAdmin);
+          portalToast('Solicitação enviada ao responsável pela ferramenta.');
+        } else {
+          err.textContent = data.error || 'Não foi possível enviar a solicitação.';
+          err.style.display = 'block';
+          if (res.status === 409) {
+            _pendingByModule[normalizeModuleId(mod.id)] = true;
+            applyCardPrivileges(_perm.mods, _perm.allowed, _perm.isAdmin);
+          }
+          send.disabled = false;
+          send.textContent = 'Enviar solicitação';
+        }
+      } catch (_) {
+        err.textContent = 'Falha de conexão. Tente novamente.';
+        err.style.display = 'block';
+        send.disabled = false;
+        send.textContent = 'Enviar solicitação';
+      }
+    };
+  }
+
+  function setRequestArea(card, mod, hasAccess) {
+    const footer = card.querySelector('.card-footer');
+    if (!footer) return;
+    footer.querySelectorAll('.req-slot').forEach(n => n.remove());
+    if (hasAccess) return;
+    const slot = document.createElement('div');
+    slot.className = 'req-slot';
+    slot.style.cssText = 'display:flex;align-items:center;gap:10px;flex-wrap:wrap';
+    if (_pendingByModule[normalizeModuleId(mod.id)]) {
+      slot.innerHTML = '<span class="req-pending-chip">Solicitação pendente de aprovação</span>';
+    } else {
+      slot.innerHTML = '<button type="button" class="btn-request-access">Solicitar acesso</button><span class="req-hint">Sem permissão para este relatório</span>';
+      slot.querySelector('button').onclick = () => openRequestModal(mod);
+    }
+    footer.appendChild(slot);
+  }
+
+  function applyCardPrivileges(mods, userAllowed, isAdmin) {
+    if (!Array.isArray(mods)) return;
+    injectRequestStyles();
+    _perm = { mods, allowed: userAllowed, isAdmin };
+    const cleanAllowed = Array.isArray(userAllowed) ? userAllowed.map(normalizeModuleId) : [];
+    mods.forEach(m => {
+      const canonicalId = normalizeModuleId(m.id);
+      const hasAccess = isAdmin || cleanAllowed.includes('all') || cleanAllowed.includes(canonicalId);
+      const routePath = m.route || `/${canonicalId}/`;
+      const cardLinks = document.querySelectorAll(`a[href*="${canonicalId}"], a[href*="${m.id}"], a[href="${routePath}"]`);
+      cardLinks.forEach(link => {
+        const card = link.closest('.card');
+        if (!card) return;
+        const tag = card.querySelector('.card-tag');
+        if (!hasAccess) {
+          if (!card.dataset.origTag && tag) {
+            card.dataset.origTag = tag.textContent;
+            card.dataset.origTagStyle = tag.getAttribute('style') || '';
+          }
+          card.style.opacity = '0.72';
+          card.style.borderColor = '#e5e7eb';
+          if (tag) {
+            tag.textContent = 'Sem Acesso';
+            tag.style.background = '#fdece9';
+            tag.style.color = '#9b1c1c';
+            tag.style.border = '1px solid #f6c8c2';
+          }
+          // O link do relatório é substituído pelo botão de solicitação
+          card.querySelectorAll('.card-footer a').forEach(btn => {
+            btn.style.display = 'none';
+            btn.onclick = (e) => { e.preventDefault(); openRequestModal(m); };
+          });
+          setRequestArea(card, m, false);
+        } else if (m.status === 'suspenso') {
+          card.style.opacity = '0.85';
+          setRequestArea(card, m, true);
+          if (tag) {
+            tag.textContent = 'Suspenso';
+            tag.style.background = '#fdece9';
+            tag.style.color = '#9b1c1c';
+            tag.style.border = '1px solid #f6c8c2';
+          }
+          card.querySelectorAll('.card-footer a').forEach(btn => {
+            btn.style.display = '';
+            btn.onclick = (e) => {
+              e.preventDefault();
+              alert(`Módulo Temporariamente Indisponível: O módulo "${m.name}" está suspenso para rotinas de consolidação.`);
+            };
+          });
+        } else {
+          card.style.opacity = '1';
+          card.style.borderColor = '';
+          setRequestArea(card, m, true);
+          if (tag && tag.textContent === 'Sem Acesso') {
+            tag.textContent = card.dataset.origTag || 'Oficial';
+            if (card.dataset.origTag) {
+              tag.setAttribute('style', card.dataset.origTagStyle || '');
+            } else {
+              tag.style.background = '#eaf2ec';
+              tag.style.color = '#1e5837';
+              tag.style.border = '1px solid #c3e2cb';
+            }
+          }
+          card.querySelectorAll('.card-footer a').forEach(btn => {
+            btn.style.display = '';
+            btn.style.cursor = 'pointer';
+            btn.onclick = null;
+          });
+        }
+      });
+    });
+  }
+
+  async function loadPendingRequests() {
+    try {
+      const r = await fetch('/api/access-requests/mine');
+      if (!r.ok) return;
+      const d = await r.json();
+      _pendingByModule = {};
+      (d.requests || []).forEach(q => {
+        if (q.status === 'pendente') _pendingByModule[normalizeModuleId(q.module_id)] = true;
+      });
+    } catch (_) {}
+  }
+
+  async function loadPermissions() {
+    try {
+      await loadPendingRequests();
+      const modRes = await fetch('/api/portal/modules');
+      if (!modRes.ok) return;
+      const data = await modRes.json();
+      const mods = data.modules || [];
+      const userAllowed = data.user_modules ? data.user_modules.split(',').map(m => m.trim().toLowerCase()) : [];
+      const isAdmin = Boolean(data.is_admin);
+
+      applyCardPrivileges(mods, userAllowed, isAdmin);
+
+      try {
+        sessionStorage.setItem('pephub_portal_perms_cache', JSON.stringify({
+          modules: mods,
+          userAllowed: userAllowed,
+          isAdmin: isAdmin
+        }));
+      } catch (_) {}
+    } catch (_) {}
+  }
+
+  // 1. Aplicação instantânea síncrona de permissões para ELIMINAR flicker visual no reload
+  try {
+    const rawCached = sessionStorage.getItem('pephub_portal_perms_cache') || localStorage.getItem('pephub_portal_perms_cache');
+    if (rawCached) {
+      const cData = JSON.parse(rawCached);
+      if (cData && Array.isArray(cData.modules)) {
+        applyCardPrivileges(cData.modules, cData.userAllowed, cData.isAdmin);
+      }
+    }
+  } catch (_) {}
+
+  // 2. Consulta de sessão e atualização dinâmica de permissões em background
+  checkUser();
+  loadPermissions();
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') loadPermissions();
+  });
+
+  const HELP = { risco: 'Direcionamento de risco e aprovação' };
+</script>
+
+<script src="/js/app-mobile.js"></script>
+</body>
+</html>

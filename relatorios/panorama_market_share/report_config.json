@@ -1,0 +1,8 @@
+{
+  "id": "panorama_market_share",
+  "titulo": "Panorama & Market Share",
+  "descricao": "Market share móvel e residencial Anatel e dinâmica concorrencial",
+  "rota_pephub": "panorama-market-share",
+  "categoria": "Market Share",
+  "bot_enabled": true
+}

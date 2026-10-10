@@ -1,0 +1,11 @@
+services:
+  pephub-whatsapp-bot:
+    build: .
+    container_name: pephub-whatsapp-bot
+    restart: unless-stopped
+    volumes:
+      - ./auth_info:/app/auth_info
+      - ./logs:/app/logs
+    environment:
+      - NODE_ENV=production
+      - PYTHONIOENCODING=utf-8

@@ -1,0 +1,10 @@
+{
+  "id": "market_share_residencial",
+  "titulo": "Market Share Residencial",
+  "descricao": "Relatório Executivo Oficial de Market Share Residencial (Anatel · Banda Larga)",
+  "rota_pephub": "market-share-residencial",
+  "categoria": "Market Share",
+  "responsavel": "Regional Norte",
+  "frequencia_atualizacao": "Mensal",
+  "bot_enabled": false
+}

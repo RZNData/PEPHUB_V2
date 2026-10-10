@@ -1,0 +1,10 @@
+{
+  "id": "novo_relatorio",
+  "titulo": "Novo Relatório Regional Norte",
+  "descricao": "Painel de acompanhamento operacional e tático",
+  "rota_pephub": "novo-relatorio",
+  "categoria": "Operações",
+  "responsavel": "Equipe Regional Norte",
+  "frequencia_atualizacao": "Mensal",
+  "bot_enabled": false
+}

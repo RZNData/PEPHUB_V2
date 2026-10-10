@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solicitação de Cadastro — Regional Norte | Pephub</title>
+<style>
+:root{
+  --bg:#f4f5f7; --panel:#fff; --ink:#1c2430; --ink2:#5b6675; --ink3:#8b95a3;
+  --line:#dfe3e8; --line2:#eceef1; --nav:#1b2430; --nav2:#27323f;
+  --red:#c0392b; --amber:#c98a15; --green:#2f7d5d; --blue:#2a5d8f; --purple:#6b4b8a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 "Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+header{background:#fff;border-bottom:1px solid var(--line)}
+.hd-bar{background:linear-gradient(90deg,#8a0f18 0%,#c0191f 26%,#e23a1e 50%,#f47a1f 74%,#f9b233 100%);
+  display:flex;align-items:center;gap:14px;padding:14px 26px}
+.hd-ico{width:42px;height:42px;min-width:42px;border-radius:50%;border:2px solid rgba(255,255,255,.95);
+  display:flex;align-items:center;justify-content:center}
+.hd-bar h1{margin:0;color:#fff;font-size:24px;font-weight:400;letter-spacing:-.4px;line-height:1.1;
+  display:flex;align-items:baseline;gap:9px}
+.hd-bar h1 b{font-weight:800;letter-spacing:-1px}
+.hd-bar h1 span{font-weight:300;font-size:20px;color:rgba(255,255,255,.93)}
+.hd-sub{background:var(--nav);color:#aab4c0;font-size:11.5px;padding:7px 26px;display:flex;align-items:center;gap:10px}
+.hd-sub a{color:#f9b233;text-decoration:none;font-weight:600}
+.hd-sub a:hover{color:#fff;text-decoration:underline}
+
+.main-container{flex:1;display:flex;align-items:center;justify-content:center;padding:36px 20px}
+.auth-card{background:#fff;border:1px solid var(--line);border-radius:4px;width:100%;max-width:540px;box-shadow:0 10px 30px rgba(0,0,0,.04);overflow:hidden}
+.auth-header{padding:24px 28px 16px;border-bottom:1px solid var(--line2);text-align:center}
+.auth-header h2{margin:0 0 6px;font-size:19px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.auth-header p{margin:0;color:var(--ink2);font-size:12.5px;line-height:1.5}
+
+.auth-body{padding:24px 28px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.grid-2{grid-template-columns:1fr}}
+
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink2);margin-bottom:6px}
+.form-group input, .form-group select{width:100%;border:1px solid var(--line);border-radius:3px;padding:9px 12px;font:13px "Segoe UI",Arial;color:var(--ink);background:#fcfcfd;transition:border-color .15s}
+.form-group input:focus, .form-group select:focus{outline:none;border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(42,93,143,.12)}
+.form-group select{cursor:pointer}
+
+.note{font-size:11px;color:var(--ink3);margin-top:4px}
+
+.btn-submit{width:100%;background:var(--nav);color:#fff;border:none;border-radius:3px;padding:12px;font:600 13px "Segoe UI",Arial;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px}
+.btn-submit:hover{background:var(--nav2)}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed}
+
+.alert{padding:12px 16px;border-radius:3px;font-size:12px;margin-bottom:18px;display:none;line-height:1.5}
+.alert.error{background:#fdece9;border:1px solid #f6c8c2;color:#9b1c1c;display:block}
+.alert.success{background:#eaf2ec;border:1px solid #c9dfd2;color:#235c44;display:block}
+
+.auth-footer{padding:14px 28px;background:#fafbfc;border-top:1px solid var(--line2);text-align:center;font-size:12px;color:var(--ink2)}
+.auth-footer a{color:var(--blue);text-decoration:none;font-weight:700;margin-left:4px}
+.auth-footer a:hover{text-decoration:underline}
+
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd-bar">
+    <div class="hd-ico">
+      <svg viewBox="0 0 48 48" width="30" height="30" aria-hidden="true">
+        <circle cx="24" cy="24" r="21" fill="none" stroke="#fff" stroke-width="2.6"/>
+        <path d="M31.5 16.5 L26.5 26.5 L16.5 31.5 L21.5 21.5 Z" fill="#fff"/>
+      </svg>
+    </div>
+    <h1><b>Pephub</b> <span>Portal de Churn & Qualidade · Regional Norte</span></h1>
+  </div>
+  <div class="hd-sub">
+    <a href="/login/">‹ Já possui acesso? Fazer Login</a>
+    <span style="color:#5b6675">•</span>
+    <span>Solicitação de Acesso</span>
+  </div>
+</header>
+
+<div class="main-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h2>Solicitar Cadastro na Plataforma</h2>
+      <p>Preencha seus dados corporativos para liberação de acesso pelo responsável pela ferramenta.</p>
+    </div>
+
+    <div class="auth-body">
+      <div id="alertBox" class="alert"></div>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="nome_completo">Nome Completo</label>
+          <input type="text" id="nome_completo" name="nome_completo" placeholder="Seu nome completo" required style="text-transform:uppercase">
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="login_claro">Login Claro</label>
+            <input type="text" id="login_claro" name="login_claro" placeholder="Ex: F138138 ou C..." required style="text-transform:uppercase">
+            <div class="note">Matrícula ou login de rede corporativo</div>
+          </div>
+
+          <div class="form-group">
+            <label for="email_claro">E-mail Claro</label>
+            <input type="email" id="email_claro" name="email_claro" placeholder="nome.sobrenome@claro.com.br" required style="text-transform:lowercase">
+            <div class="note">E-mail para login e notificações</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="telefone">Telefone / WhatsApp Corporativo</label>
+          <input type="tel" id="telefone" name="telefone" placeholder="(91) 98888-7777" required maxlength="15">
+          <div class="note">Mesmo número utilizado no WhatsApp corporativo para liberação e autorização de consultas via Bot</div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="area">Área / Canal</label>
+            <select id="area" name="area" required>
+              <option value="" disabled selected>Selecione a sua área…</option>
+              <option value="MARKETING">MARKETING</option>
+              <option value="AGENTE AUTORIZADO">AGENTE AUTORIZADO</option>
+              <option value="LOJAS PRÓPRIAS">LOJAS PRÓPRIAS</option>
+              <option value="PME">PME</option>
+              <option value="VAREJO">VAREJO</option>
+              <option value="PORTA A PORTA">PORTA A PORTA</option>
+              <option value="P&P">P&P</option>
+              <option value="ENGENHARIA">ENGENHARIA</option>
+              <option value="TÉCNICA">TÉCNICA</option>
+              <option value="DISTRIBUIÇÃO">DISTRIBUIÇÃO</option>
+              <option value="DIRETORIA">DIRETORIA</option>
+              <option value="OUTROS">OUTROS</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="funcao">Função / Cargo</label>
+            <select id="funcao" name="funcao" required>
+              <option value="" disabled selected>Selecione a sua função…</option>
+              <option value="DIRETOR">DIRETOR</option>
+              <option value="GERENTE">GERENTE</option>
+              <option value="ESPECIALISTA/COORDENADOR">ESPECIALISTA / COORDENADOR</option>
+              <option value="CONSULTOR">CONSULTOR</option>
+              <option value="SUPERVISOR">SUPERVISOR</option>
+              <option value="EXECUTIVO/GN">EXECUTIVO / GN</option>
+              <option value="OUTROS">OUTROS</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="password">Senha de Acesso</label>
+            <input type="password" id="password" name="password" minlength="6" placeholder="Mínimo 6 dígitos" required autocomplete="new-password">
+          </div>
+
+          <div class="form-group">
+            <label for="confirm_password">Repetir Senha</label>
+            <input type="password" id="confirm_password" name="confirm_password" minlength="6" placeholder="Repita a senha" required autocomplete="new-password">
+          </div>
+        </div>
+
+        <button type="submit" id="btnSubmit" class="btn-submit">
+          <div id="btnSpinner" class="spinner"></div>
+          <span id="btnText">Enviar Solicitação de Cadastro</span>
+        </button>
+      </form>
+    </div>
+
+    <div class="auth-footer">
+      Já possui cadastro aprovado? <a href="/login/">Fazer Login</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function showAlert(text, type='error') {
+  const box = document.getElementById('alertBox');
+  box.className = 'alert ' + type;
+  box.textContent = text;
+  box.style.display = 'block';
+}
+
+// 1. Normalização Automática em Tempo Real (MAIÚSCULO para Nome e Login, minúsculo para E-mail)
+const nameInput = document.getElementById('nome_completo');
+if (nameInput) {
+  nameInput.addEventListener('input', e => {
+    const s = e.target.selectionStart, end = e.target.selectionEnd;
+    e.target.value = e.target.value.toUpperCase();
+    e.target.setSelectionRange(s, end);
+  });
+}
+
+const loginInput = document.getElementById('login_claro');
+if (loginInput) {
+  loginInput.addEventListener('input', e => {
+    const s = e.target.selectionStart, end = e.target.selectionEnd;
+    e.target.value = e.target.value.toUpperCase();
+    e.target.setSelectionRange(s, end);
+  });
+}
+
+const emailInput = document.getElementById('email_claro');
+if (emailInput) {
+  emailInput.addEventListener('input', e => {
+    const s = e.target.selectionStart, end = e.target.selectionEnd;
+    e.target.value = e.target.value.toLowerCase();
+    e.target.setSelectionRange(s, end);
+  });
+}
+
+// 2. Máscara de Telefone Fluida com suporte nativo a Backspace
+const telInput = document.getElementById('telefone');
+if (telInput) {
+  let isBackspacing = false;
+  telInput.addEventListener('keydown', e => {
+    isBackspacing = (e.key === 'Backspace' || e.key === 'Delete');
+  });
+
+  telInput.addEventListener('input', e => {
+    let digits = e.target.value.replace(/\D/g, '');
+    if (digits.length > 11) digits = digits.slice(0, 11);
+
+    if (isBackspacing) {
+      if (digits.length === 0) {
+        e.target.value = '';
+      } else if (digits.length <= 2) {
+        e.target.value = `(${digits}`;
+      } else if (digits.length <= 6) {
+        e.target.value = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+      } else if (digits.length <= 10) {
+        e.target.value = `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+      } else {
+        e.target.value = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+      }
+      return;
+    }
+
+    if (digits.length === 0) {
+      e.target.value = '';
+    } else if (digits.length <= 2) {
+      e.target.value = `(${digits}`;
+    } else if (digits.length <= 6) {
+      e.target.value = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    } else if (digits.length <= 10) {
+      e.target.value = `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+    } else {
+      e.target.value = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    }
+  });
+}
+
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const nome_completo = document.getElementById('nome_completo').value.trim().toUpperCase();
+  const login_claro = document.getElementById('login_claro').value.trim().toUpperCase();
+  const email_claro = document.getElementById('email_claro').value.trim().toLowerCase();
+  const telefone = document.getElementById('telefone').value.trim();
+  const area = document.getElementById('area').value.trim().toUpperCase();
+  const funcao = document.getElementById('funcao').value.trim().toUpperCase();
+  const password = document.getElementById('password').value;
+  const confirm_password = document.getElementById('confirm_password').value;
+
+  const btn = document.getElementById('btnSubmit');
+  const sp = document.getElementById('btnSpinner');
+  const txt = document.getElementById('btnText');
+
+  if (!nome_completo || !login_claro || !email_claro || !telefone || !area || !funcao || !password) {
+    showAlert('Por favor, preencha todos os campos do formulário.');
+    return;
+  }
+
+  const rawPhone = telefone.replace(/\D/g, '');
+  if (rawPhone.length < 10 || rawPhone.length > 13) {
+    showAlert('Informe um número de telefone/WhatsApp corporativo válido com DDD (Ex: 91988887777).');
+    return;
+  }
+
+  if (password.length < 6) {
+    showAlert('A senha deve conter no mínimo 6 dígitos.');
+    return;
+  }
+
+  if (password !== confirm_password) {
+    showAlert('As senhas digitadas não coincidem. Digite-as novamente.');
+    return;
+  }
+
+  btn.disabled = true;
+  sp.style.display = 'inline-block';
+  txt.textContent = 'Enviando solicitação…';
+
+  try {
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nome_completo,
+        login_claro,
+        email_claro,
+        telefone,
+        area,
+        funcao,
+        password
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      showAlert(data.error || 'Erro ao processar o cadastro. Verifique os dados e tente novamente.');
+      btn.disabled = false;
+      sp.style.display = 'none';
+      txt.textContent = 'Enviar Solicitação de Cadastro';
+      return;
+    }
+
+    // Sucesso
+    showAlert('Solicitação de cadastro enviada com sucesso. Uma notificação foi encaminhada para aprovação do responsável pela ferramenta. Assim que seu cadastro for aprovado, você receberá um e-mail informando que já pode acessar.', 'success');
+    document.getElementById('registerForm').reset();
+    btn.style.display = 'none';
+
+    setTimeout(() => {
+      window.location.href = '/login/?msg=registered';
+    }, 4500);
+
+  } catch (err) {
+    showAlert('Erro de comunicação com o servidor. Tente novamente.');
+    btn.disabled = false;
+    sp.style.display = 'none';
+    txt.textContent = 'Enviar Solicitação de Cadastro';
+  }
+});
+</script>
+
+</body>
+</html>

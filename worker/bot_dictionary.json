@@ -1,0 +1,450 @@
+[
+  {
+    "reportId": "FPD",
+    "category": "Período e Safras",
+    "question": "Qual a última safra de FPD?",
+    "sql": "SELECT DISTINCT safra, safra_ord FROM fato_fpd ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Safra mais recente consolidada (mai/26)"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Período e Safras",
+    "question": "Quais safras estão disponíveis em FPD?",
+    "sql": "SELECT DISTINCT safra FROM fato_fpd ORDER BY safra_ord DESC",
+    "expectedResult": "Lista das safras disponíveis"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Rankings e Extremos",
+    "question": "Quem tem o pior FPD 60?",
+    "sql": "SELECT cidade, taxa_fpd60 FROM fato_fpd ORDER BY taxa_fpd60 DESC LIMIT 5",
+    "expectedResult": "Ranking com as 5 piores entidades/cidades no indicador padrão"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Rankings e Extremos",
+    "question": "Quem tem o melhor FPD 60?",
+    "sql": "SELECT cidade, taxa_fpd60 FROM fato_fpd ORDER BY taxa_fpd60 ASC LIMIT 5",
+    "expectedResult": "Ranking com as 5 melhores entidades/cidades"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Filtro por Cidade",
+    "question": "Qual o FPD 60 de Belém?",
+    "sql": "SELECT safra, cidade, taxa_fpd60 FROM fato_fpd WHERE cidade LIKE '%Belém%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para Belém no período mais recente"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Filtro por Cidade",
+    "question": "Qual o FPD 60 de Manaus?",
+    "sql": "SELECT safra, cidade, taxa_fpd60 FROM fato_fpd WHERE cidade LIKE '%Manaus%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para Manaus no período mais recente"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Filtro por Cidade",
+    "question": "Qual o FPD 60 de São Luís?",
+    "sql": "SELECT safra, cidade, taxa_fpd60 FROM fato_fpd WHERE cidade LIKE '%São Luís%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para São Luís no período mais recente"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Filtro por Canal de Venda",
+    "question": "Qual o FPD 60 de PAP?",
+    "sql": "SELECT safra, canal, taxa_fpd60 FROM fato_fpd WHERE canal LIKE '%PAP%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para PAP no período mais recente"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Filtro por Canal de Venda",
+    "question": "Qual o FPD 60 de Lojas?",
+    "sql": "SELECT safra, canal, taxa_fpd60 FROM fato_fpd WHERE canal LIKE '%Lojas%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para Lojas no período mais recente"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Filtro por Canal de Venda",
+    "question": "Qual o FPD 60 de Televendas?",
+    "sql": "SELECT safra, canal, taxa_fpd60 FROM fato_fpd WHERE canal LIKE '%Televendas%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para Televendas no período mais recente"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Filtro por Faixa de Risco",
+    "question": "Qual o FPD 60 de BAIXO?",
+    "sql": "SELECT safra, faixa_risco, taxa_fpd60 FROM fato_fpd WHERE faixa_risco LIKE '%BAIXO%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para BAIXO no período mais recente"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Filtro por Faixa de Risco",
+    "question": "Qual o FPD 60 de MEDIO?",
+    "sql": "SELECT safra, faixa_risco, taxa_fpd60 FROM fato_fpd WHERE faixa_risco LIKE '%MEDIO%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para MEDIO no período mais recente"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Filtro por Faixa de Risco",
+    "question": "Qual o FPD 60 de ALTO?",
+    "sql": "SELECT safra, faixa_risco, taxa_fpd60 FROM fato_fpd WHERE faixa_risco LIKE '%ALTO%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para ALTO no período mais recente"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Filtro por Safra",
+    "question": "Qual o FPD 60 de mai/26?",
+    "sql": "SELECT safra, safra, taxa_fpd60 FROM fato_fpd WHERE safra LIKE '%mai/26%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para mai/26 no período mais recente"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Filtro por Safra",
+    "question": "Qual o FPD 60 de abr/26?",
+    "sql": "SELECT safra, safra, taxa_fpd60 FROM fato_fpd WHERE safra LIKE '%abr/26%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para abr/26 no período mais recente"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Filtro por Safra",
+    "question": "Qual o FPD 60 de mar/26?",
+    "sql": "SELECT safra, safra, taxa_fpd60 FROM fato_fpd WHERE safra LIKE '%mar/26%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para mar/26 no período mais recente"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Parceiros de Venda",
+    "question": "Qual o parceiro com pior FPD?",
+    "sql": "SELECT safra, entidade_nome, instalacoes, taxa_d30, taxa_np120 FROM fato_churn_safra WHERE visao = 'PARCEIRO' AND instalacoes >= 30 ORDER BY safra_ord DESC, taxa_d30 DESC LIMIT 5",
+    "expectedResult": "Ranking de parceiros com maior perda de 1º pagamento (Taxa D30) e estorno (NP120) com volume mínimo de 30 instalações"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Parceiros de Venda",
+    "question": "Qual o FPD do parceiro TEL CENTRO DE CONTATOS LTDA?",
+    "sql": "SELECT safra, entidade_nome, instalacoes, taxa_d30, taxa_np120, status_safra FROM fato_churn_safra WHERE visao = 'PARCEIRO' AND entidade_nome LIKE '%TEL CENTRO DE CONTATOS LTDA%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Desempenho de 1º pagamento e estorno do parceiro TEL CENTRO DE CONTATOS LTDA"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Parceiros de Venda",
+    "question": "Qual o FPD do parceiro HITSS DO BRASIL SERVICOS TECNOLOGICOS LTDA?",
+    "sql": "SELECT safra, entidade_nome, instalacoes, taxa_d30, taxa_np120, status_safra FROM fato_churn_safra WHERE visao = 'PARCEIRO' AND entidade_nome LIKE '%HITSS DO BRASIL SERVICOS TECNOLOGICOS LTDA%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Desempenho de 1º pagamento e estorno do parceiro HITSS DO BRASIL SERVICOS TECNOLOGICOS LTDA"
+  },
+  {
+    "reportId": "FPD",
+    "category": "Parceiros de Venda",
+    "question": "Qual o FPD do parceiro PRUDENTE SOLUCOES E INTERMEDIACAO LTDA?",
+    "sql": "SELECT safra, entidade_nome, instalacoes, taxa_d30, taxa_np120, status_safra FROM fato_churn_safra WHERE visao = 'PARCEIRO' AND entidade_nome LIKE '%PRUDENTE SOLUCOES E INTERMEDIACAO LTDA%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Desempenho de 1º pagamento e estorno do parceiro PRUDENTE SOLUCOES E INTERMEDIACAO LTDA"
+  },
+  {
+    "reportId": "CHURN_BL",
+    "category": "Período e Safras",
+    "question": "Qual a última safra de Churn?",
+    "sql": "SELECT DISTINCT mes_referencia, mes_referencia FROM fato_indicadores_mensais ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Safra mais recente consolidada (Setembro / 2026)"
+  },
+  {
+    "reportId": "CHURN_BL",
+    "category": "Período e Safras",
+    "question": "Quais safras estão disponíveis em Churn?",
+    "sql": "SELECT DISTINCT mes_referencia FROM fato_indicadores_mensais ORDER BY mes_referencia DESC",
+    "expectedResult": "Lista das safras disponíveis"
+  },
+  {
+    "reportId": "CHURN_BL",
+    "category": "Rankings e Extremos",
+    "question": "Quem tem o pior Taxa de Churn Real?",
+    "sql": "SELECT cidade, taxa_real FROM fato_indicadores_mensais ORDER BY taxa_real DESC LIMIT 5",
+    "expectedResult": "Ranking com as 5 piores entidades/cidades no indicador padrão"
+  },
+  {
+    "reportId": "CHURN_BL",
+    "category": "Rankings e Extremos",
+    "question": "Quem tem o melhor Taxa de Churn Real?",
+    "sql": "SELECT cidade, taxa_real FROM fato_indicadores_mensais ORDER BY taxa_real ASC LIMIT 5",
+    "expectedResult": "Ranking com as 5 melhores entidades/cidades"
+  },
+  {
+    "reportId": "CHURN_BL",
+    "category": "Filtro por Segmento",
+    "question": "Qual o Taxa de Churn Real de Banda Larga Total?",
+    "sql": "SELECT mes_referencia, segmento, taxa_real FROM fato_indicadores_mensais WHERE segmento LIKE '%Banda Larga Total%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para Banda Larga Total no período mais recente"
+  },
+  {
+    "reportId": "CHURN_BL",
+    "category": "Filtro por Segmento",
+    "question": "Qual o Taxa de Churn Real de Banda Larga PME?",
+    "sql": "SELECT mes_referencia, segmento, taxa_real FROM fato_indicadores_mensais WHERE segmento LIKE '%Banda Larga PME%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para Banda Larga PME no período mais recente"
+  },
+  {
+    "reportId": "CHURN_BL",
+    "category": "Filtro por Tipo de Visão",
+    "question": "Qual o Taxa de Churn Real de TOTAL?",
+    "sql": "SELECT mes_referencia, tipo_visao, taxa_real FROM fato_indicadores_mensais WHERE tipo_visao LIKE '%TOTAL%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para TOTAL no período mais recente"
+  },
+  {
+    "reportId": "CHURN_BL",
+    "category": "Filtro por Tipo de Visão",
+    "question": "Qual o Taxa de Churn Real de VOLUNTARIO?",
+    "sql": "SELECT mes_referencia, tipo_visao, taxa_real FROM fato_indicadores_mensais WHERE tipo_visao LIKE '%VOLUNTARIO%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para VOLUNTARIO no período mais recente"
+  },
+  {
+    "reportId": "CHURN_BL",
+    "category": "Filtro por Tipo de Visão",
+    "question": "Qual o Taxa de Churn Real de INVOLUNTARIO?",
+    "sql": "SELECT mes_referencia, tipo_visao, taxa_real FROM fato_indicadores_mensais WHERE tipo_visao LIKE '%INVOLUNTARIO%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para INVOLUNTARIO no período mais recente"
+  },
+  {
+    "reportId": "CHURN_BL",
+    "category": "Filtro por Cidade",
+    "question": "Qual o Taxa de Churn Real de Regional Norte?",
+    "sql": "SELECT mes_referencia, cidade, taxa_real FROM fato_indicadores_mensais WHERE cidade LIKE '%Regional Norte%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para Regional Norte no período mais recente"
+  },
+  {
+    "reportId": "CHURN_BL",
+    "category": "Filtro por Cidade",
+    "question": "Qual o Taxa de Churn Real de Belém?",
+    "sql": "SELECT mes_referencia, cidade, taxa_real FROM fato_indicadores_mensais WHERE cidade LIKE '%Belém%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para Belém no período mais recente"
+  },
+  {
+    "reportId": "CHURN_BL",
+    "category": "Filtro por Cidade",
+    "question": "Qual o Taxa de Churn Real de Manaus?",
+    "sql": "SELECT mes_referencia, cidade, taxa_real FROM fato_indicadores_mensais WHERE cidade LIKE '%Manaus%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para Manaus no período mais recente"
+  },
+  {
+    "reportId": "CHURN_SAFRA",
+    "category": "Período e Safras",
+    "question": "Qual a última safra de Churn?",
+    "sql": "SELECT DISTINCT safra, safra_ord FROM fato_churn_safra ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Safra mais recente consolidada (mai/26)"
+  },
+  {
+    "reportId": "CHURN_SAFRA",
+    "category": "Período e Safras",
+    "question": "Quais safras estão disponíveis em Churn?",
+    "sql": "SELECT DISTINCT safra FROM fato_churn_safra ORDER BY safra_ord DESC",
+    "expectedResult": "Lista das safras disponíveis"
+  },
+  {
+    "reportId": "CHURN_SAFRA",
+    "category": "Rankings e Extremos",
+    "question": "Quem tem o pior Não Pagamento 120 dias (NP120)?",
+    "sql": "SELECT cidade, taxa_np120 FROM fato_churn_safra ORDER BY taxa_np120 DESC LIMIT 5",
+    "expectedResult": "Ranking com as 5 piores entidades/cidades no indicador padrão"
+  },
+  {
+    "reportId": "CHURN_SAFRA",
+    "category": "Rankings e Extremos",
+    "question": "Quem tem o melhor Não Pagamento 120 dias (NP120)?",
+    "sql": "SELECT cidade, taxa_np120 FROM fato_churn_safra ORDER BY taxa_np120 ASC LIMIT 5",
+    "expectedResult": "Ranking com as 5 melhores entidades/cidades"
+  },
+  {
+    "reportId": "CHURN_SAFRA",
+    "category": "Filtro por Visão",
+    "question": "Qual o Não Pagamento 120 dias (NP120) de PARCEIRO?",
+    "sql": "SELECT safra, visao, taxa_np120 FROM fato_churn_safra WHERE visao LIKE '%PARCEIRO%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para PARCEIRO no período mais recente"
+  },
+  {
+    "reportId": "CHURN_SAFRA",
+    "category": "Filtro por Visão",
+    "question": "Qual o Não Pagamento 120 dias (NP120) de CIDADE?",
+    "sql": "SELECT safra, visao, taxa_np120 FROM fato_churn_safra WHERE visao LIKE '%CIDADE%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para CIDADE no período mais recente"
+  },
+  {
+    "reportId": "CHURN_SAFRA",
+    "category": "Filtro por Visão",
+    "question": "Qual o Não Pagamento 120 dias (NP120) de REGIONAL?",
+    "sql": "SELECT safra, visao, taxa_np120 FROM fato_churn_safra WHERE visao LIKE '%REGIONAL%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para REGIONAL no período mais recente"
+  },
+  {
+    "reportId": "CHURN_SAFRA",
+    "category": "Filtro por Parceiro / Cidade",
+    "question": "Qual o Não Pagamento 120 dias (NP120) de TEL CENTRO DE CONTATOS LTDA?",
+    "sql": "SELECT safra, entidade_nome, taxa_np120 FROM fato_churn_safra WHERE entidade_nome LIKE '%TEL CENTRO DE CONTATOS LTDA%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para TEL CENTRO DE CONTATOS LTDA no período mais recente"
+  },
+  {
+    "reportId": "CHURN_SAFRA",
+    "category": "Filtro por Parceiro / Cidade",
+    "question": "Qual o Não Pagamento 120 dias (NP120) de HITSS DO BRASIL?",
+    "sql": "SELECT safra, entidade_nome, taxa_np120 FROM fato_churn_safra WHERE entidade_nome LIKE '%HITSS DO BRASIL%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para HITSS DO BRASIL no período mais recente"
+  },
+  {
+    "reportId": "CHURN_SAFRA",
+    "category": "Filtro por Parceiro / Cidade",
+    "question": "Qual o Não Pagamento 120 dias (NP120) de CCH Mendes?",
+    "sql": "SELECT safra, entidade_nome, taxa_np120 FROM fato_churn_safra WHERE entidade_nome LIKE '%CCH Mendes%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para CCH Mendes no período mais recente"
+  },
+  {
+    "reportId": "CHURN_SAFRA",
+    "category": "Filtro por Status da Safra",
+    "question": "Qual o Não Pagamento 120 dias (NP120) de MADURA?",
+    "sql": "SELECT safra, status_safra, taxa_np120 FROM fato_churn_safra WHERE status_safra LIKE '%MADURA%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para MADURA no período mais recente"
+  },
+  {
+    "reportId": "CHURN_SAFRA",
+    "category": "Filtro por Status da Safra",
+    "question": "Qual o Não Pagamento 120 dias (NP120) de EM_ABERTO?",
+    "sql": "SELECT safra, status_safra, taxa_np120 FROM fato_churn_safra WHERE status_safra LIKE '%EM_ABERTO%' ORDER BY safra_ord DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para EM_ABERTO no período mais recente"
+  },
+  {
+    "reportId": "CREDITO",
+    "category": "Período e Safras",
+    "question": "Qual a última safra de Aprovação?",
+    "sql": "SELECT DISTINCT mes_referencia, mes_referencia FROM fato_aprovacao_credito ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Safra mais recente consolidada (2026-09)"
+  },
+  {
+    "reportId": "CREDITO",
+    "category": "Período e Safras",
+    "question": "Quais safras estão disponíveis em Aprovação?",
+    "sql": "SELECT DISTINCT mes_referencia FROM fato_aprovacao_credito ORDER BY mes_referencia DESC",
+    "expectedResult": "Lista das safras disponíveis"
+  },
+  {
+    "reportId": "CREDITO",
+    "category": "Rankings e Extremos",
+    "question": "Quem tem o pior Taxa de Aprovação?",
+    "sql": "SELECT cidade, taxa_aprovacao FROM fato_aprovacao_credito ORDER BY taxa_aprovacao DESC LIMIT 5",
+    "expectedResult": "Ranking com as 5 piores entidades/cidades no indicador padrão"
+  },
+  {
+    "reportId": "CREDITO",
+    "category": "Rankings e Extremos",
+    "question": "Quem tem o melhor Taxa de Aprovação?",
+    "sql": "SELECT cidade, taxa_aprovacao FROM fato_aprovacao_credito ORDER BY taxa_aprovacao ASC LIMIT 5",
+    "expectedResult": "Ranking com as 5 melhores entidades/cidades"
+  },
+  {
+    "reportId": "CREDITO",
+    "category": "Filtro por Canal",
+    "question": "Qual o Taxa de Aprovação de Agente Autorizado?",
+    "sql": "SELECT mes_referencia, canal, taxa_aprovacao FROM fato_aprovacao_credito WHERE canal LIKE '%Agente Autorizado%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para Agente Autorizado no período mais recente"
+  },
+  {
+    "reportId": "CREDITO",
+    "category": "Filtro por Canal",
+    "question": "Qual o Taxa de Aprovação de D2D Parceiros?",
+    "sql": "SELECT mes_referencia, canal, taxa_aprovacao FROM fato_aprovacao_credito WHERE canal LIKE '%D2D Parceiros%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para D2D Parceiros no período mais recente"
+  },
+  {
+    "reportId": "CREDITO",
+    "category": "Filtro por Canal",
+    "question": "Qual o Taxa de Aprovação de Lojas Próprias?",
+    "sql": "SELECT mes_referencia, canal, taxa_aprovacao FROM fato_aprovacao_credito WHERE canal LIKE '%Lojas Próprias%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para Lojas Próprias no período mais recente"
+  },
+  {
+    "reportId": "CREDITO",
+    "category": "Filtro por Cidade",
+    "question": "Qual o Taxa de Aprovação de Belém?",
+    "sql": "SELECT mes_referencia, cidade, taxa_aprovacao FROM fato_aprovacao_credito WHERE cidade LIKE '%Belém%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para Belém no período mais recente"
+  },
+  {
+    "reportId": "CREDITO",
+    "category": "Filtro por Cidade",
+    "question": "Qual o Taxa de Aprovação de Manaus?",
+    "sql": "SELECT mes_referencia, cidade, taxa_aprovacao FROM fato_aprovacao_credito WHERE cidade LIKE '%Manaus%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para Manaus no período mais recente"
+  },
+  {
+    "reportId": "CREDITO",
+    "category": "Filtro por Cidade",
+    "question": "Qual o Taxa de Aprovação de São Luís?",
+    "sql": "SELECT mes_referencia, cidade, taxa_aprovacao FROM fato_aprovacao_credito WHERE cidade LIKE '%São Luís%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para São Luís no período mais recente"
+  },
+  {
+    "reportId": "MARKET_SHARE",
+    "category": "Período e Safras",
+    "question": "Qual a última safra de Market?",
+    "sql": "SELECT DISTINCT mes_referencia, mes_referencia FROM fato_market_share ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Safra mais recente consolidada (2026-08)"
+  },
+  {
+    "reportId": "MARKET_SHARE",
+    "category": "Período e Safras",
+    "question": "Quais safras estão disponíveis em Market?",
+    "sql": "SELECT DISTINCT mes_referencia FROM fato_market_share ORDER BY mes_referencia DESC",
+    "expectedResult": "Lista das safras disponíveis"
+  },
+  {
+    "reportId": "MARKET_SHARE",
+    "category": "Rankings e Extremos",
+    "question": "Quem tem o pior Participação de Mercado (Share)?",
+    "sql": "SELECT cidade, market_share_pct FROM fato_market_share ORDER BY market_share_pct DESC LIMIT 5",
+    "expectedResult": "Ranking com as 5 piores entidades/cidades no indicador padrão"
+  },
+  {
+    "reportId": "MARKET_SHARE",
+    "category": "Rankings e Extremos",
+    "question": "Quem tem o melhor Participação de Mercado (Share)?",
+    "sql": "SELECT cidade, market_share_pct FROM fato_market_share ORDER BY market_share_pct ASC LIMIT 5",
+    "expectedResult": "Ranking com as 5 melhores entidades/cidades"
+  },
+  {
+    "reportId": "MARKET_SHARE",
+    "category": "Filtro por Operadora",
+    "question": "Qual o Participação de Mercado (Share) de CLARO?",
+    "sql": "SELECT mes_referencia, operadora, market_share_pct FROM fato_market_share WHERE operadora LIKE '%CLARO%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para CLARO no período mais recente"
+  },
+  {
+    "reportId": "MARKET_SHARE",
+    "category": "Filtro por Operadora",
+    "question": "Qual o Participação de Mercado (Share) de VIVO?",
+    "sql": "SELECT mes_referencia, operadora, market_share_pct FROM fato_market_share WHERE operadora LIKE '%VIVO%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para VIVO no período mais recente"
+  },
+  {
+    "reportId": "MARKET_SHARE",
+    "category": "Filtro por Operadora",
+    "question": "Qual o Participação de Mercado (Share) de OI?",
+    "sql": "SELECT mes_referencia, operadora, market_share_pct FROM fato_market_share WHERE operadora LIKE '%OI%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para OI no período mais recente"
+  },
+  {
+    "reportId": "MARKET_SHARE",
+    "category": "Filtro por Cidade",
+    "question": "Qual o Participação de Mercado (Share) de Belém?",
+    "sql": "SELECT mes_referencia, cidade, market_share_pct FROM fato_market_share WHERE cidade LIKE '%Belém%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para Belém no período mais recente"
+  },
+  {
+    "reportId": "MARKET_SHARE",
+    "category": "Filtro por Cidade",
+    "question": "Qual o Participação de Mercado (Share) de Manaus?",
+    "sql": "SELECT mes_referencia, cidade, market_share_pct FROM fato_market_share WHERE cidade LIKE '%Manaus%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para Manaus no período mais recente"
+  },
+  {
+    "reportId": "MARKET_SHARE",
+    "category": "Filtro por Cidade",
+    "question": "Qual o Participação de Mercado (Share) de São Luís?",
+    "sql": "SELECT mes_referencia, cidade, market_share_pct FROM fato_market_share WHERE cidade LIKE '%São Luís%' ORDER BY mes_referencia DESC LIMIT 1",
+    "expectedResult": "Resultado analítico para São Luís no período mais recente"
+  }
+]

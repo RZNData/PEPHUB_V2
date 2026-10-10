@@ -1,0 +1,127 @@
+[
+  {
+    "speaker": "Carol",
+    "voice": "pt-BR-FranciscaNeural",
+    "text": "Olá pessoal! Sejam muito bem-vindos a mais uma edição especial do Deep Dive do PEP HUB! Sabe aquela experiência mágica do Google NotebookLM, onde relatórios densos e manuais complexos se transformam num bate-papo de podcast super gostoso e dinâmico? Pois é, hoje a gente preparou um episódio novinho em folha para destrinchar a grande versão dois ponto zero do PEP HUB da Regional Norte da Claro!"
+  },
+  {
+    "speaker": "Lucas",
+    "voice": "pt-BR-AntonioNeural",
+    "text": "É isso aí, Carol! Que prazer estar aqui de novo. Se na versão anterior a gente já tinha arrumado as gavetas e deixado o sistema voando baixo, dessa vez a equipe realizou três revoluções gigantescas: uma cirurgia estética e funcional nos relatórios, a criação de um cérebro analítico à prova de alucinações para o nosso bot do WhatsApp e uma Central Unificada de Cargas para alimentar todas as bases da Regional!"
+  },
+  {
+    "speaker": "Carol",
+    "voice": "pt-BR-FranciscaNeural",
+    "text": "Nossa Lucas, quanta coisa importante! Vamos começar por essa cirurgia nos relatórios. Eu soube que o relatório de Panorama Market Share e o de Taxa de Aprovação de Crédito passaram por uma verdadeira transformação visual. O que estava pegando antes e o que mudou?"
+  },
+  {
+    "speaker": "Lucas",
+    "voice": "pt-BR-AntonioNeural",
+    "text": "Carol, o relatório de Market Share antes parecia um hóspede em casa alheia: o código HTML veio importado de fora, com classes de cores diferentes, sem a identidade visual elegante da Claro e sem nenhum botão para navegar até os outros relatórios. O usuário ficava preso lá dentro! Nós reconstruímos ele inteiro no padrão do PEP HUB, com o vermelho corporativo, tipografia harmônica e uma barra de navegação no topo para saltar direto para o Churn Safra, F P D ou Banda Larga num clique só."
+  },
+  {
+    "speaker": "Carol",
+    "voice": "pt-BR-FranciscaNeural",
+    "text": "Faz todo o sentido! Ninguém merece ter que voltar para a tela inicial toda hora. E no relatório de Taxa de Aprovação de Crédito, que analisa as recusas e aprovações de clientes residenciais? O que foi consertado lá?"
+  },
+  {
+    "speaker": "Lucas",
+    "voice": "pt-BR-AntonioNeural",
+    "text": "Lá fizemos uma cirurgia plástica completa! Primeiro: jogamos fora aquela capa decorativa inútil. Em relatório executivo, a diretoria quer ver o dado imediatamente, não quer ficar clicando em botão de 'Entrar'. Segundo: tinha nome de loja parceira com mais de setenta caracteres que explodia a largura da tabela e obrigava o usuário a fazer um scroll horizontal quilométrico! Agora o nome fica travado em até trinta caracteres com reticências, e se você quiser ler o nome inteiro, basta passar o mouse por cima que abre um balãozinho elegante."
+  },
+  {
+    "speaker": "Carol",
+    "voice": "pt-BR-FranciscaNeural",
+    "text": "Que sacada genial! Isso melhora demais a vida no celular ou no notebook. E a ordenação por volume de P D V?"
+  },
+  {
+    "speaker": "Lucas",
+    "voice": "pt-BR-AntonioNeural",
+    "text": "Exatamente! Antes a tabela abria com lojas pequenas no topo. Nós padronizamos para abrir sempre pelos pontos de venda com maior volume de consultas de crédito de forma decrescente. Onde está a maior massa de vendas ou o maior risco de fraude é o que o diretor precisa bater o olho primeiro. E o gráfico de evolução temporal agora ocupa toda a largura útil da tela, com as legendas organizadas dentro da moldura."
+  },
+  {
+    "speaker": "Carol",
+    "voice": "pt-BR-FranciscaNeural",
+    "text": "Espetacular! Agora Lucas, vamos para o assunto que mais me impressionou: o robô de inteligência artificial do WhatsApp. Por que vocês precisaram criar essa tal de Arquitetura R A G Híbrida? Por que não deixar o modelo de linguagem responder tudo sozinho?"
+  },
+  {
+    "speaker": "Lucas",
+    "voice": "pt-BR-AntonioNeural",
+    "text": "Carol, essa é a maior lição de engenharia de software da atualidade! As IAs generativas, como o Gemini ou o Chat G P T, são brilhantes com texto, mas são terríveis com contas matemáticas. Elas trabalham adivinhando a próxima palavra mais provável. Se um diretor pergunta no WhatsApp: 'Qual foi o churn de Belém em setembro?', e você deixa o robô calcular na memória ou inventar com base num texto solto, ele comete alucinações matemáticas absurdas: erra a média ponderada, inventa decimais e passa uma informação errada para a presidência!"
+  },
+  {
+    "speaker": "Carol",
+    "voice": "pt-BR-FranciscaNeural",
+    "text": "E no mundo corporativo da Claro, um número errado de churn pode custar milhões de reais! Como vocês resolveram esse nó?"
+  },
+  {
+    "speaker": "Lucas",
+    "voice": "pt-BR-AntonioNeural",
+    "text": "Criamos uma rodovia de duas pistas, separando estritamente o cálculo da conversa! Quando a pergunta chega no WhatsApp, um roteador inteligente descobre a intenção. Se for uma pergunta numérica analítica, ele não deixa a I A fazer a conta: ele gera uma consulta S Q L segura e consulta diretamente a tabela fato dentro do banco Cloudflare D 1! O banco devolve a taxa real, por exemplo, um vírgula oitenta e oito por cento em Belém. Aí sim a I A pega esse número exato e só monta uma resposta educada e formal no WhatsApp. Precisão de cem por cento, zero alucinações!"
+  },
+  {
+    "speaker": "Carol",
+    "voice": "pt-BR-FranciscaNeural",
+    "text": "Que arquitetura primorosa, Lucas! E se o usuário fizer uma pergunta sobre regras de negócio, do tipo: 'O que é F P D?'"
+  },
+  {
+    "speaker": "Lucas",
+    "voice": "pt-BR-AntonioNeural",
+    "text": "Aí entra a segunda pista: o R A G Semântico! O robô consulta a nossa tabela de regras no banco de dados, resgata a definição oficial da Claro explicando a diferença de F P D trinta e F P D sessenta dias, e entrega a explicação perfeita. E ainda tem checagem de carteirização: o robô confere pelo número do WhatsApp se aquele colaborador tem crachá para ver os dados daquela cidade!"
+  },
+  {
+    "speaker": "Carol",
+    "voice": "pt-BR-FranciscaNeural",
+    "text": "É inteligência artificial com governança e auditoria bancária! E para fechar com chave de ouro, me conta sobre a nova Central de Carga de Insumos. Como é que o sistema é alimentado agora?"
+  },
+  {
+    "speaker": "Lucas",
+    "voice": "pt-BR-AntonioNeural",
+    "text": "Essa foi a libertação da equipe de desenvolvimento! Antes, para atualizar as safras de F P D, Churn ou Aprovação de Crédito, dependia de um programador rodar scripts na máquina e fazer deploy. Agora criamos uma aba de Carga de Insumos dentro do painel administrativo. Levantamos todos os sete insumos oficiais da Regional Norte. Cada um tem seu card, mostrando quem mandou o último arquivo, quando mandou e com botão para baixar a base atual."
+  },
+  {
+    "speaker": "Carol",
+    "voice": "pt-BR-FranciscaNeural",
+    "text": "E como funciona o envio? Pode arrastar o arquivo direto na tela?"
+  },
+  {
+    "speaker": "Lucas",
+    "voice": "pt-BR-AntonioNeural",
+    "text": "Pode arrastar com drag and drop direto na tela! E o arquivo é fatiado no próprio navegador em pedacinhos de quinhentos kilobytes e guardado de forma compacta no Cloudflare D 1, com uma barra de progresso verde em tempo real. Não tivemos que gastar nem um centavo com storages caros de terceiros como o Amazon S três!"
+  },
+  {
+    "speaker": "Carol",
+    "voice": "pt-BR-FranciscaNeural",
+    "text": "E tem também a cereja do bolo: a delegação de tarefas, não é? O administrador não precisa fazer tudo sozinho!"
+  },
+  {
+    "speaker": "Lucas",
+    "voice": "pt-BR-AntonioNeural",
+    "text": "Exatamente! O administrador pode delegar para um analista de planejamento ou estagiário a missão de subir a base do Market Share ou do F P D. Quando esse colaborador loga na tela de administração, as abas de alterar senhas, suspender o sistema ou ver relatórios confidenciais somem automaticamente. Ele vê apenas os cards que foi autorizado a alimentar. Segurança total sem sobrecarregar o gestor!"
+  },
+  {
+    "speaker": "Carol",
+    "voice": "pt-BR-FranciscaNeural",
+    "text": "Que salto espetacular de maturidade, Lucas! O PEP HUB agora é uma plataforma completa de inteligência de ponta a ponta: visual impecável, banco na borda ultraveloz, bot de WhatsApp que nunca erra uma conta e autonomia para a operação alimentar os dados."
+  },
+  {
+    "speaker": "Lucas",
+    "voice": "pt-BR-AntonioNeural",
+    "text": "É o padrão de excelência da Regional Norte da Claro! Tudo testado, aprovado pelo Release Gate e rodando liso em produção no domínio pephub ponto cloud."
+  },
+  {
+    "speaker": "Carol",
+    "voice": "pt-BR-FranciscaNeural",
+    "text": "Sensacional! Esse foi o nosso episódio especial da Versão Dois Ponto Zero do PEP HUB. Para você que nos ouviu até aqui, muito obrigada pela companhia e nos vemos nos próximos lançamentos da plataforma!"
+  },
+  {
+    "speaker": "Lucas",
+    "voice": "pt-BR-AntonioNeural",
+    "text": "Um grande abraço a todos e até a próxima!"
+  },
+  {
+    "speaker": "Carol",
+    "voice": "pt-BR-FranciscaNeural",
+    "text": "Tchau tchau pessoal!"
+  }
+]

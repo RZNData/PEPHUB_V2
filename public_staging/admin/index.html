@@ -1,0 +1,3343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Administração & Governança — Regional Norte | Pephub</title>
+
+<!-- PWA & Mobile Web App Meta Tags -->
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#8a0f18">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PEP HUB">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon.png">
+<link rel="stylesheet" href="/css/app-mobile.css">
+<style>
+:root{
+  --bg:#f4f5f7; --panel:#fff; --ink:#1c2430; --ink2:#5b6675; --ink3:#8b95a3;
+  --line:#dfe3e8; --line2:#eceef1; --nav:#1b2430; --nav2:#27323f;
+  --red:#c0392b; --amber:#c98a15; --green:#2f7d5d; --blue:#2a5d8f; --purple:#6b4b8a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.45 "Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+header{background:#fff;border-bottom:1px solid var(--line)}
+.hd-bar{background:linear-gradient(90deg,#8a0f18 0%,#c0191f 26%,#e23a1e 50%,#f47a1f 74%,#f9b233 100%);
+  display:flex;align-items:center;gap:16px;padding:12px 28px}
+.hd-ico{width:40px;height:40px;min-width:40px;border-radius:50%;border:2px solid rgba(255,255,255,.95);
+  display:flex;align-items:center;justify-content:center}
+.hd-bar h1{margin:0;color:#fff;font-size:22px;font-weight:400;letter-spacing:-.4px;line-height:1.1;
+  display:flex;align-items:baseline;gap:8px}
+.hd-bar h1 b{font-weight:800;letter-spacing:-1px}
+.hd-bar h1 span{font-weight:300;font-size:19px;color:rgba(255,255,255,.93)}
+.hd-bar .hd-actions{margin-left:auto;display:flex;align-items:center;gap:8px}
+.hd-btn{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.35);padding:5px 12px;border-radius:3px;font-size:11.5px;font-weight:600;text-decoration:none;transition:background .15s}
+.hd-btn:hover{background:rgba(255,255,255,.3);color:#fff}
+
+.hd-sub{background:var(--nav);color:#aab4c0;font-size:11.5px;padding:7px 28px;display:flex;align-items:center;gap:12px}
+.hd-sub b{color:#e8edf3}
+.hd-sub a{color:#f9b233;text-decoration:none;font-weight:600}
+.hd-sub a:hover{color:#fff;text-decoration:underline}
+.hd-sub .user-tag{margin-left:auto;color:#aab4c0}
+
+.wrap{padding:18px 28px 48px;max-width:100%;margin:0 auto}
+
+.top-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.top-bar h2{margin:0;font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+.top-bar p{margin:2px 0 0;color:var(--ink2);font-size:12px}
+
+.main-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.main-tab{border:1px solid transparent;border-bottom:none;background:none;padding:9px 18px;font:600 12.5px "Segoe UI",Arial;color:var(--ink2);cursor:pointer;border-radius:3px 3px 0 0;display:inline-flex;align-items:center;gap:7px;transition:all .15s}
+.main-tab:hover{color:var(--ink);background:#eef1f4}
+.main-tab.active{background:#fff;color:var(--red);border-color:var(--line);border-bottom:1px solid #fff;margin-bottom:-1px}
+
+.panel{background:#fff;border:1px solid var(--line);border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.02);overflow:hidden;margin-bottom:16px}
+
+.sub-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#f7f8fa;border-bottom:1px solid var(--line2);gap:12px;flex-wrap:wrap}
+.sub-filters{display:flex;gap:6px;flex-wrap:wrap}
+.sub-filter-btn{border:1px solid var(--line);background:#fff;color:var(--ink2);padding:5px 11px;border-radius:3px;font:600 11.5px "Segoe UI",Arial;cursor:pointer;transition:all .15s}
+.sub-filter-btn:hover{background:#f0f2f5;color:var(--ink)}
+.sub-filter-btn.active{background:var(--nav);color:#fff;border-color:var(--nav)}
+.search-input{border:1px solid var(--line);border-radius:3px;padding:5px 11px;font:12px "Segoe UI",Arial;width:280px;background:#fff}
+.search-input:focus{outline:none;border-color:var(--blue)}
+
+.btn-primary{background:var(--nav);color:#fff;border:none;border-radius:3px;padding:7px 14px;font:600 12px "Segoe UI",Arial;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .15s}
+.btn-primary:hover{background:var(--nav2)}
+.table-wrap{width:100%;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px;text-align:left}
+th, td{padding:9px 12px;border-bottom:1px solid var(--line2);vertical-align:middle}
+th{background:#fcfcfd;color:var(--ink2);font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.4px;white-space:nowrap}
+tbody tr:hover{background:#f7f9fb}
+
+.badge{display:inline-block;padding:2px 6px;border-radius:3px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.badge.pendente{background:#fdf3e2;color:#8a5d06;border:1px solid #f0dcb4}
+.badge.aprovado{background:#eaf2ec;color:#235c44;border:1px solid #c9dfd2}
+.badge.bloqueado, .badge.rejeitado{background:#fdece9;color:#9b1c1c;border:1px solid #f6c8c2}
+.badge.admin{background:#e8f0fe;color:#1a73e8;border:1px solid #c8dafc}
+.badge.colab{background:#f1f3f4;color:#5f6368;border:1px solid #dadce0}
+.badge.temp-pwd{background:#fff8e1;color:#b78103;border:1px solid #ffe082}
+.switch-group{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.switch-item{display:inline-flex;align-items:center;gap:5px;background:#f7f8fa;border:1px solid var(--line);border-radius:14px;padding:2px 7px 2px 6px;font-size:11px;font-weight:600;color:var(--ink2);cursor:pointer;user-select:none;transition:all .15s}
+.switch-item:hover{border-color:#b9c2cc;background:#eef1f4}
+.switch-item.on{background:#eaf2ec;border-color:#b8dcbf;color:#1e5837}
+.switch-item.disabled{opacity:.6;cursor:not-allowed}
+.switch-btn{position:relative;width:24px;height:14px;background:#cbd5e1;border-radius:14px;transition:background .2s;display:inline-block;flex-shrink:0}
+.switch-btn:after{content:'';position:absolute;width:10px;height:10px;background:#fff;border-radius:50%;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.switch-btn.active{background:#2f7d5d}
+.switch-btn.active:after{transform:translateX(10px)}
+
+/* Seções de Módulos & Toggles do Usuário */
+.user-modules-grid{display:flex;flex-direction:column;gap:5px}
+.user-modules-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.user-sec-tag{font-size:9.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;min-width:68px}
+
+/* Controles & Travas Globais do Sistema (Tab 4) */
+.ctrl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px}
+.ctrl-card{background:#fff;border:1px solid var(--line);border-radius:4px;padding:16px 18px;box-shadow:0 2px 6px rgba(0,0,0,.02);display:flex;flex-direction:column;justify-content:space-between;transition:all .15s}
+.ctrl-card.locked{border-color:#f0dcb4;background:#fffdfa}
+.ctrl-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:12px}
+.ctrl-title{font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.ctrl-desc{font-size:11.5px;color:var(--ink2);line-height:1.5}
+.ctrl-switch-wrap{flex-shrink:0}
+.ctrl-ft{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line2);padding-top:10px;gap:8px;flex-wrap:wrap}
+.ctrl-meta{font-size:10.5px;color:var(--ink3)}
+
+/* Badges de Status de Ferramentas & Módulos */
+.badge-mod{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.badge-mod.ativo{background:#eaf2ec;color:#235c44;border:1px solid #c9dfd2}
+.badge-mod.suspenso{background:#fdece9;color:#9b1c1c;border:1px solid #f6c8c2}
+.badge-mod.oculto{background:#f1f3f4;color:#5f6368;border:1px solid #dadce0}
+.badge-mod.em_andamento{background:#fdf3e2;color:#8a5d06;border:1px solid #f0dcb4}
+.form-group{margin-bottom:12px}
+.form-label{display:block;font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
+.form-input, .form-select, .form-textarea{width:100%;border:1px solid var(--line);border-radius:3px;padding:7px 10px;font:12px "Segoe UI",Arial;box-sizing:border-box;background:#fff;color:var(--ink)}
+.form-input:focus, .form-select:focus, .form-textarea:focus{outline:none;border-color:var(--blue)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-help{font-size:11px;color:var(--ink3);margin-top:3px}
+
+/* Panorama Avatar & Info */
+.u-avatar{width:32px;height:32px;min-width:32px;border-radius:50%;background:linear-gradient(135deg,#1b2430,#34495e);color:#fff;font-weight:700;font-size:11.5px;display:flex;align-items:center;justify-content:center;letter-spacing:-.3px}
+.u-cell{display:flex;align-items:center;gap:10px}
+.date-toolbar{background:#fff;border:1px solid var(--line);border-radius:4px;padding:10px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;box-shadow:0 2px 6px rgba(0,0,0,.02)}
+.date-presets{display:flex;gap:4px;flex-wrap:wrap}
+.date-preset-btn{background:#f7f8fa;border:1px solid var(--line);border-radius:3px;padding:5px 11px;font:600 11px "Segoe UI",Arial;color:var(--ink2);cursor:pointer;transition:all .15s}
+.date-preset-btn:hover{background:#eef1f4;color:var(--ink)}
+.date-preset-btn.active{background:var(--nav);color:#fff;border-color:var(--nav)}
+.date-inputs-wrap{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.date-in{border:1px solid var(--line);border-radius:3px;padding:4px 8px;font:11.5px "Segoe UI",Arial;background:#fff;color:var(--ink)}
+.date-in:focus{outline:none;border-color:var(--blue)}
+.badge-period{background:#e8f0fe;color:#1a73e8;border:1px solid #c8dafc;padding:4px 10px;border-radius:3px;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+.badge-act{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:3px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.badge-act.export-html{background:#e6f4ea;color:#137333;border:1px solid #ceead6}
+.badge-act.export-csv{background:#e6f4ea;color:#0d652d;border:1px solid #b7e1cd}
+.badge-act.view{background:#e8f0fe;color:#1a73e8;border:1px solid #d2e3fc}
+.badge-act.login{background:#fef7e0;color:#b06000;border:1px solid #fce8b2}
+.badge-act.admin{background:#f1f3f4;color:#3c4043;border:1px solid #dadce0}
+.badge-act.password{background:#f3e8fd;color:#7627bb;border:1px solid #e1bee7}
+
+.badge-export-yes{background:#e6f4ea;color:#137333;font-weight:700;padding:2px 7px;border-radius:3px;font-size:10px;border:1px solid #ceead6;display:inline-flex;align-items:center;gap:4px}
+.badge-export-no{background:#f8f9fa;color:#80868b;font-weight:600;padding:2px 7px;border-radius:3px;font-size:10px;border:1px solid #dadce0}
+.time-tag{display:inline-block;background:#f0f2f5;color:var(--ink2);padding:1px 5px;border-radius:2px;font-family:Consolas,monospace;font-size:10.5px;font-weight:600}
+
+.actions-cell{display:flex;gap:5px;justify-content:flex-end;white-space:nowrap}
+.btn-act{border:1px solid var(--line);background:#fff;color:var(--ink);padding:4px 8px;border-radius:2px;font:600 11px "Segoe UI",Arial;cursor:pointer;transition:all .15s;text-decoration:none;display:inline-flex;align-items:center;gap:3px}
+.btn-act:hover{background:#f0f2f5;color:var(--ink)}
+.btn-act.approve{background:#2f7d5d;color:#fff;border-color:#2f7d5d}
+.btn-act.approve:hover{background:#246349}
+.btn-act.danger{color:#c0392b;border-color:#e0a39c}
+.btn-act.danger:hover{background:#fdece9}
+.btn-act.primary{background:var(--nav);color:#fff;border-color:var(--nav)}
+.btn-act.primary:hover{background:var(--nav2)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:4px;padding:14px 16px;box-shadow:0 2px 6px rgba(0,0,0,.02)}
+.kpi .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--ink3);font-weight:700}
+.kpi .v{font-size:24px;font-weight:700;margin-top:4px;color:var(--ink);letter-spacing:-.5px}
+.kpi .d{font-size:11.5px;color:var(--ink2);margin-top:2px;display:flex;align-items:center;gap:5px}
+.kpi .tag-pos{color:#235c44;font-weight:700}
+.kpi .tag-neg{color:#9b1c1c;font-weight:700}
+
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+@media(max-width:1100px){.charts-grid{grid-template-columns:1fr}}
+
+.chart-card{background:#fff;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.chart-card h3{margin:0;padding:11px 16px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink2);border-bottom:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between}
+.chart-body{padding:14px 16px}
+.bar-row{margin-bottom:10px}
+.bar-row:last-child{margin-bottom:0}
+.bar-meta{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px}
+.bar-meta strong{color:var(--ink)}
+.bar-meta span{color:var(--ink3)}
+.bar-track{height:8px;background:#eceef1;border-radius:2px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,#2a5d8f,#3b7bb9);border-radius:2px}
+.bar-fill.red{background:linear-gradient(90deg,#c0191f,#e23a1e)}
+.bar-fill.green{background:linear-gradient(90deg,#2f7d5d,#3b9b73)}
+.daily-chart{display:flex;align-items:flex-end;gap:6px;height:160px;padding:14px 4px 6px;border-bottom:1px solid var(--line2);overflow-x:auto}
+.daily-col{flex:1;min-width:24px;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end}
+.daily-bars{display:flex;align-items:flex-end;gap:2px;width:100%;justify-content:center;height:130px}
+.daily-b{width:10px;border-radius:2px 2px 0 0;transition:height .2s}
+.daily-b.views{background:#1b2430}
+.daily-b.exports{background:#2f7d5d}
+.daily-lbl{font-size:10px;color:var(--ink2);margin-top:6px;font-weight:600;white-space:nowrap}
+.modal{position:fixed;inset:0;background:rgba(18,24,32,.55);display:none;z-index:99;align-items:center;justify-content:center;padding:20px}
+.modal.on{display:flex}
+.modal-box{background:#fff;max-width:560px;width:100%;border-radius:4px;box-shadow:0 14px 48px rgba(0,0,0,.25);overflow:hidden}
+.modal-hd{padding:14px 18px;border-bottom:1px solid var(--line2);display:flex;align-items:center;justify-content:space-between}
+.modal-hd h3{margin:0;font-size:14px;font-weight:700}
+.modal-hd button{border:none;background:none;font-size:20px;color:var(--ink3);cursor:pointer;line-height:1}
+.modal-bd{padding:18px}
+.modal-bd label{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--ink2);margin-bottom:5px}
+.modal-bd input, .modal-bd select, .modal-bd textarea{width:100%;border:1px solid var(--line);border-radius:3px;padding:8px 11px;font:12.5px "Segoe UI",Arial;margin-bottom:12px;background:#fcfcfd}
+.modal-bd input:focus, .modal-bd select:focus, .modal-bd textarea:focus{outline:none;border-color:var(--blue);background:#fff}
+.modal-ft{padding:12px 18px;background:#fafbfc;border-top:1px solid var(--line2);display:flex;justify-content:flex-end;gap:8px}
+
+.modal-module-card{border:1px solid var(--line);border-radius:4px;padding:10px 12px;margin-bottom:8px;background:#fafbfc;cursor:pointer;transition:all .15s}
+.modal-module-card:hover{border-color:#b9c2cc;background:#fff}
+.modal-module-card.active{background:#eaf2ec;border-color:#b8dcbf}
+
+.btn-link{background:none;border:none;color:var(--blue);font-size:11.5px;font-weight:600;cursor:pointer;padding:0}
+.btn-link:hover{text-decoration:underline}
+
+.code-box{background:#1b2430;color:#f8fafc;padding:12px;border-radius:3px;font-family:Consolas,monospace;font-size:16px;text-align:center;letter-spacing:1px;margin:12px 0}
+
+/* Central de Carga de Insumos & Uploads */
+.upload-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:16px;margin-bottom:20px}
+.upload-card{background:#fff;border:1px solid var(--line);border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.02);display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;transition:all .15s ease}
+.upload-card:hover{border-color:#b9c2cc;box-shadow:0 4px 12px rgba(0,0,0,.05)}
+.upload-card.disabled{opacity:.75;background:#fafbfc}
+.upload-card-hd{padding:14px 16px;border-bottom:1px solid var(--line2);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.upload-card-title{font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:3px;display:flex;align-items:center;gap:7px}
+.upload-card-desc{font-size:11.5px;color:var(--ink2);line-height:1.45}
+.upload-card-bd{padding:14px 16px;flex:1;display:flex;flex-direction:column;gap:12px}
+.upload-info-box{background:#f7f8fa;border:1px solid var(--line2);border-radius:4px;padding:10px 12px;font-size:11.5px}
+.upload-info-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.upload-info-row:last-child{margin-bottom:0}
+.upload-info-label{color:var(--ink3);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.upload-info-val{font-weight:600;color:var(--ink);text-align:right}
+.upload-dropzone{border:2px dashed #cbd5e1;border-radius:4px;padding:16px 12px;text-align:center;cursor:pointer;background:#fafbfc;transition:all .2s;position:relative}
+.upload-dropzone:hover,.upload-dropzone.dragover{border-color:var(--blue);background:#f0f7ff}
+.upload-dropzone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-drop-text{font-size:12px;color:var(--ink);font-weight:600}
+.upload-drop-sub{font-size:10.5px;color:var(--ink3);margin-top:2px}
+.upload-progress{display:none;margin-top:6px}
+.upload-progress-bar{height:6px;background:#eceef1;border-radius:3px;overflow:hidden}
+.upload-progress-fill{height:100%;background:linear-gradient(90deg,#2f7d5d,#3b9b73);width:0%;transition:width .15s ease}
+.upload-progress-text{font-size:10.5px;color:var(--ink2);margin-top:3px;display:flex;justify-content:space-between}
+.upload-card-ft{padding:10px 16px;border-top:1px solid var(--line2);background:#fafbfc;display:flex;align-items:center;justify-content:space-between;gap:8px}
+
+/* Novo Modal de Privilégios & Acessos Remodelado */
+.priv-quick-bar{display:flex;gap:6px;flex-wrap:wrap;padding:10px 12px;background:#f7f8fa;border:1px solid var(--line2);border-radius:4px;margin-bottom:14px;align-items:center}
+.priv-quick-btn{padding:5px 10px;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);display:inline-flex;align-items:center;gap:4px;transition:all .15s ease}
+.priv-quick-btn:hover{background:#f0f2f5;border-color:#b9c2cc}
+.priv-quick-btn.grant{background:#eaf2ec;border-color:#b8dcbf;color:#1e5837}
+.priv-quick-btn.grant:hover{background:#d5ebd9}
+.priv-quick-btn.revoke{background:#fdece9;border-color:#f6c8c2;color:#9b1c1c}
+.priv-quick-btn.revoke:hover{background:#f9d6d1}
+
+.priv-section{margin-bottom:12px;background:#fff;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.priv-section-hd{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f7f8fa;border-bottom:1px solid var(--line2)}
+.priv-section-title{font-size:11.5px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.4px;display:flex;align-items:center;gap:6px}
+.priv-section-count{font-size:10.5px;font-weight:600;color:var(--ink2);background:#eceef1;padding:1px 6px;border-radius:10px}
+.priv-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;padding:10px 12px}
+.priv-card{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid var(--line);border-radius:4px;background:#fff;cursor:pointer;user-select:none;transition:all .15s ease;gap:10px}
+.priv-card:hover{border-color:#a0aec0;background:#fafbfc}
+.priv-card.active{border-color:#2f7d5d;background:#f2f9f5}
+.priv-card-info{flex:1;min-width:0}
+.priv-card-name{font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.priv-card-desc{font-size:10.5px;color:var(--ink3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd-bar">
+    <div class="hd-ico">
+      <svg viewBox="0 0 48 48" width="30" height="30" aria-hidden="true">
+        <circle cx="24" cy="24" r="21" fill="none" stroke="#fff" stroke-width="2.6"/>
+        <path d="M31.5 16.5 L26.5 26.5 L16.5 31.5 L21.5 21.5 Z" fill="#fff"/>
+      </svg>
+    </div>
+    <h1><b>Pephub</b> <span>Portal de Churn & Qualidade · Gestão Administrativa</span></h1>
+    <div class="hd-actions">
+      <a href="/" class="hd-btn">‹ Ver Portal</a>
+      <a href="/pep-tools/divulgacao/?tab=curadoria" class="hd-btn" style="background:#f9b233;color:#1b2430;font-weight:700">Curadoria TVs</a>
+      <a href="/churn/" class="hd-btn">Safra</a>
+      <a href="/fpd/" class="hd-btn">FPD</a>
+      <a href="/churn-bl-total/" class="hd-btn">BL Total</a>
+      <a href="/churn-bl-pme/" class="hd-btn">BL PME</a>
+      <button id="btnLogout" class="hd-btn" style="cursor:pointer">Sair</button>
+    </div>
+  </div>
+  <div class="hd-sub">
+    <span>Central de Governança, Privilégios & Auditoria de Acessos</span>
+    <span class="user-tag" id="userTag">Conectado como Responsável pela Ferramenta</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="top-bar">
+    <div>
+      <h2>Administração & Inteligência de Acessos da Regional</h2>
+      <p>Gerenciamento corporativo de colaboradores, controle de privilégios de acesso aos relatórios e ferramentas, telemetria de auditoria e métricas de engajamento.</p>
+    </div>
+    <button id="btnOpenBroadcast" class="btn-primary">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      Avisar Atualização de Relatório
+    </button>
+  </div>
+
+  <div class="main-tabs">
+    <button class="main-tab active" id="tabUsersBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Panorama de Colaboradores (<span id="totalUsersCount">0</span>)
+    </button>
+    <button class="main-tab" id="tabStatsBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+      Dashboard & Filtro de Data
+    </button>
+    <button class="main-tab" id="tabLogsBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Auditoria Detalhada (Acessos & Exportações)
+    </button>
+    <button class="main-tab" id="tabControlsBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Travas & Controles (<span id="activeControlsCount">0</span>)
+    </button>
+    <button class="main-tab" id="tabModulesBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Gestão de Ferramentas (<span id="totalModulesCount">0</span>)
+    </button>
+    <button class="main-tab" id="tabUploadsBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Carga de Insumos & Uploads (<span id="totalUploadsCount">7</span>)
+    </button>
+  </div>
+
+  <!-- Banner Global de Travas Ativas -->
+  <div id="globalLockBanner" style="display:none;background:#fdf3e2;border:1px solid #f0dcb4;color:#8a5d06;padding:10px 16px;border-radius:3px;margin-bottom:16px;font-size:12px;font-weight:600;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#c98a15"></span>
+      <span id="globalLockText">Atenção: Existem travas operacionais ativas na plataforma.</span>
+    </div>
+    <button class="btn-act" onclick="showTab('controls')">Gerenciar Travas Globais</button>
+  </div>
+
+  <!-- ABA 1: PANORAMA DE USUÁRIOS & TOGGLES -->
+  <div id="sectionUsers">
+    <!-- Panorama Executivo: Micro KPIs de Usuários -->
+    <div class="kpis" style="margin-bottom:14px">
+      <div class="kpi">
+        <div class="k">Total Cadastrados</div>
+        <div class="v" id="kpiTotalUsers">0</div>
+        <div class="d">Colaboradores registrados</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Acessos Aprovados</div>
+        <div class="v" style="color:var(--green)" id="kpiApprovedUsers">0</div>
+        <div class="d">Aptos a consultar painéis</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Pendentes de Avaliação</div>
+        <div class="v" style="color:var(--amber)" id="kpiPendingUsers">0</div>
+        <div class="d">Aguardando aprovação formal</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Colaboradores Ativos</div>
+        <div class="v" style="color:var(--blue)" id="kpiActiveUsers">0</div>
+        <div class="d">Com sessões registradas</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Exportaram Relatório</div>
+        <div class="v" style="color:var(--purple)" id="kpiExportUsers">0</div>
+        <div class="d">Baixaram versão offline ou CSV</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="sub-bar">
+        <div class="sub-filters">
+          <button class="sub-filter-btn active" data-filter="all">Todos</button>
+          <button class="sub-filter-btn" data-filter="pendente">Pendentes (<span id="countPending">0</span>)</button>
+          <button class="sub-filter-btn" data-filter="aprovado">Aprovados (<span id="countApproved">0</span>)</button>
+          <button class="sub-filter-btn" data-filter="bloqueado">Bloqueados (<span id="countBlocked">0</span>)</button>
+        </div>
+        <input type="text" id="searchUsers" class="search-input" placeholder="Buscar colaborador, login, e-mail, canal ou função…">
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:24%">Colaborador</th>
+              <th style="width:16%">Canal / Função</th>
+              <th style="width:18%">Acessos & Privilégios</th>
+              <th style="width:16%">Atividade & Exportações</th>
+              <th style="width:11%">Status / Perfil</th>
+              <th style="width:15%;text-align:right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="usersTbody">
+            <tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:24px">Carregando panorama de colaboradores…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABA 2: DASHBOARD DE ACESSOS & FILTRO DE DATA -->
+  <div id="sectionStats" style="display:none">
+    
+    <!-- Barra Superior de Filtro de Data -->
+    <div class="date-toolbar">
+      <div class="date-presets">
+        <button class="date-preset-btn" data-preset="today" onclick="setDatePreset('today')">Hoje</button>
+        <button class="date-preset-btn" data-preset="7d" onclick="setDatePreset('7d')">Últimos 7 dias</button>
+        <button class="date-preset-btn" data-preset="15d" onclick="setDatePreset('15d')">Últimos 15 dias</button>
+        <button class="date-preset-btn active" data-preset="30d" onclick="setDatePreset('30d')">Últimos 30 dias</button>
+        <button class="date-preset-btn" data-preset="all" onclick="setDatePreset('all')">Todo o Período</button>
+      </div>
+      <div class="date-inputs-wrap">
+        <span style="font-size:11px;font-weight:600;color:var(--ink2)">Intervalo:</span>
+        <input type="date" id="statsDateStart" class="date-in">
+        <span style="color:var(--ink3)">até</span>
+        <input type="date" id="statsDateEnd" class="date-in">
+        <button class="btn-primary" style="padding:4px 10px;font-size:11.5px" onclick="applyCustomDateFilter()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          Filtrar
+        </button>
+        <button class="btn-act" onclick="clearDateFilter()">Limpar</button>
+        <span class="badge-period" id="statsPeriodBadge">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span id="statsPeriodLabel">Últimos 30 dias</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Faixa de KPIs Executivos Filtrados -->
+    <div class="kpis">
+      <div class="kpi">
+        <div class="k">Acessos no Período</div>
+        <div class="v" id="kpiMonthAccesses">—</div>
+        <div class="d" id="kpiMomGrowth">Calculando comparativo…</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Relatórios Exportados</div>
+        <div class="v" style="color:var(--green)" id="kpiPeriodExports">—</div>
+        <div class="d" id="kpiExportRate">Downloads HTML e arquivos CSV</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Usuários Únicos Ativos</div>
+        <div class="v" id="kpiUniqueUsers">—</div>
+        <div class="d">Pessoas com atividade no período</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Canal Mais Engajado</div>
+        <div class="v" style="font-size:18px" id="kpiTopChannel">—</div>
+        <div class="d">Maior volume relativo de acessos</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Recurso Mais Demandado</div>
+        <div class="v" style="font-size:18px" id="kpiTopResource">—</div>
+        <div class="d">Módulo com maior frequência</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Polo Regional Líder</div>
+        <div class="v" style="font-size:18px" id="kpiTopLocation">—</div>
+        <div class="d">Cidade de maior tráfego</div>
+      </div>
+    </div>
+
+    <!-- Linha 1 de Gráficos: Evolução Diária no Período e Horários -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>
+          <span>Evolução Diária de Consultas & Exportações</span>
+          <span style="font-size:10.5px;color:var(--ink3);text-transform:none">Acessos por Dia no Período</span>
+        </h3>
+        <div class="chart-body">
+          <div class="daily-chart" id="dailyChart">
+            <!-- Gerado via JavaScript -->
+          </div>
+          <div style="display:flex;gap:14px;font-size:11px;color:var(--ink2);margin-top:10px;justify-content:center">
+            <span style="display:flex;align-items:center;gap:5px"><i style="width:10px;height:10px;border-radius:2px;background:#1b2430;display:inline-block"></i> Visualizações em Tela</span>
+            <span style="display:flex;align-items:center;gap:5px"><i style="width:10px;height:10px;border-radius:2px;background:#2f7d5d;display:inline-block"></i> Exportações (HTML / CSV)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>
+          <span>Curva de Acessos por Horário</span>
+          <span style="font-size:10.5px;color:var(--ink3);text-transform:none">Concentração no Período</span>
+        </h3>
+        <div class="chart-body">
+          <div id="hourlyChart" style="height:160px;display:flex;align-items:flex-end;gap:4px;padding-top:14px;border-bottom:1px solid var(--line2)">
+            <!-- Barras horárias -->
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink3);margin-top:6px">
+            <span>08:00</span>
+            <span>12:00</span>
+            <span>15:00</span>
+            <span>18:00</span>
+            <span>22:00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Linha 2 de Gráficos: Recursos Mais Usados e Canais -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>
+          <span>Adoção de Relatórios e Exportações</span>
+          <span style="font-size:10.5px;color:var(--ink3);text-transform:none">Volume de Interações</span>
+        </h3>
+        <div class="chart-body" id="resourcesBars">
+          <!-- Barras de recursos -->
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>
+          <span>Engajamento por Canal Comercial</span>
+          <span style="font-size:10.5px;color:var(--ink3);text-transform:none">Participação no Período</span>
+        </h3>
+        <div class="chart-body" id="channelsBars">
+          <!-- Barras de canais -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabela de Engajamento por Usuário no Período Filtrado -->
+    <div class="panel">
+      <div class="sub-bar">
+        <strong style="font-size:12px;color:var(--ink2)">Engajamento Individual de Colaboradores no Período</strong>
+        <span style="font-size:11px;color:var(--ink3)">Ranking com total de acessos, exportações e última atividade</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Colaborador</th>
+              <th>Login Claro</th>
+              <th>E-mail Corporativo</th>
+              <th>Canal / Função</th>
+              <th>Total de Acessos</th>
+              <th>Exportações</th>
+              <th>Recurso Mais Acessado</th>
+              <th>Última Localização</th>
+              <th>Último Acesso</th>
+            </tr>
+          </thead>
+          <tbody id="topUsersTbody">
+            <tr><td colspan="9" style="text-align:center;color:var(--ink3);padding:24px">Carregando métricas individuais do período…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ABA 3: AUDITORIA DETALHADA (ACESSOS, HORÁRIOS & SE EXPORTOU) -->
+  <div id="sectionLogs" class="panel" style="display:none">
+    <div class="sub-bar">
+      <div class="sub-filters">
+        <button class="sub-filter-btn active" data-act-filter="all">Todos os Registros</button>
+        <button class="sub-filter-btn" data-act-filter="export" style="color:#137333;font-weight:700">Apenas Exportações</button>
+        <button class="sub-filter-btn" data-act-filter="view">Visualizações</button>
+        <button class="sub-filter-btn" data-act-filter="login">Logins & Senhas</button>
+        <button class="sub-filter-btn" data-act-filter="admin">Ações Admin</button>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <input type="text" id="searchLogs" class="search-input" placeholder="Filtrar por nome, login, e-mail, IP, recurso ou localidade…">
+        <button id="btnRefreshLogs" class="sub-filter-btn">Atualizar</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:13%">Data & Horário</th>
+            <th style="width:20%">Colaborador</th>
+            <th style="width:14%">Canal / Função</th>
+            <th style="width:15%">O Que Fez (Ação)</th>
+            <th style="width:15%">Página / Relatório</th>
+            <th style="width:9%">Exportou?</th>
+            <th style="width:14%">IP / Localização</th>
+          </tr>
+        </thead>
+        <tbody id="logsTbody">
+          <tr><td colspan="7" style="text-align:center;color:var(--ink3);padding:24px">Carregando logs detalhados de auditoria…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ABA 4: TRAVAS & CONTROLES GLOBAIS DO SISTEMA -->
+  <div id="sectionControls" style="display:none">
+    <div class="panel">
+      <div class="sub-bar">
+        <div>
+          <strong style="font-size:13px;color:var(--ink)">Central de Travas Operacionais & Governança Global</strong>
+          <div style="font-size:11.5px;color:var(--ink2);margin-top:2px">Interruptores mestres para contingência, manutenção preventiva e controle de integrações externas da Regional.</div>
+        </div>
+        <button id="btnRefreshControls" class="sub-filter-btn" onclick="loadSystemControls()">Atualizar Status</button>
+      </div>
+      <div style="padding:18px 20px">
+        <div class="ctrl-grid" id="controlsGrid">
+          <!-- Renderizado dinamicamente via JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Sub-Painel: Requisitos de Cadastro Obrigatórios -->
+    <div class="panel" style="margin-top:16px">
+      <div class="sub-bar">
+        <div>
+          <strong style="font-size:13px;color:var(--ink)">Parâmetros Obrigatórios de Cadastro (Perfil do Colaborador)</strong>
+          <div style="font-size:11.5px;color:var(--ink2);margin-top:2px">
+            Campos que o sistema exigirá que todo usuário preencha ao logar, caso não constem em seu cadastro original.
+          </div>
+        </div>
+        <button class="btn-primary" style="padding:5px 12px;font-size:11.5px" onclick="openAddProfileFieldModal()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Adicionar Campo Obrigatório
+        </button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:25%">Rótulo do Campo</th>
+              <th style="width:20%">Chave no Banco (Key)</th>
+              <th style="width:15%">Tipo de Entrada</th>
+              <th style="width:15%">Obrigatoriedade</th>
+              <th style="width:25%;text-align:right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="requiredFieldsTbody">
+            <tr><td colspan="5" style="text-align:center;color:var(--ink3);padding:18px">Carregando campos obrigatórios…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABA 5: GESTÃO DE FERRAMENTAS & CONTROLE EM MASSA -->
+  <div id="sectionModules" style="display:none">
+    
+    <!-- Micro KPIs de Ferramentas -->
+    <div class="kpis" style="margin-bottom:14px">
+      <div class="kpi">
+        <div class="k">Total de Módulos</div>
+        <div class="v" id="kpiTotalModules">0</div>
+        <div class="d">Ferramentas catalogadas</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Módulos Ativos</div>
+        <div class="v" style="color:var(--green)" id="kpiActiveModules">0</div>
+        <div class="d">Disponíveis no portal</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Módulos Suspensos</div>
+        <div class="v" style="color:var(--red)" id="kpiSuspendedModules">0</div>
+        <div class="d">Interrompidos temporariamente</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Módulos Ocultos</div>
+        <div class="v" style="color:var(--ink2)" id="kpiHiddenModules">0</div>
+        <div class="d">Acesso direto / reservado</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Em Andamento</div>
+        <div class="v" style="color:var(--amber)" id="kpiRoadmapModules">0</div>
+        <div class="d">Em desenvolvimento / esteira</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="sub-bar">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <input type="text" id="searchModules" class="search-input" placeholder="Buscar ferramenta, seção ou rota…">
+          <button class="btn-primary" onclick="openEditModuleModal()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Cadastrar Nova Ferramenta / Em Andamento
+          </button>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <button class="btn-act approve" onclick="bulkAllModulesAccess('grant_all')" title="Concede acesso a todos os relatórios e ferramentas para todos os colaboradores não-admins">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Autorizar Todos os Relatórios a Todos os Não-Admins
+          </button>
+          <button class="btn-act danger" onclick="bulkAllModulesAccess('revoke_all')" title="Desmarca todos os relatórios e ferramentas de todos os colaboradores não-admins">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Desmarcar Todos os Relatórios de Todos os Não-Admins
+          </button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:28%">Ferramenta / Relatório</th>
+              <th style="width:16%">Seção / Categoria</th>
+              <th style="width:15%">Status Operacional</th>
+              <th style="width:15%">Acessos Concedidos</th>
+              <th style="width:26%;text-align:right">Controle em Massa no Relatório</th>
+            </tr>
+          </thead>
+          <tbody id="modulesTbody">
+            <tr><td colspan="5" style="text-align:center;color:var(--ink3);padding:24px">Carregando catálogo de ferramentas…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABA 6: CARGA DE INSUMOS & UPLOADS CENTRALIZADOS -->
+  <div id="sectionUploads" style="display:none">
+    <div class="panel">
+      <div class="sub-bar">
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Central de Carga de Insumos Analíticos
+          </div>
+          <div style="font-size:11.5px;color:var(--ink2);margin-top:2px">Gestão centralizada de bases analíticas dos 7 painéis e regras semânticas do Bot RAG. Apenas administradores e delegados.</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <button id="btnOpenDelegations" class="btn-primary" style="display:none" onclick="openUploadDelegations()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+            Gerenciar Delegações de Upload
+          </button>
+          <button class="btn-act" onclick="loadUploadsConfig()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Atualizar Status
+          </button>
+        </div>
+      </div>
+      <div style="padding:16px 20px">
+        <div class="upload-grid" id="uploadsGrid">
+          <div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--ink3)">Carregando catálogo de insumos…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Gerenciamento de Delegações de Upload -->
+<div class="modal" id="modalUploadDelegations">
+  <div class="modal-box" style="max-width:680px">
+    <div class="modal-hd">
+      <h3>Delegações de Upload & Insumos</h3>
+      <button class="modal-close" data-close="modalUploadDelegations">×</button>
+    </div>
+    <div class="modal-bd">
+      <p style="margin-top:0;font-size:12px;color:var(--ink2)">
+        Delegue a responsabilidade de alimentar insumos e relatórios para colaboradores específicos sem conceder acesso administrativo geral.
+      </p>
+
+      <!-- Formulário de Nova Delegação -->
+      <div style="background:#f7f8fa;border:1px solid var(--line2);border-radius:4px;padding:14px;margin-bottom:16px">
+        <div style="font-size:11.5px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px">
+          Nova Concessão de Delegação
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div>
+            <label for="delegationUserSelect" style="font-size:10.5px;font-weight:700;color:var(--ink2);display:block;margin-bottom:4px">Colaborador Aprovado</label>
+            <select id="delegationUserSelect" class="form-select" style="margin-bottom:0">
+              <option value="">Selecione um colaborador…</option>
+            </select>
+          </div>
+          <div>
+            <label for="delegationScopeSelect" style="font-size:10.5px;font-weight:700;color:var(--ink2);display:block;margin-bottom:4px">Escopo Permitido</label>
+            <select id="delegationScopeSelect" class="form-select" style="margin-bottom:0">
+              <option value="ALL">Todos os Relatórios & Insumos (Geral)</option>
+              <option value="churn_bl_pme">Painel de Churn Banda Larga PME</option>
+              <option value="churn_bl_total">Painel de Churn Banda Larga Total</option>
+              <option value="churn_safra">Painel de Churn Safra</option>
+              <option value="aprovacao_credito">Painel de Taxa de Aprovação de Crédito</option>
+              <option value="fpd">Painel de FPD (First Payment Default)</option>
+              <option value="fpd_residencial">FPD Residencial (Executivo Fixa)</option>
+              <option value="market_share_movel">Market Share Móvel</option>
+              <option value="market_share_residencial">Market Share Residencial</option>
+              <option value="panorama_market_share">Panorama & Market Share</option>
+              <option value="divulgacao">Divulgação Corporativa (TVs)</option>
+              <option value="tv">Player TV (16:9 Fullscreen)</option>
+              <option value="bot-knowledge">Base de Regras do Bot RAG</option>
+            </select>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <button id="btnSubmitDelegation" class="btn-primary" onclick="createDelegation()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Conceder Delegação
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabela de Delegações Ativas -->
+      <div style="font-size:11.5px;font-weight:700;color:var(--ink);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">
+        Delegações Ativas na Regional (<span id="delegationsCount">0</span>)
+      </div>
+      <div class="table-wrap" style="max-height:260px;overflow-y:auto;border:1px solid var(--line2);border-radius:3px">
+        <table>
+          <thead>
+            <tr>
+              <th>Colaborador</th>
+              <th>Escopo de Upload</th>
+              <th>Delegado Em</th>
+              <th style="text-align:right">Ação</th>
+            </tr>
+          </thead>
+          <tbody id="delegationsTbody">
+            <tr><td colspan="4" style="text-align:center;color:var(--ink3);padding:16px">Carregando delegações…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="sub-filter-btn modal-close" data-close="modalUploadDelegations">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Histórico de Envios de Insumo -->
+<div class="modal" id="modalUploadHistory">
+  <div class="modal-box" style="max-width:720px">
+    <div class="modal-hd">
+      <h3 id="modalUploadHistoryTitle">Histórico de Envios do Insumo</h3>
+      <button class="modal-close" data-close="modalUploadHistory">×</button>
+    </div>
+    <div class="modal-bd">
+      <div class="table-wrap" style="max-height:360px;overflow-y:auto;border:1px solid var(--line2);border-radius:3px">
+        <table>
+          <thead>
+            <tr>
+              <th>Data / Hora</th>
+              <th>Arquivo Enviado</th>
+              <th>Tamanho</th>
+              <th>Responsável</th>
+              <th>Registros</th>
+              <th style="text-align:right">Download</th>
+            </tr>
+          </thead>
+          <tbody id="uploadHistoryTbody">
+            <tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:20px">Carregando histórico…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="sub-filter-btn modal-close" data-close="modalUploadHistory">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Privilégios & Acessos Remodelado -->
+<div class="modal" id="modalPrivileges">
+  <div class="modal-box" style="max-width:760px">
+    <div class="modal-hd">
+      <h3>Atribuição de Privilégios & Acessos da Regional</h3>
+      <button class="modal-close" data-close="modalPrivileges">×</button>
+    </div>
+    <div class="modal-bd">
+      <div style="background:#f7f8fa;border:1px solid var(--line2);border-radius:4px;padding:12px 14px;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="u-avatar" id="privAvatar" style="width:40px;height:40px;font-size:14px">CL</div>
+          <div>
+            <strong id="privUserName" style="font-size:14px;color:var(--ink)">Nome do Usuário</strong>
+            <div id="privUserEmail" style="color:var(--ink2);font-size:11.5px">email@claro.com.br</div>
+            <div id="privUserMeta" style="color:var(--ink3);font-size:11px;margin-top:2px">Área / Cargo</div>
+          </div>
+        </div>
+      </div>
+
+      <input type="hidden" id="privUserId">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+        <div>
+          <label class="form-label" for="privStatus">Status da Conta</label>
+          <select id="privStatus" class="form-select">
+            <option value="aprovado">Aprovado (Acesso Liberado)</option>
+            <option value="pendente">Pendente de Avaliação</option>
+            <option value="bloqueado">Bloqueado (Acesso Suspenso)</option>
+            <option value="rejeitado">Rejeitado</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label" for="privRole">Perfil de Governança</label>
+          <select id="privRole" class="form-select">
+            <option value="0">Colaborador (Acessos Conforme Privilégios Selecionados)</option>
+            <option value="1">Responsável pela Ferramenta (Admin Geral)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Barra de Ações Rápidas em 1 Clique -->
+      <div style="font-size:11px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">
+        Ações Rápidas de Privilégios
+      </div>
+      <div class="priv-quick-bar">
+        <button type="button" class="priv-quick-btn grant" onclick="grantAllReports()">
+          📊 Liberar Todos os Relatórios
+        </button>
+        <button type="button" class="priv-quick-btn grant" onclick="grantAllPepTools()">
+          ⚡ Liberar Todo o PeP Tools
+        </button>
+        <button type="button" class="priv-quick-btn grant" onclick="setAllPrivToggles(true)">
+          ⭐ Liberar Acesso Total (Tudo)
+        </button>
+        <span style="color:var(--line);margin:0 2px">|</span>
+        <button type="button" class="priv-quick-btn revoke" onclick="revokeAllReports()">
+          Desmarcar Relatórios
+        </button>
+        <button type="button" class="priv-quick-btn revoke" onclick="revokeAllPepTools()">
+          Desmarcar PeP Tools
+        </button>
+        <button type="button" class="priv-quick-btn revoke" onclick="setAllPrivToggles(false)">
+          🚫 Bloquear Todos
+        </button>
+      </div>
+
+      <!-- Lista Dinâmica de Módulos por Seção (Auto-atualizada) -->
+      <div id="modalModulesList" style="max-height:360px;overflow-y:auto;padding-right:4px">
+        <!-- Renderizado dinamicamente via JS -->
+      </div>
+
+      <div class="checkbox-row" style="margin-top:14px;display:flex;align-items:center;gap:8px">
+        <input type="checkbox" id="privNotify" checked style="width:auto;margin:0">
+        <label for="privNotify" style="margin:0;text-transform:none;font-weight:600;font-size:12px;color:var(--ink)">Receber comunicados de atualização de safra por e-mail</label>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="sub-filter-btn modal-close" data-close="modalPrivileges">Cancelar</button>
+      <button id="btnSavePrivileges" class="btn-primary">Salvar Privilégios</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Senha Provisória Gerada -->
+<div class="modal" id="modalTempPassword">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <h3>Senha Provisória de Uso Único</h3>
+      <button class="modal-close" data-close="modalTempPassword">×</button>
+    </div>
+    <div class="modal-bd">
+      <p style="margin-top:0;color:var(--ink2);font-size:12px">
+        Uma senha temporária de uso único foi gerada e encaminhada para o e-mail corporativo de <strong id="tempTargetName">Colaborador</strong> (<span id="tempTargetEmail">email</span>).
+      </p>
+
+      <div class="code-box" id="tempCodeDisplay">Claro#XXXXXX</div>
+
+      <p style="font-size:11.5px;color:var(--ink3);margin-bottom:0">
+        O colaborador será obrigado a cadastrar sua nova senha pessoal definitiva imediatamente no primeiro acesso.
+      </p>
+    </div>
+    <div class="modal-ft">
+      <button id="btnCopyTemp" class="btn-act primary">Copiar Senha</button>
+      <button class="sub-filter-btn modal-close" data-close="modalTempPassword">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Broadcast -->
+<div class="modal" id="modalBroadcast">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <h3>Disparo de Comunicado aos Usuários Aprovados</h3>
+      <button class="modal-close" data-close="modalBroadcast">×</button>
+    </div>
+    <div class="modal-bd">
+      <label for="bcReport">Relatório Atualizado</label>
+      <select id="bcReport" required></select>
+
+      <label for="bcSubject">Assunto da Notificação</label>
+      <input type="text" id="bcSubject" value="Novos Dados Consolidados Disponíveis na Plataforma" required>
+
+      <label for="bcMessage">Mensagem / Observações (Opcional)</label>
+      <textarea id="bcMessage" rows="4" placeholder="Ex: Foram consolidados os dados da Safra 28 com abertura para os canais Varejo e P&P…"></textarea>
+
+      <div style="font-size:11px;color:var(--ink3)">
+        O comunicado será transmitido formalmente para todos os colaboradores com cadastro ativo e aprovado.
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="sub-filter-btn modal-close" data-close="modalBroadcast">Cancelar</button>
+      <button id="btnSendBroadcast" class="btn-primary">Enviar Comunicado</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Editar Cadastro do Colaborador (Admin) -->
+<div class="modal" id="modalEditUser">
+  <div class="modal-box" style="max-width:540px">
+    <div class="modal-hd">
+      <h3>Editar Cadastro do Colaborador</h3>
+      <button class="modal-close" data-close="modalEditUser">×</button>
+    </div>
+    <div class="modal-bd">
+      <input type="hidden" id="editUserId">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="editUserNome">Nome Completo</label>
+          <input type="text" id="editUserNome" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="editUserLogin">Login Claro</label>
+          <input type="text" id="editUserLogin" class="form-input" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="editUserEmail">E-mail Corporativo</label>
+          <input type="email" id="editUserEmail" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="editUserTelefone">Telefone (WhatsApp)</label>
+          <input type="tel" id="editUserTelefone" class="form-input" placeholder="(XX) 9XXXX-XXXX">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="editUserArea">Área / Canal</label>
+          <input type="text" id="editUserArea" class="form-input" placeholder="Ex: VAREJO, MULTIFRANQUIAS, P&P">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="editUserFuncao">Função / Cargo</label>
+          <input type="text" id="editUserFuncao" class="form-input" placeholder="Ex: GERENTE, COORDENADOR, ANALISTA">
+        </div>
+      </div>
+
+      <div id="editUserDynamicSection" style="margin-top:10px;border-top:1px solid var(--line2);padding-top:10px">
+        <div style="font-size:11px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">
+          Parâmetros Adicionais & Metadados
+        </div>
+        <div id="editUserDynamicFields"></div>
+      </div>
+
+      <div style="font-size:11px;color:var(--ink3);margin-top:6px">
+        As alterações cadastrais surtem efeito imediato no acesso do colaborador.
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="sub-filter-btn modal-close" data-close="modalEditUser">Cancelar</button>
+      <button id="btnSaveUserEdit" class="btn-primary" onclick="saveUserProfile()">Salvar Dados Cadastrais</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Cadastrar / Editar Ferramenta Corporativa -->
+<div class="modal" id="modalEditModule">
+  <div class="modal-box" style="max-width:540px">
+    <div class="modal-hd">
+      <h3 id="modalEditModuleTitle">Cadastrar Nova Ferramenta / Módulo</h3>
+      <button class="modal-close" data-close="modalEditModule">×</button>
+    </div>
+    <div class="modal-bd">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="modId">ID / Chave Única</label>
+          <input type="text" id="modId" class="form-input" placeholder="Ex: retencao, cabeamento" required>
+          <div class="form-help">Identificador sem espaços (apenas letras, números, hífens).</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="modShortName">Sigla / Nome Curto</label>
+          <input type="text" id="modShortName" class="form-input" placeholder="Ex: Retenção, Fibra" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="modName">Nome Oficial do Módulo / Painel</label>
+        <input type="text" id="modName" class="form-input" placeholder="Ex: Painel de Retenção & Ciclo da Regional" required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="modSection">Seção / Categoria</label>
+          <select id="modSection" class="form-select">
+            <option value="Painéis Analíticos">Painéis Analíticos</option>
+            <option value="PeP Tools & Operações">PeP Tools & Operações</option>
+            <option value="Planejamento & Estratégia">Planejamento & Estratégia</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="modStatus">Status Operacional</label>
+          <select id="modStatus" class="form-select">
+            <option value="ativo">Ativo (Disponível normalmente)</option>
+            <option value="em_andamento">Em Andamento (Em desenvolvimento / esteira)</option>
+            <option value="suspenso">Suspenso (Bloqueado temporariamente)</option>
+            <option value="oculto">Oculto (Apenas acesso direto / admin)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="modRoute">Rota / URL de Acesso</label>
+          <input type="text" id="modRoute" class="form-input" placeholder="Ex: /retencao/ ou /pep-tools/fibra/" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="modSortOrder">Ordem de Exibição</label>
+          <input type="number" id="modSortOrder" class="form-input" value="10" min="0">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="modDesc">Descrição Funcional & Metodológica</label>
+        <textarea id="modDesc" class="form-textarea" rows="3" placeholder="Resumo dos objetivos e abrangência deste painel/ferramenta…"></textarea>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="sub-filter-btn modal-close" data-close="modalEditModule">Cancelar</button>
+      <button id="btnSaveModule" class="btn-primary" onclick="saveModule()">Salvar Ferramenta</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Novo Parâmetro Obrigatório de Perfil -->
+<div class="modal" id="modalAddProfileField">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-hd">
+      <h3>Novo Parâmetro Obrigatório de Cadastro</h3>
+      <button class="modal-close" data-close="modalAddProfileField">×</button>
+    </div>
+    <div class="modal-bd">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="fieldKey">Chave no Banco (Key)</label>
+          <input type="text" id="fieldKey" class="form-input" placeholder="Ex: matricula, gestor" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="fieldType">Tipo de Entrada</label>
+          <select id="fieldType" class="form-select">
+            <option value="text">Texto Simples</option>
+            <option value="tel">Telefone / WhatsApp</option>
+            <option value="email">E-mail</option>
+            <option value="number">Numérico</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="fieldLabel">Rótulo Exibido ao Usuário</label>
+        <input type="text" id="fieldLabel" class="form-input" placeholder="Ex: Matrícula Funcional, Gestor Imediato" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="fieldPlaceholder">Texto de Exemplo (Placeholder)</label>
+        <input type="text" id="fieldPlaceholder" class="form-input" placeholder="Ex: Digite seus 6 números funcionais">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="fieldRequired">Obrigatoriedade</label>
+          <select id="fieldRequired" class="form-select">
+            <option value="1">Obrigatório (Exige preenchimento no login)</option>
+            <option value="0">Opcional</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="fieldRegex">Regex de Validação (Opcional)</label>
+          <input type="text" id="fieldRegex" class="form-input" placeholder="Ex: ^[0-9]{6}$">
+        </div>
+      </div>
+
+      <div style="font-size:11px;color:var(--ink3);line-height:1.4">
+        Ao marcar como obrigatório, qualquer usuário que logar no portal e não tiver este campo preenchido será direcionado para uma tela mandatória de preenchimento.
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="sub-filter-btn modal-close" data-close="modalAddProfileField">Cancelar</button>
+      <button id="btnSaveProfileField" class="btn-primary" onclick="saveProfileField()">Salvar Requisito</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Módulos e Ferramentas oficiais organizados por seção canônica (Regional Norte)
+// Inicializado com os módulos canônicos e atualizado dinamicamente via D1
+let SYSTEM_SECTIONS = [
+  {
+    "name": "Painéis & Relatórios Oficiais",
+    "key": "paineis_e_relatorios_oficiais",
+    "modules": [
+      {
+        "id": "churn_safra",
+        "name": "Painel de Churn Safra",
+        "short": "Safra",
+        "desc": "Acompanhamento de Churn Safra da Regional Norte"
+      },
+      {
+        "id": "churn_bl_total",
+        "name": "Painel de Churn Banda Larga Total",
+        "short": "BL Total",
+        "desc": "Acompanhamento de Churn Horizontal BL Total (Residencial + PME)"
+      },
+      {
+        "id": "churn_bl_pme",
+        "name": "Painel de Churn Banda Larga PME",
+        "short": "BL PME",
+        "desc": "Acompanhamento de Churn Horizontal BL PME"
+      },
+      {
+        "id": "fpd",
+        "name": "Painel de FPD 60/30 (First Payment Default)",
+        "short": "FPD Regional",
+        "desc": "Inadimplência de primeira fatura (FPD 30 e FPD 60)"
+      },
+      {
+        "id": "fpd_residencial",
+        "name": "FPD Residencial (Executivo Fixa)",
+        "short": "FPD Residencial",
+        "desc": "Relatório Executivo Oficial de FPD 60 da Fixa por Canal, Cidade e Parceiro"
+      },
+      {
+        "id": "market_share_movel",
+        "name": "Market Share Móvel",
+        "short": "MS Móvel",
+        "desc": "Relatório Executivo Oficial de Market Share Móvel (Anatel · Telefonia Móvel & 5G)"
+      },
+      {
+        "id": "market_share_residencial",
+        "name": "Market Share Residencial",
+        "short": "MS Residencial",
+        "desc": "Relatório Executivo Oficial de Market Share Residencial (Anatel · Banda Larga)"
+      },
+      {
+        "id": "panorama_market_share",
+        "name": "Panorama & Market Share",
+        "short": "Panorama",
+        "desc": "Market share móvel e residencial Anatel e dinâmica concorrencial"
+      },
+      {
+        "id": "aprovacao_credito",
+        "name": "Painel de Taxa de Aprovação de Crédito",
+        "short": "Taxa Crédito",
+        "desc": "Taxa de aprovação por canal, parceiro e cidade"
+      }
+    ]
+  },
+  {
+    "name": "PeP Tools & Operações",
+    "key": "pep_tools___opera__es",
+    "modules": [
+      {
+        "id": "divulgacao",
+        "name": "Divulgação Corporativa (TVs)",
+        "short": "TV Divulgação",
+        "desc": "Propostas de mídia, curadoria e exibição nas TVs da Regional"
+      },
+      {
+        "id": "tv",
+        "name": "Player TV (16:9 Fullscreen)",
+        "short": "Player TV",
+        "desc": "Acesso direto ao reprodutor widescreen para recepções e salas"
+      }
+    ]
+  }
+];
+
+let ALL_SYSTEM_MODULES = SYSTEM_SECTIONS.flatMap(s => s.modules);
+let ALL_MODULE_IDS = ALL_SYSTEM_MODULES.map(m => m.id);
+let REPORT_MODULES = ALL_SYSTEM_MODULES;
+
+function isPepToolsModule(m) {
+  if (!m) return false;
+  const sec = (m.section || '').toLowerCase();
+  const id = (m.id || '').toLowerCase();
+  return sec.includes('pep') || sec.includes('ferramenta') || id === 'divulgacao' || id === 'tv';
+}
+
+function updateSystemCatalog(modules) {
+  if (!Array.isArray(modules) || modules.length === 0) return;
+  const sectionsMap = new Map();
+  
+  // Garante as duas seções canônicas iniciais
+  sectionsMap.set('Painéis & Relatórios Oficiais', {
+    name: 'Painéis & Relatórios Oficiais',
+    key: 'paineis_e_relatorios_oficiais',
+    modules: []
+  });
+  sectionsMap.set('PeP Tools & Operações', {
+    name: 'PeP Tools & Operações',
+    key: 'pep_tools___opera__es',
+    modules: []
+  });
+
+  modules.forEach(m => {
+    let secName = m.section || 'Painéis & Relatórios Oficiais';
+    const cleanId = normalizeModuleId(m.id);
+    if (cleanId === 'divulgacao' || cleanId === 'tv' || secName.toLowerCase().includes('pep') || secName.toLowerCase().includes('ferramenta')) {
+      secName = 'PeP Tools & Operações';
+    } else if (secName.toLowerCase().includes('painel') || secName.toLowerCase().includes('relat') || secName.toLowerCase().includes('indicador') || secName.toLowerCase().includes('estrat')) {
+      secName = 'Painéis & Relatórios Oficiais';
+    }
+
+    if (!sectionsMap.has(secName)) {
+      sectionsMap.set(secName, {
+        name: secName,
+        key: secName.toLowerCase().replace(/[^a-z0-9]/g, '_'),
+        modules: []
+      });
+    }
+
+    sectionsMap.get(secName).modules.push({
+      id: cleanId,
+      name: m.name,
+      short: m.short_name || m.name,
+      desc: m.description || '',
+      section: secName,
+      route: m.route,
+      status: m.status || 'ativo',
+      sort_order: m.sort_order || 0
+    });
+  });
+
+  // Filtra seções que tenham pelo menos 1 módulo
+  SYSTEM_SECTIONS = Array.from(sectionsMap.values()).filter(s => s.modules.length > 0);
+  ALL_SYSTEM_MODULES = SYSTEM_SECTIONS.flatMap(s => s.modules);
+  ALL_MODULE_IDS = ALL_SYSTEM_MODULES.map(m => m.id);
+  REPORT_MODULES = ALL_SYSTEM_MODULES;
+  
+  populateBroadcastReports();
+  populateDelegationScopeSelect();
+}
+
+function populateBroadcastReports() {
+  const sel = document.getElementById('bcReport');
+  if (!sel) return;
+  const currentVal = sel.value;
+  sel.innerHTML = '<option value="Todos os Relatórios & Plataforma Pephub">Todos os Relatórios &amp; Plataforma Pephub</option>' +
+    ALL_SYSTEM_MODULES.map(m => `<option value="${escapeHtml(m.name)}">${escapeHtml(m.name)} (${escapeHtml(m.short)})</option>`).join('');
+  if (currentVal) sel.value = currentVal;
+}
+
+function populateDelegationScopeSelect() {
+  const sel = document.getElementById('delegationScopeSelect');
+  if (!sel) return;
+  const currentVal = sel.value;
+  let html = '<option value="ALL">Todos os Relatórios &amp; Insumos (Geral)</option>';
+  ALL_SYSTEM_MODULES.forEach(m => {
+    html += `<option value="${escapeHtml(m.id)}">${escapeHtml(m.name)}</option>`;
+  });
+  html += '<option value="bot-knowledge">Base de Regras do Bot RAG</option>';
+  sel.innerHTML = html;
+  if (currentVal) sel.value = currentVal;
+}
+
+let allUsers = [];
+let allControls = [];
+let allModules = [];
+let allProfileFields = [];
+let activeUserFilter = 'all';
+let activeLogActionFilter = 'all';
+
+// Filtro de data do Dashboard
+let statsDateFilter = {
+  preset: '30d',
+  startDate: '',
+  endDate: ''
+};
+
+// Navegação de Abas
+const tabUsersBtn = document.getElementById('tabUsersBtn');
+const tabStatsBtn = document.getElementById('tabStatsBtn');
+const tabLogsBtn = document.getElementById('tabLogsBtn');
+const tabControlsBtn = document.getElementById('tabControlsBtn');
+const tabModulesBtn = document.getElementById('tabModulesBtn');
+const tabUploadsBtn = document.getElementById('tabUploadsBtn');
+
+const sectionUsers = document.getElementById('sectionUsers');
+const sectionStats = document.getElementById('sectionStats');
+const sectionLogs = document.getElementById('sectionLogs');
+const sectionControls = document.getElementById('sectionControls');
+const sectionModules = document.getElementById('sectionModules');
+const sectionUploads = document.getElementById('sectionUploads');
+
+function showTab(tab) {
+  [tabUsersBtn, tabStatsBtn, tabLogsBtn, tabControlsBtn, tabModulesBtn, tabUploadsBtn].forEach(b => b.classList.remove('active'));
+  [sectionUsers, sectionStats, sectionLogs, sectionControls, sectionModules, sectionUploads].forEach(s => s.style.display = 'none');
+
+  if (tab === 'users') {
+    tabUsersBtn.classList.add('active');
+    sectionUsers.style.display = 'block';
+    loadUsers();
+  } else if (tab === 'stats') {
+    tabStatsBtn.classList.add('active');
+    sectionStats.style.display = 'block';
+    loadAccessStats();
+  } else if (tab === 'logs') {
+    tabLogsBtn.classList.add('active');
+    sectionLogs.style.display = 'block';
+    loadAccessLogs();
+  } else if (tab === 'controls') {
+    tabControlsBtn.classList.add('active');
+    sectionControls.style.display = 'block';
+    loadSystemControls();
+    loadProfileFields();
+  } else if (tab === 'modules') {
+    tabModulesBtn.classList.add('active');
+    sectionModules.style.display = 'block';
+    loadModules();
+  } else if (tab === 'uploads') {
+    tabUploadsBtn.classList.add('active');
+    sectionUploads.style.display = 'block';
+    loadUploadsConfig();
+  }
+}
+
+tabUsersBtn.addEventListener('click', () => showTab('users'));
+tabStatsBtn.addEventListener('click', () => showTab('stats'));
+tabLogsBtn.addEventListener('click', () => showTab('logs'));
+tabControlsBtn.addEventListener('click', () => showTab('controls'));
+tabModulesBtn.addEventListener('click', () => showTab('modules'));
+tabUploadsBtn.addEventListener('click', () => showTab('uploads'));
+
+// Logout Seguro e Direto
+document.getElementById('btnLogout').addEventListener('click', async () => {
+  try {
+    await fetch('/api/auth/logout', { method: 'POST' });
+  } catch (_) {}
+  window.location.href = '/login/';
+});
+
+// Fechar modais
+document.querySelectorAll('.modal-close').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    const modalId = e.currentTarget.dataset.close;
+    if (modalId) document.getElementById(modalId).classList.remove('on');
+  });
+});
+
+function normalizeModuleId(id) {
+  if (!id) return '';
+  const clean = String(id).trim().toLowerCase();
+  if (clean === 'churn' || clean === 'churn_safra' || clean === 'churn-safra') return 'churn';
+  if (clean === 'churn-bl-total' || clean === 'churn_bl_total' || clean === 'bl-total') return 'churn-bl-total';
+  if (clean === 'churn-bl-pme' || clean === 'churn_bl_pme' || clean === 'bl-pme') return 'churn-bl-pme';
+  if (clean === 'fpd' || clean === 'fpd_regional_norte' || clean === 'fpd-regional-norte') return 'fpd';
+  if (clean === 'divulgacao' || clean === 'pep_tools_divulgacao' || clean === 'peptools_divulgacao') return 'divulgacao';
+  if (clean === 'tv' || clean === 'player_tv' || clean === 'tv_player') return 'tv';
+  return clean;
+}
+
+// Helper: Extrair lista de módulos de um usuário (interpretação estrita de permissões)
+function getUserModules(u) {
+  if (u.is_admin || u.modules_allowed === 'all') {
+    return [...ALL_MODULE_IDS];
+  }
+  if (u.modules_allowed === 'none' || u.modules_allowed === '') {
+    return [];
+  }
+  if (u.modules_allowed === null || u.modules_allowed === undefined) {
+    return [...ALL_MODULE_IDS];
+  }
+  return u.modules_allowed.split(',').map(normalizeModuleId).filter(Boolean);
+}
+
+// Helper: Iniciais do nome
+function getInitials(name) {
+  if (!name) return 'CL';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+// Helper: Formatar data relativa
+function formatRelativeTime(dateStr) {
+  if (!dateStr) return 'Nunca';
+  try {
+    const d = new Date(dateStr);
+    const now = new Date();
+    const diffMin = Math.round((now - d) / 60000);
+    if (diffMin < 2) return 'Agora mesmo';
+    if (diffMin < 60) return `Há ${diffMin} min`;
+    const diffHours = Math.round(diffMin / 60);
+    if (diffHours < 24) return `Hoje às ${d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+    if (diffHours < 48) return `Ontem às ${d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  } catch (_) {
+    return dateStr;
+  }
+}
+
+// Helper: Formatar data curta
+function formatDateShort(dateStr) {
+  if (!dateStr) return '—';
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('pt-BR');
+  } catch (_) {
+    return '—';
+  }
+}
+
+// ==========================================
+// 1. CARREGAR E RENDERIZAR USUÁRIOS
+// ==========================================
+async function loadUsers() {
+  try {
+    const [resUsers, resModules] = await Promise.all([
+      fetch('/api/admin/users'),
+      fetch('/api/admin/modules')
+    ]);
+
+    if (resUsers.status === 401 || resUsers.status === 403) {
+      window.location.href = '/login/?redirect=/admin/';
+      return;
+    }
+    const dataUsers = await resUsers.json();
+    if (!resUsers.ok || !Array.isArray(dataUsers)) {
+      throw new Error((dataUsers && dataUsers.error) ? dataUsers.error : 'Resposta inválida do servidor.');
+    }
+    allUsers = dataUsers;
+
+    if (resModules.ok) {
+      const dataModules = await resModules.json();
+      if (Array.isArray(dataModules) && dataModules.length > 0) {
+        allModules = dataModules;
+        updateSystemCatalog(dataModules);
+      }
+    }
+
+    renderUsers();
+    populateDelegationUserSelect();
+  } catch (err) {
+    document.getElementById('usersTbody').innerHTML = `
+      <tr><td colspan="6" style="text-align:center;color:var(--red);padding:20px">Erro ao carregar lista de usuários: ${escapeHtml(err.message)}</td></tr>
+    `;
+  }
+}
+
+function renderUsers() {
+  const tbody = document.getElementById('usersTbody');
+  const search = document.getElementById('searchUsers').value.trim().toLowerCase();
+
+  const countPending = allUsers.filter(u => u.status === 'pendente').length;
+  const countApproved = allUsers.filter(u => u.status === 'aprovado').length;
+  const countBlocked = allUsers.filter(u => u.status === 'bloqueado' || u.status === 'rejeitado').length;
+  const countActive = allUsers.filter(u => (u.total_accesses || 0) > 0).length;
+  const countExport = allUsers.filter(u => (u.total_exports || 0) > 0).length;
+
+  document.getElementById('totalUsersCount').textContent = allUsers.length;
+  document.getElementById('countPending').textContent = countPending;
+  document.getElementById('countApproved').textContent = countApproved;
+  document.getElementById('countBlocked').textContent = countBlocked;
+
+  document.getElementById('kpiTotalUsers').textContent = allUsers.length;
+  document.getElementById('kpiApprovedUsers').textContent = countApproved;
+  document.getElementById('kpiPendingUsers').textContent = countPending;
+  document.getElementById('kpiActiveUsers').textContent = countActive;
+  document.getElementById('kpiExportUsers').textContent = countExport;
+
+  let filtered = allUsers;
+  if (activeUserFilter === 'pendente') filtered = filtered.filter(u => u.status === 'pendente');
+  else if (activeUserFilter === 'aprovado') filtered = filtered.filter(u => u.status === 'aprovado');
+  else if (activeUserFilter === 'bloqueado') filtered = filtered.filter(u => u.status === 'bloqueado' || u.status === 'rejeitado');
+
+  if (search) {
+    filtered = filtered.filter(u => 
+      (u.nome_completo || '').toLowerCase().includes(search) ||
+      (u.login_claro || '').toLowerCase().includes(search) ||
+      (u.email_claro || '').toLowerCase().includes(search) ||
+      (u.area || '').toLowerCase().includes(search) ||
+      (u.funcao || '').toLowerCase().includes(search)
+    );
+  }
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:24px">Nenhum colaborador encontrado com os filtros aplicados.</td></tr>`;
+    return;
+  }
+
+  const totalCatalogMods = ALL_SYSTEM_MODULES.length;
+
+  tbody.innerHTML = filtered.map(u => {
+    const isPending = u.status === 'pendente';
+    const isApproved = u.status === 'aprovado';
+    const isBlocked = u.status === 'bloqueado' || u.status === 'rejeitado';
+    const hasTempPwd = Boolean(u.must_change_password);
+    const initials = getInitials(u.nome_completo);
+    const userMods = getUserModules(u);
+    const totalAcc = u.total_accesses || 0;
+    const totalExp = u.total_exports || 0;
+
+    return `
+      <tr>
+        <td>
+          <div class="u-cell">
+            <div class="u-avatar" title="${escapeHtml(u.nome_completo)}">${initials}</div>
+            <div>
+              <div style="font-weight:700;color:var(--ink)">${escapeHtml(u.nome_completo)}</div>
+              <div style="font-size:11px;color:var(--ink3);display:flex;align-items:center;gap:6px;margin-top:1px">
+                <span>Login: <code>${escapeHtml(u.login_claro)}</code></span>
+                ${u.telefone ? `<a href="https://wa.me/${u.telefone}" target="_blank" style="color:#2f7d5d;text-decoration:none;font-weight:600" title="WhatsApp Corporativo">Tel: ${escapeHtml(u.telefone)}</a>` : ''}
+              </div>
+              <div style="font-family:Consolas,monospace;font-size:10.5px;color:var(--ink3);margin-top:1px">${escapeHtml(u.email_claro)}</div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div style="font-weight:600;color:var(--ink)">${escapeHtml(u.area || 'OUTROS')}</div>
+          <div style="color:var(--ink3);font-size:11px">${escapeHtml(u.funcao || 'COLABORADOR')}</div>
+          <div style="color:var(--ink3);font-size:10px;margin-top:2px">Desde ${formatDateShort(u.created_at)}</div>
+        </td>
+        <td>
+          ${u.is_admin ? `
+            <span class="badge admin" style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;font-size:10.5px">
+              Acesso Irrestrito (Admin)
+            </span>
+          ` : `
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              ${userMods.length === totalCatalogMods && totalCatalogMods > 0 ? `
+                <span class="badge aprovado" style="font-size:10.5px;font-weight:700">Acesso Total (${userMods.length})</span>
+              ` : userMods.length === 0 ? `
+                <span class="badge bloqueado" style="font-size:10.5px">Nenhum autorizado</span>
+              ` : `
+                <span class="badge aprovado" style="font-size:10.5px">${userMods.length} de ${totalCatalogMods} autorizados</span>
+              `}
+              <button class="btn-link" onclick="openPrivilegesModal('${u.id}')" title="Gerenciar privilégios do colaborador">Configurar</button>
+            </div>
+          `}
+        </td>
+        <td>
+          <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+            <span class="badge ${totalAcc > 0 ? 'aprovado' : 'colab'}" style="font-size:10px">
+              ${totalAcc} ${totalAcc === 1 ? 'acesso' : 'acessos'}
+            </span>
+            ${totalExp > 0 ? `<span class="badge-export-yes" title="${totalExp} exportações registradas">${totalExp} exp.</span>` : '<span class="badge-export-no">0 exp.</span>'}
+          </div>
+          <div style="color:var(--ink2);font-size:10.5px;margin-top:3px">
+            ${u.last_access ? `Último: ${formatRelativeTime(u.last_access)}` : '<span style="color:var(--ink3)">Sem acessos</span>'}
+          </div>
+        </td>
+        <td>
+          <div style="display:flex;flex-direction:column;gap:3px;align-items:flex-start">
+            <span class="badge ${u.status}">${u.status}</span>
+            <span class="badge ${u.is_admin ? 'admin' : 'colab'}">${u.is_admin ? 'Admin' : 'Colaborador'}</span>
+            ${hasTempPwd ? '<span class="badge temp-pwd" title="Senha provisória pendente de troca no primeiro login">Trocar Senha</span>' : ''}
+          </div>
+        </td>
+        <td>
+          <div class="actions-cell">
+            ${isPending ? `<button class="btn-act approve" onclick="quickStatus('${u.id}', 'aprovado')">Aprovar</button>` : ''}
+            ${isApproved ? `<button class="btn-act danger" onclick="quickStatus('${u.id}', 'bloqueado')">Bloquear</button>` : ''}
+            ${isBlocked ? `<button class="btn-act approve" onclick="quickStatus('${u.id}', 'aprovado')">Reativar</button>` : ''}
+            <button class="btn-act" onclick="openEditUserModal('${u.id}')" title="Editar dados cadastrais, telefone e metadados">Editar Dados</button>
+            <button class="btn-act" onclick="openPrivilegesModal('${u.id}')" title="Ajustar perfil, status e relatórios">Privilégios</button>
+            <button class="btn-act" onclick="resetUserPassword('${u.id}')" title="Gerar senha temporária de uso único">Resetar Senha</button>
+            ${!u.is_admin ? `<button class="btn-act danger" onclick="deleteUser('${u.id}', '${escapeHtml(u.nome_completo)}')" title="Excluir permanentemente o colaborador">Excluir</button>` : ''}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// Filtros de Usuários
+document.querySelectorAll('.sub-filter-btn[data-filter]').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    document.querySelectorAll('.sub-filter-btn[data-filter]').forEach(b => b.classList.remove('active'));
+    e.currentTarget.classList.add('active');
+    activeUserFilter = e.currentTarget.dataset.filter;
+    renderUsers();
+  });
+});
+
+document.getElementById('searchUsers').addEventListener('input', renderUsers);
+
+// Alteração rápida de status
+async function quickStatus(userId, newStatus) {
+  if (!confirm(`Confirmar alteração de status para ${newStatus.toUpperCase()}?`)) return;
+  try {
+    const res = await fetch(`/api/admin/users/${userId}/privileges`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    });
+    if (res.ok) {
+      loadUsers();
+    } else {
+      alert('Erro ao atualizar status.');
+    }
+  } catch (err) {
+    alert('Erro de conexão.');
+  }
+}
+
+// Exclusão permanente de colaborador
+async function deleteUser(userId, userName) {
+  if (!confirm(`Deseja realmente EXCLUIR permanentemente o cadastro de "${userName}"?\n\nEsta operação removerá o colaborador da base corporativa e não poderá ser desfeita.`)) {
+    return;
+  }
+  try {
+    const res = await fetch(`/api/admin/users/${userId}`, {
+      method: 'DELETE'
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert(`Colaborador "${userName}" excluído com sucesso.`);
+      loadUsers();
+    } else {
+      alert(data.error || 'Erro ao excluir usuário.');
+    }
+  } catch (err) {
+    alert('Erro de comunicação ao tentar excluir usuário.');
+  }
+}
+
+// Modal de Privilégios Remodelado & Ações Rápidas
+let currentModalUserMods = [];
+
+function openPrivilegesModal(userId) {
+  const user = allUsers.find(u => u.id === userId);
+  if (!user) return;
+
+  document.getElementById('privUserId').value = user.id;
+  document.getElementById('privUserName').textContent = user.nome_completo;
+  document.getElementById('privUserEmail').textContent = `${user.email_claro} • Login: ${user.login_claro}`;
+  document.getElementById('privUserMeta').textContent = `Área: ${user.area || '—'} • Função: ${user.funcao || '—'}`;
+  document.getElementById('privAvatar').textContent = getInitials(user.nome_completo);
+  document.getElementById('privStatus').value = user.status;
+  document.getElementById('privRole').value = user.is_admin ? '1' : '0';
+  document.getElementById('privNotify').checked = Boolean(user.notify_updates);
+
+  currentModalUserMods = getUserModules(user);
+  renderModalModuleToggles();
+
+  document.getElementById('modalPrivileges').classList.add('on');
+}
+
+function renderModalModuleToggles() {
+  const container = document.getElementById('modalModulesList');
+  if (!container) return;
+
+  container.innerHTML = SYSTEM_SECTIONS.map(sec => {
+    const totalInSec = sec.modules.length;
+    const activeInSec = sec.modules.filter(m => currentModalUserMods.includes(m.id)).length;
+    return `
+      <div class="priv-section">
+        <div class="priv-section-hd">
+          <div class="priv-section-title">
+            <span>${escapeHtml(sec.name)}</span>
+            <span class="priv-section-count">${activeInSec} de ${totalInSec} autorizados</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <button type="button" class="btn-link" onclick="setSectionToggles('${sec.key}', true)">Marcar Seção</button>
+            <span style="color:var(--line)">•</span>
+            <button type="button" class="btn-link" onclick="setSectionToggles('${sec.key}', false)">Desmarcar</button>
+          </div>
+        </div>
+        <div class="priv-cards-grid">
+          ${sec.modules.map(m => {
+            const isChecked = currentModalUserMods.includes(m.id);
+            return `
+              <div class="priv-card ${isChecked ? 'active' : ''}" onclick="toggleModalModule('${m.id}')" title="Clique para ${isChecked ? 'revogar' : 'conceder'} acesso ao ${escapeHtml(m.name)}">
+                <div class="priv-card-info">
+                  <div class="priv-card-name">${escapeHtml(m.name)}</div>
+                  <div class="priv-card-desc">${escapeHtml(m.desc || m.short || '')}</div>
+                </div>
+                <span class="switch-btn ${isChecked ? 'active' : ''}"></span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function setSectionToggles(sectionKey, enable) {
+  const sec = SYSTEM_SECTIONS.find(s => s.key === sectionKey);
+  if (!sec) return;
+  const modIds = sec.modules.map(m => m.id);
+  if (enable) {
+    currentModalUserMods = Array.from(new Set([...currentModalUserMods, ...modIds]));
+  } else {
+    currentModalUserMods = currentModalUserMods.filter(id => !modIds.includes(id));
+  }
+  renderModalModuleToggles();
+}
+
+function toggleModalModule(moduleId) {
+  if (currentModalUserMods.includes(moduleId)) {
+    currentModalUserMods = currentModalUserMods.filter(m => m !== moduleId);
+  } else {
+    currentModalUserMods.push(moduleId);
+  }
+  renderModalModuleToggles();
+}
+
+function grantAllReports() {
+  const reportModIds = ALL_SYSTEM_MODULES
+    .filter(m => !isPepToolsModule(m))
+    .map(m => m.id);
+  currentModalUserMods = Array.from(new Set([...currentModalUserMods, ...reportModIds]));
+  renderModalModuleToggles();
+}
+
+function revokeAllReports() {
+  const reportModIds = ALL_SYSTEM_MODULES
+    .filter(m => !isPepToolsModule(m))
+    .map(m => m.id);
+  currentModalUserMods = currentModalUserMods.filter(id => !reportModIds.includes(id));
+  renderModalModuleToggles();
+}
+
+function grantAllPepTools() {
+  const pepModIds = ALL_SYSTEM_MODULES
+    .filter(m => isPepToolsModule(m))
+    .map(m => m.id);
+  currentModalUserMods = Array.from(new Set([...currentModalUserMods, ...pepModIds]));
+  renderModalModuleToggles();
+}
+
+function revokeAllPepTools() {
+  const pepModIds = ALL_SYSTEM_MODULES
+    .filter(m => isPepToolsModule(m))
+    .map(m => m.id);
+  currentModalUserMods = currentModalUserMods.filter(id => !pepModIds.includes(id));
+  renderModalModuleToggles();
+}
+
+function setAllPrivToggles(enableAll) {
+  if (enableAll) {
+    currentModalUserMods = [...ALL_MODULE_IDS];
+  } else {
+    currentModalUserMods = [];
+  }
+  renderModalModuleToggles();
+}
+
+document.getElementById('btnSavePrivileges').addEventListener('click', async () => {
+  const userId = document.getElementById('privUserId').value;
+  const status = document.getElementById('privStatus').value;
+  const is_admin = document.getElementById('privRole').value === '1';
+  const modules_allowed = currentModalUserMods.length > 0 ? currentModalUserMods.join(',') : 'none';
+  const notify_updates = document.getElementById('privNotify').checked ? 1 : 0;
+
+  try {
+    const res = await fetch(`/api/admin/users/${userId}/privileges`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status, is_admin, modules_allowed, notify_updates })
+    });
+
+    if (res.ok) {
+      document.getElementById('modalPrivileges').classList.remove('on');
+      loadUsers();
+    } else {
+      alert('Erro ao salvar privilégios.');
+    }
+  } catch (err) {
+    alert('Erro de conexão ao salvar privilégios.');
+  }
+});
+
+// Resetar Senha (Senha de uso único)
+async function resetUserPassword(userId) {
+  const user = allUsers.find(u => u.id === userId);
+  if (!user) return;
+
+  if (!confirm(`Deseja gerar uma senha provisória de uso único para ${user.nome_completo}? Um e-mail formal será despachado para ${user.email_claro}.`)) {
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/admin/users/${userId}/reset-password`, { method: 'POST' });
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || 'Erro ao redefinir senha.');
+      return;
+    }
+
+    document.getElementById('tempTargetName').textContent = data.nome || user.nome_completo;
+    document.getElementById('tempTargetEmail').textContent = data.email || user.email_claro;
+    document.getElementById('tempCodeDisplay').textContent = data.temp_password;
+    document.getElementById('modalTempPassword').classList.add('on');
+    loadUsers();
+  } catch (err) {
+    alert('Erro de conexão com o servidor.');
+  }
+}
+
+document.getElementById('btnCopyTemp').addEventListener('click', () => {
+  const code = document.getElementById('tempCodeDisplay').textContent;
+  navigator.clipboard.writeText(code);
+  alert('Senha provisória copiada para a área de transferência.');
+});
+
+// ==========================================
+// 2. DASHBOARD DE ACESSOS COM FILTRO DE DATA
+// ==========================================
+function setDatePreset(preset) {
+  statsDateFilter.preset = preset;
+  document.querySelectorAll('.date-preset-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.querySelector(`.date-preset-btn[data-preset="${preset}"]`);
+  if (btn) btn.classList.add('active');
+
+  const now = new Date();
+  const formatYmd = d => d.toISOString().split('T')[0];
+
+  if (preset === 'today') {
+    statsDateFilter.startDate = formatYmd(now);
+    statsDateFilter.endDate = formatYmd(now);
+  } else if (preset === '7d') {
+    const s = new Date(now.getTime() - 7 * 86400000);
+    statsDateFilter.startDate = formatYmd(s);
+    statsDateFilter.endDate = formatYmd(now);
+  } else if (preset === '15d') {
+    const s = new Date(now.getTime() - 15 * 86400000);
+    statsDateFilter.startDate = formatYmd(s);
+    statsDateFilter.endDate = formatYmd(now);
+  } else if (preset === '30d') {
+    const s = new Date(now.getTime() - 30 * 86400000);
+    statsDateFilter.startDate = formatYmd(s);
+    statsDateFilter.endDate = formatYmd(now);
+  } else if (preset === 'all') {
+    statsDateFilter.startDate = '';
+    statsDateFilter.endDate = '';
+  }
+
+  document.getElementById('statsDateStart').value = statsDateFilter.startDate;
+  document.getElementById('statsDateEnd').value = statsDateFilter.endDate;
+  loadAccessStats();
+}
+
+function applyCustomDateFilter() {
+  const start = document.getElementById('statsDateStart').value;
+  const end = document.getElementById('statsDateEnd').value;
+  if (!start) {
+    alert('Selecione a data inicial.');
+    return;
+  }
+  statsDateFilter.preset = 'custom';
+  statsDateFilter.startDate = start;
+  statsDateFilter.endDate = end || start;
+  document.querySelectorAll('.date-preset-btn').forEach(b => b.classList.remove('active'));
+  loadAccessStats();
+}
+
+function clearDateFilter() {
+  setDatePreset('30d');
+}
+
+async function loadAccessStats() {
+  let url = '/api/admin/access-stats';
+  const params = [];
+  if (statsDateFilter.startDate) params.push(`start_date=${encodeURIComponent(statsDateFilter.startDate)}`);
+  if (statsDateFilter.endDate) params.push(`end_date=${encodeURIComponent(statsDateFilter.endDate)}`);
+  if (params.length) url += `?${params.join('&')}`;
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Falha ao obter estatísticas');
+    const data = await res.json();
+    renderStatsDashboard(data);
+  } catch (err) {
+    console.error('Erro loadAccessStats:', err);
+  }
+}
+
+function renderStatsDashboard(data) {
+  const s = data.summary;
+
+  // Atualiza rótulo do período
+  document.getElementById('statsPeriodLabel').textContent = s.period_label || 'Período Selecionado';
+
+  // 1. KPIs
+  document.getElementById('kpiMonthAccesses').textContent = Number(s.period_accesses).toLocaleString('pt-BR');
+  document.getElementById('kpiMomGrowth').innerHTML = s.growth_pct >= 0 
+    ? `<span class="tag-pos">▲ +${s.growth_pct}%</span> vs período anterior`
+    : `<span class="tag-neg">▼ ${s.growth_pct}%</span> vs período anterior`;
+
+  document.getElementById('kpiPeriodExports').textContent = Number(s.total_exports).toLocaleString('pt-BR');
+  const expRate = s.period_accesses > 0 ? Math.round((s.total_exports / s.period_accesses) * 100) : 0;
+  document.getElementById('kpiExportRate').textContent = `${expRate}% de taxa de exportação (${s.total_exports} de ${s.period_accesses} acessos)`;
+
+  document.getElementById('kpiUniqueUsers').textContent = s.unique_users;
+  document.getElementById('kpiTopChannel').textContent = s.top_channel;
+  document.getElementById('kpiTopResource').textContent = formatResourceName(s.top_resource);
+  document.getElementById('kpiTopLocation').textContent = s.top_location;
+
+  // 2. Gráfico Diário de Evolução (Consultas vs Exportações)
+  const dailyEl = document.getElementById('dailyChart');
+  if (!data.daily || data.daily.length === 0) {
+    dailyEl.innerHTML = `<div style="margin:auto;color:var(--ink3);font-size:12px">Sem registros no intervalo filtrado.</div>`;
+  } else {
+    const maxDay = Math.max(...data.daily.map(d => d.count), 1);
+    dailyEl.innerHTML = data.daily.map(d => {
+      const hTotal = Math.round((d.count / maxDay) * 125);
+      const hExp = Math.round(((d.exports || 0) / maxDay) * 125);
+      const dateParts = d.day.split('-');
+      const label = `${dateParts[2]}/${dateParts[1]}`;
+      return `
+        <div class="daily-col" title="${label}: ${d.count} acessos (${d.exports || 0} exportações)">
+          <div class="daily-bars">
+            <div class="daily-b views" style="height:${Math.max(3, hTotal - hExp)}px"></div>
+            ${hExp > 0 ? `<div class="daily-b exports" style="height:${Math.max(3, hExp)}px"></div>` : ''}
+          </div>
+          <div class="daily-lbl">${label}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // 3. Gráfico Horário
+  const hourlyEl = document.getElementById('hourlyChart');
+  const maxHour = Math.max(...data.hourly.map(h => h.count), 1);
+  hourlyEl.innerHTML = data.hourly.map(h => {
+    const height = Math.round((h.count / maxHour) * 130);
+    return `
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end" title="${h.hour}:00 — ${h.count} acessos">
+        <div style="width:100%;background:#2a5d8f;height:${Math.max(3, height)}px;border-radius:2px 2px 0 0"></div>
+      </div>
+    `;
+  }).join('');
+
+  // 4. Recursos / Visões Mais Demandadas
+  const resourcesEl = document.getElementById('resourcesBars');
+  const maxRes = Math.max(...data.resources.map(r => r.count), 1);
+  const totalRes = data.resources.reduce((acc, r) => acc + r.count, 0) || 1;
+
+  if (!data.resources || data.resources.length === 0) {
+    resourcesEl.innerHTML = `<div style="color:var(--ink3);text-align:center;padding:20px">Sem dados de recursos no período.</div>`;
+  } else {
+    resourcesEl.innerHTML = data.resources.map(r => {
+      const pct = Math.round((r.count / totalRes) * 100);
+      const widthPct = Math.round((r.count / maxRes) * 100);
+      const isExport = r.recurso.includes('DOWNLOAD') || r.recurso.includes('EXPORT');
+      return `
+        <div class="bar-row">
+          <div class="bar-meta">
+            <strong>${isExport ? '[Exportação] ' : ''}${formatResourceName(r.recurso)}</strong>
+            <span>${r.count} interações (${pct}%)</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill ${isExport ? 'green' : (r.recurso.includes('CHURN') ? 'red' : '')}" style="width:${widthPct}%"></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // 5. Canais Mais Engajados
+  const channelsEl = document.getElementById('channelsBars');
+  const maxChan = Math.max(...data.channels.map(c => c.count), 1);
+  const totalChan = data.channels.reduce((acc, c) => acc + c.count, 0) || 1;
+
+  if (!data.channels || data.channels.length === 0) {
+    channelsEl.innerHTML = `<div style="color:var(--ink3);text-align:center;padding:20px">Sem dados de canais no período.</div>`;
+  } else {
+    channelsEl.innerHTML = data.channels.map(c => {
+      const pct = Math.round((c.count / totalChan) * 100);
+      const widthPct = Math.round((c.count / maxChan) * 100);
+      return `
+        <div class="bar-row">
+          <div class="bar-meta">
+            <strong>${escapeHtml(c.area)}</strong>
+            <span>${c.count} sessões (${pct}%)</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${widthPct}%"></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // 6. Ranking de Usuários e Visões no Período
+  const topUsersTbody = document.getElementById('topUsersTbody');
+  if (!data.top_users || data.top_users.length === 0) {
+    topUsersTbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--ink3);padding:20px">Nenhum dado individual registrado neste período.</td></tr>`;
+  } else {
+    topUsersTbody.innerHTML = data.top_users.map(u => {
+      const dt = u.last_access ? new Date(u.last_access).toLocaleString('pt-BR') : '—';
+      const exportsCount = u.total_exports || 0;
+      return `
+        <tr>
+          <td><strong>${escapeHtml(u.nome_completo || 'Desconhecido')}</strong></td>
+          <td><code>${escapeHtml(u.login_claro || '—')}</code></td>
+          <td>${escapeHtml(u.email_claro)}</td>
+          <td>${escapeHtml(u.area || '—')} / <span style="color:var(--ink3)">${escapeHtml(u.funcao || '—')}</span></td>
+          <td><strong style="color:var(--blue);font-size:13px">${u.total_views}</strong></td>
+          <td>
+            ${exportsCount > 0 ? `<span class="badge-export-yes">${exportsCount} exp.</span>` : '<span class="badge-export-no">0</span>'}
+          </td>
+          <td><span class="badge ${u.last_resource?.includes('DOWNLOAD') || u.last_resource?.includes('EXPORT') ? 'aprovado' : 'admin'}">${formatResourceName(u.last_resource)}</span></td>
+          <td>${escapeHtml(u.last_location || '—')}</td>
+          <td><span style="color:var(--ink2);font-family:Consolas,monospace;font-size:11px">${dt}</span></td>
+        </tr>
+      `;
+    }).join('');
+  }
+}
+
+// ==========================================
+// 3. AUDITORIA DETALHADA (ACESSOS, HORÁRIOS & SE EXPORTOU)
+// ==========================================
+function parseActionMeta(recurso) {
+  if (!recurso) return { type: 'view', label: 'Visualização', page: 'Geral', isExport: false, exportType: '' };
+
+  const rec = recurso.toUpperCase();
+  if (rec.startsWith('EXPORT_CSV')) {
+    const pageKey = rec.split(':')[1] || '';
+    return { type: 'export-csv', label: 'Exportou CSV', page: formatResourceName(pageKey || rec), isExport: true, exportType: 'CSV' };
+  }
+  if (rec.startsWith('EXPORT_HTML') || rec.includes('DOWNLOAD')) {
+    const pageKey = rec.split(':')[1] || rec.replace('_DOWNLOAD', '');
+    return { type: 'export-html', label: 'Exportou HTML', page: formatResourceName(pageKey), isExport: true, exportType: 'HTML Offline' };
+  }
+  if (rec === 'LOGIN') {
+    return { type: 'login', label: 'Autenticação / Login', page: 'Portal Corporativo', isExport: false, exportType: '' };
+  }
+  if (rec === 'PASSWORD_CHANGE') {
+    return { type: 'password', label: 'Redefinição de Senha', page: 'Segurança', isExport: false, exportType: '' };
+  }
+  if (rec.startsWith('ADMIN_')) {
+    return { type: 'admin', label: 'Ação Administrativa', page: rec.replace('ADMIN_', ''), isExport: false, exportType: '' };
+  }
+  if (rec === 'PORTAL_HOME') {
+    return { type: 'view', label: 'Visualizou Tela', page: 'Portal / Pool de Ferramentas', isExport: false, exportType: '' };
+  }
+  return { type: 'view', label: 'Visualizou Tela', page: formatResourceName(rec), isExport: false, exportType: '' };
+}
+
+function formatResourceName(rec) {
+  if (!rec) return 'Geral';
+  const clean = rec.replace(/^EXPORT_HTML:/, '').replace(/^EXPORT_CSV:/, '').replace(/_DOWNLOAD$/, '');
+  if (clean === 'CHURN_SAFRA' || clean === 'CHURN') return 'Painel Churn Safra';
+  if (clean === 'CHURN_BL_TOTAL') return 'Painel Churn Banda Larga Total';
+  if (clean === 'CHURN_BL_PME') return 'Painel Churn Banda Larga PME';
+  if (clean === 'FPD_REGIONAL_NORTE' || clean === 'FPD') return 'Painel FPD Regional Norte';
+  if (clean === 'PORTAL_HOME') return 'Portal Pephub Home';
+  if (clean === 'ADMIN_PANEL') return 'Painel Administrativo';
+  if (clean === 'LOGIN') return 'Portal / Autenticação';
+  if (clean === 'PASSWORD_CHANGE') return 'Redefinição de Senha';
+  return clean;
+}
+
+async function loadAccessLogs() {
+  const tbody = document.getElementById('logsTbody');
+  tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--ink3);padding:24px">Atualizando registros de auditoria…</td></tr>`;
+
+  const query = document.getElementById('searchLogs').value.trim();
+  const params = [];
+  if (query) params.push(`q=${encodeURIComponent(query)}`);
+  if (activeLogActionFilter !== 'all') params.push(`action=${encodeURIComponent(activeLogActionFilter)}`);
+
+  try {
+    const res = await fetch(`/api/admin/access-logs?${params.join('&')}`);
+    const logs = await res.json();
+
+    if (!logs || logs.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--ink3);padding:24px">Nenhum registro de auditoria localizado com estes filtros.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = logs.map(l => {
+      const dtObj = new Date(l.created_at);
+      const dateFormatted = dtObj.toLocaleDateString('pt-BR');
+      const timeFormatted = dtObj.toLocaleTimeString('pt-BR');
+      const act = parseActionMeta(l.recurso);
+
+      return `
+        <tr>
+          <td>
+            <div style="font-weight:700;color:var(--ink)">${dateFormatted}</div>
+            <span class="time-tag">${timeFormatted}</span>
+          </td>
+          <td>
+            <div style="font-weight:700;color:var(--ink)">${escapeHtml(l.nome_completo || 'Desconhecido')}</div>
+            <div style="font-size:11px;color:var(--ink3)"><code>${escapeHtml(l.login_claro || '—')}</code> • ${escapeHtml(l.email_claro || '—')}</div>
+          </td>
+          <td>
+            <div style="font-weight:600;color:var(--ink)">${escapeHtml(l.area || '—')}</div>
+            <div style="color:var(--ink3);font-size:11px">${escapeHtml(l.funcao || '—')}</div>
+          </td>
+          <td>
+            <span class="badge-act ${act.type}">
+              ${act.label}
+            </span>
+          </td>
+          <td>
+            <strong style="color:var(--ink);font-size:12px">${escapeHtml(act.page)}</strong>
+          </td>
+          <td>
+            ${act.isExport 
+              ? `<span class="badge-export-yes">SIM • ${act.exportType}</span>` 
+              : `<span class="badge-export-no">NÃO</span>`}
+          </td>
+          <td>
+            <div><code style="font-size:11px">${escapeHtml(l.ip || '127.0.0.1')}</code></div>
+            <div style="font-size:11px;color:var(--ink3)">${escapeHtml(l.localizacao || 'Localidade não identificada')}</div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--red);padding:24px">Erro ao consultar registros de auditoria.</td></tr>`;
+  }
+}
+
+// Filtro de ações de auditoria
+document.querySelectorAll('.sub-filter-btn[data-act-filter]').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    document.querySelectorAll('.sub-filter-btn[data-act-filter]').forEach(b => b.classList.remove('active'));
+    e.currentTarget.classList.add('active');
+    activeLogActionFilter = e.currentTarget.dataset.actFilter;
+    loadAccessLogs();
+  });
+});
+
+document.getElementById('btnRefreshLogs').addEventListener('click', loadAccessLogs);
+document.getElementById('searchLogs').addEventListener('input', () => {
+  clearTimeout(window._logSearchTimeout);
+  window._logSearchTimeout = setTimeout(loadAccessLogs, 300);
+});
+
+// Modal Broadcast
+document.getElementById('btnOpenBroadcast').addEventListener('click', () => {
+  document.getElementById('modalBroadcast').classList.add('on');
+});
+
+document.getElementById('btnSendBroadcast').addEventListener('click', async () => {
+  const relatorio = document.getElementById('bcReport').value.trim();
+  const assunto = document.getElementById('bcSubject').value.trim();
+  const mensagem = document.getElementById('bcMessage').value.trim();
+
+  if (!relatorio || !assunto) {
+    alert('Preencha o nome do relatório e o assunto.');
+    return;
+  }
+
+  const btn = document.getElementById('btnSendBroadcast');
+  btn.disabled = true;
+  btn.textContent = 'Enviando…';
+
+  try {
+    const res = await fetch('/api/admin/broadcast', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ relatorio, assunto, mensagem })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      alert(`Comunicado formal transmitido com sucesso para ${data.sent} colaboradores aprovados.`);
+      document.getElementById('modalBroadcast').classList.remove('on');
+    } else {
+      alert(data.error || 'Erro ao enviar comunicado.');
+    }
+  } catch (err) {
+    alert('Erro de conexão ao disparar comunicado.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Enviar Comunicado';
+  }
+});
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ==========================================
+// 4. TRAVAS E CONTROLES GLOBAIS DO SISTEMA
+// ==========================================
+async function loadSystemControls() {
+  try {
+    const res = await fetch('/api/admin/system-controls');
+    if (!res.ok) throw new Error('Falha ao obter travas de sistema');
+    allControls = await res.json();
+    renderSystemControls();
+    updateGlobalLockBanner();
+  } catch (err) {
+    console.error('Erro loadSystemControls:', err);
+  }
+}
+
+function renderSystemControls() {
+  const container = document.getElementById('controlsGrid');
+  if (!container) return;
+
+  const countActive = allControls.filter(c => c.value === '1').length;
+  const countBadge = document.getElementById('activeControlsCount');
+  if (countBadge) countBadge.textContent = countActive;
+
+  container.innerHTML = allControls.map(c => {
+    const isActive = c.value === '1';
+    return `
+      <div class="ctrl-card ${isActive ? 'locked' : ''}">
+        <div class="ctrl-hd">
+          <div>
+            <div class="ctrl-title">${escapeHtml(c.label)}</div>
+            <div class="ctrl-desc">${escapeHtml(c.description)}</div>
+          </div>
+          <div class="ctrl-switch-wrap">
+            <div class="switch-item ${isActive ? 'on' : ''}" 
+                 onclick="toggleSystemControl('${c.key}', '${isActive ? '0' : '1'}')"
+                 title="Clique para ${isActive ? 'desativar trava (normalizar)' : 'ativar trava (suspender)'}">
+              <span style="font-size:11px;font-weight:700">${isActive ? 'TRAVA ATIVA' : 'LIBERADO'}</span>
+              <span class="switch-btn ${isActive ? 'active' : ''}"></span>
+            </div>
+          </div>
+        </div>
+        <div class="ctrl-ft">
+          <span class="badge ${isActive ? 'bloqueado' : 'aprovado'}">
+            ${isActive ? 'Operação Suspensa / Travada' : 'Operação Normal / Liberada'}
+          </span>
+          <span class="ctrl-meta">
+            ${c.updated_at ? `Última alteração: ${formatRelativeTime(c.updated_at)} ${c.updated_by ? `por ${escapeHtml(c.updated_by)}` : ''}` : 'Status padrão do sistema'}
+          </span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function toggleSystemControl(key, newValue) {
+  const ctrl = allControls.find(c => c.key === key);
+  const isActivating = newValue === '1';
+  const actionText = isActivating ? 'ATIVAR A TRAVA (SUSPENDER OPERAÇÃO)' : 'DESATIVAR A TRAVA (LIBERAR OPERAÇÃO)';
+  
+  if (!confirm(`Confirmar ${actionText} para:\n"${ctrl ? ctrl.label : key}"?\n\nEsta alteração entra em vigor imediatamente para todos os colaboradores.`)) {
+    return;
+  }
+
+  // Atualização otimista
+  if (ctrl) ctrl.value = newValue;
+  renderSystemControls();
+  updateGlobalLockBanner();
+
+  try {
+    const res = await fetch('/api/admin/system-controls', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key, value: newValue })
+    });
+    if (!res.ok) {
+      alert('Erro ao atualizar trava de sistema.');
+      loadSystemControls();
+    } else {
+      loadSystemControls();
+    }
+  } catch (err) {
+    alert('Erro de comunicação com o servidor.');
+    loadSystemControls();
+  }
+}
+
+function updateGlobalLockBanner() {
+  const banner = document.getElementById('globalLockBanner');
+  const lockText = document.getElementById('globalLockText');
+  if (!banner || !lockText) return;
+  const activeList = allControls.filter(c => c.value === '1');
+  if (activeList.length > 0) {
+    banner.style.display = 'flex';
+    lockText.innerHTML = `<strong>Atenção:</strong> Existem <strong>${activeList.length}</strong> trava(s) operacional(is) ativa(s) na plataforma: ${activeList.map(c => `<code>${escapeHtml(c.label)}</code>`).join(' • ')}.`;
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+// ==========================================
+// 5. GESTÃO DE FERRAMENTAS & CONTROLE EM MASSA
+// ==========================================
+async function loadModules() {
+  try {
+    const res = await fetch('/api/admin/modules');
+    if (!res.ok) throw new Error('Falha ao carregar catálogo de ferramentas');
+    allModules = await res.json();
+    if (typeof updateSystemCatalog === 'function') {
+      updateSystemCatalog(allModules);
+    }
+    if (typeof allUsers !== 'undefined' && allUsers.length > 0) {
+      renderUsers();
+    }
+
+    const countActive = allModules.filter(m => m.status === 'ativo').length;
+    const countSuspended = allModules.filter(m => m.status === 'suspenso').length;
+    const countHidden = allModules.filter(m => m.status === 'oculto').length;
+    const countRoadmap = allModules.filter(m => m.status === 'em_andamento').length;
+
+    const countBadge = document.getElementById('totalModulesCount');
+    if (countBadge) countBadge.textContent = allModules.length;
+
+    const kpiTotal = document.getElementById('kpiTotalModules');
+    const kpiActive = document.getElementById('kpiActiveModules');
+    const kpiSusp = document.getElementById('kpiSuspendedModules');
+    const kpiHidden = document.getElementById('kpiHiddenModules');
+    const kpiRoadmap = document.getElementById('kpiRoadmapModules');
+
+    if (kpiTotal) kpiTotal.textContent = allModules.length;
+    if (kpiActive) kpiActive.textContent = countActive;
+    if (kpiSusp) kpiSusp.textContent = countSuspended;
+    if (kpiHidden) kpiHidden.textContent = countHidden;
+    if (kpiRoadmap) kpiRoadmap.textContent = countRoadmap;
+
+    renderModules();
+  } catch (err) {
+    console.error('Erro loadModules:', err);
+  }
+}
+
+function renderModules() {
+  const tbody = document.getElementById('modulesTbody');
+  if (!tbody) return;
+
+  const searchInput = document.getElementById('searchModules');
+  const search = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+  let filtered = allModules;
+  if (search) {
+    filtered = filtered.filter(m =>
+      (m.name || '').toLowerCase().includes(search) ||
+      (m.short_name || '').toLowerCase().includes(search) ||
+      (m.id || '').toLowerCase().includes(search) ||
+      (m.section || '').toLowerCase().includes(search) ||
+      (m.route || '').toLowerCase().includes(search)
+    );
+  }
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink3);padding:24px">Nenhuma ferramenta encontrada com os filtros aplicados.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(m => {
+    const isCore = ['churn', 'fpd', 'churn-bl-total', 'churn-bl-pme', 'divulgacao', 'tv'].includes(m.id);
+    const withAccess = m.users_with_access || 0;
+    const totalUsers = m.total_regular_users || 0;
+    const pct = totalUsers > 0 ? Math.round((withAccess / totalUsers) * 100) : 0;
+
+    return `
+      <tr>
+        <td>
+          <div style="font-weight:700;color:var(--ink);font-size:13px">${escapeHtml(m.name)}</div>
+          <div style="font-size:11px;color:var(--ink3);display:flex;align-items:center;gap:6px;margin-top:2px">
+            <span>Sigla: <strong>${escapeHtml(m.short_name)}</strong></span>
+            <span>•</span>
+            <span>ID: <code>${escapeHtml(m.id)}</code></span>
+            <span>•</span>
+            <span>Rota: <code style="color:var(--blue)">${escapeHtml(m.route)}</code></span>
+          </div>
+          ${m.description ? `<div style="font-size:11px;color:var(--ink2);margin-top:3px;line-height:1.4">${escapeHtml(m.description)}</div>` : ''}
+        </td>
+        <td>
+          <span style="display:inline-block;padding:3px 8px;border-radius:3px;font-size:10.5px;font-weight:700;background:#f0f2f5;color:var(--ink2)">
+            ${escapeHtml(m.section)}
+          </span>
+        </td>
+        <td>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span class="badge-mod ${m.status}">${m.status}</span>
+            <select class="form-select" style="font-size:11px;padding:3px 6px;width:auto;font-weight:600" onchange="changeModuleStatus('${m.id}', this.value)">
+              <option value="ativo" ${m.status === 'ativo' ? 'selected' : ''}>Ativo</option>
+              <option value="em_andamento" ${m.status === 'em_andamento' ? 'selected' : ''}>Em Andamento</option>
+              <option value="suspenso" ${m.status === 'suspenso' ? 'selected' : ''}>Suspenso</option>
+              <option value="oculto" ${m.status === 'oculto' ? 'selected' : ''}>Oculto</option>
+            </select>
+          </div>
+        </td>
+        <td>
+          <div style="font-weight:700;color:var(--ink);font-size:12px">${withAccess} de ${totalUsers}</div>
+          <div style="font-size:10.5px;color:var(--ink3);margin-top:1px">${pct}% dos não-admins</div>
+        </td>
+        <td>
+          <div class="actions-cell">
+            <button class="btn-act approve" onclick="bulkModuleAccess('${m.id}', 'grant_all')" title="Concede acesso deste relatório para todos os colaboradores não-admins">
+              Autorizar Todos
+            </button>
+            <button class="btn-act danger" onclick="bulkModuleAccess('${m.id}', 'revoke_all')" title="Desmarca o acesso deste relatório de todos os colaboradores não-admins">
+              Desmarcar Todos
+            </button>
+            <button class="btn-act" onclick="openEditModuleModal('${m.id}')" title="Editar dados da ferramenta">
+              Editar
+            </button>
+            ${!isCore ? `
+              <button class="btn-act danger" onclick="deleteModule('${m.id}', '${escapeHtml(m.name)}')" title="Excluir ferramenta do catálogo">
+                Excluir
+              </button>
+            ` : ''}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// Alteração de status operacional de módulo via dropdown
+async function changeModuleStatus(modId, newStatus) {
+  try {
+    const mod = allModules.find(m => m.id === modId);
+    if (!mod) return;
+
+    const res = await fetch('/api/admin/modules', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: mod.id,
+        name: mod.name,
+        short_name: mod.short_name,
+        section: mod.section,
+        description: mod.description,
+        route: mod.route,
+        status: newStatus,
+        sort_order: mod.sort_order
+      })
+    });
+    if (res.ok) {
+      loadModules();
+    } else {
+      alert('Erro ao atualizar status do módulo.');
+      loadModules();
+    }
+  } catch (err) {
+    alert('Erro de conexão ao alterar status do módulo.');
+    loadModules();
+  }
+}
+
+// Ação em massa em um módulo específico (conceder ou desmarcar para todos os não-admins)
+async function bulkModuleAccess(modId, action) {
+  const mod = allModules.find(m => m.id === modId);
+  const modTitle = mod ? mod.name : modId;
+  const isGrant = action === 'grant_all';
+
+  const confirmMsg = isGrant
+    ? `Deseja realmente AUTORIZAR o acesso a "${modTitle}" para TODOS os colaboradores não-administradores?`
+    : `Deseja realmente DESMARCAR/REVOGAR o acesso a "${modTitle}" de TODOS os colaboradores não-administradores?`;
+
+  if (!confirm(confirmMsg)) return;
+
+  try {
+    const res = await fetch(`/api/admin/modules/${modId}/bulk-access`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert(`Permissões atualizadas com sucesso para ${data.affected || 0} colaboradores.`);
+      loadModules();
+      loadUsers();
+    } else {
+      alert(data.error || 'Erro ao processar permissões em massa.');
+    }
+  } catch (err) {
+    alert('Erro de conexão com o servidor.');
+  }
+}
+
+// Ação em massa mestra: Conceder ou Desmarcar TODOS os módulos para todos os não-admins
+async function bulkAllModulesAccess(action) {
+  const isGrant = action === 'grant_all';
+  const confirmMsg = isGrant
+    ? 'ATENÇÃO: Deseja realmente CONCEDER acesso a TODOS os relatórios e ferramentas ativos para TODOS os colaboradores não-administradores?'
+    : 'ATENÇÃO: Deseja realmente DESMARCAR / REVOGAR o acesso a TODOS os relatórios e ferramentas de TODOS os colaboradores não-administradores?';
+
+  if (!confirm(confirmMsg)) return;
+
+  try {
+    const res = await fetch('/api/admin/modules/bulk-access-all', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert(isGrant ? 'Todos os relatórios foram autorizados com sucesso para todos os colaboradores.' : 'Todos os relatórios foram desmarcados de todos os colaboradores com sucesso.');
+      loadModules();
+      loadUsers();
+    } else {
+      alert(data.error || 'Erro ao atualizar permissões em massa.');
+    }
+  } catch (err) {
+    alert('Erro de comunicação ao processar ação em massa.');
+  }
+}
+
+// Modal de Cadastrar / Editar Ferramenta
+function openEditModuleModal(modId) {
+  const isEdit = Boolean(modId);
+  document.getElementById('modalEditModuleTitle').textContent = isEdit ? 'Editar Ferramenta Corporativa' : 'Cadastrar Nova Ferramenta / Módulo';
+
+  const idIn = document.getElementById('modId');
+  const shortIn = document.getElementById('modShortName');
+  const nameIn = document.getElementById('modName');
+  const secIn = document.getElementById('modSection');
+  const statusIn = document.getElementById('modStatus');
+  const routeIn = document.getElementById('modRoute');
+  const sortIn = document.getElementById('modSortOrder');
+  const descIn = document.getElementById('modDesc');
+
+  if (isEdit) {
+    const mod = allModules.find(m => m.id === modId);
+    if (!mod) return;
+    idIn.value = mod.id;
+    idIn.disabled = true;
+    shortIn.value = mod.short_name || '';
+    nameIn.value = mod.name || '';
+    secIn.value = mod.section || 'Painéis Analíticos';
+    statusIn.value = mod.status || 'ativo';
+    routeIn.value = mod.route || '';
+    sortIn.value = mod.sort_order || 10;
+    descIn.value = mod.description || '';
+  } else {
+    idIn.value = '';
+    idIn.disabled = false;
+    shortIn.value = '';
+    nameIn.value = '';
+    secIn.value = 'Painéis Analíticos';
+    statusIn.value = 'ativo';
+    routeIn.value = '';
+    sortIn.value = 10;
+    descIn.value = '';
+  }
+
+  document.getElementById('modalEditModule').classList.add('on');
+}
+
+async function saveModule() {
+  const id = document.getElementById('modId').value.trim().toLowerCase();
+  const name = document.getElementById('modName').value.trim();
+  const short_name = document.getElementById('modShortName').value.trim();
+  const section = document.getElementById('modSection').value.trim();
+  const status = document.getElementById('modStatus').value;
+  const route = document.getElementById('modRoute').value.trim();
+  const sort_order = parseInt(document.getElementById('modSortOrder').value || '0', 10);
+  const description = document.getElementById('modDesc').value.trim();
+
+  if (!id || !name || !short_name || !section || !route) {
+    alert('Por favor, preencha todos os campos obrigatórios (ID, Nome, Sigla, Seção e Rota).');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/admin/modules', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, name, short_name, section, status, route, sort_order, description })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      document.getElementById('modalEditModule').classList.remove('on');
+      await loadModules();
+      loadUsers();
+    } else {
+      alert(data.error || 'Erro ao salvar ferramenta.');
+    }
+  } catch (err) {
+    alert('Erro de comunicação com o servidor.');
+  }
+}
+
+async function deleteModule(modId, modName) {
+  if (!confirm(`Deseja realmente EXCLUIR a ferramenta "${modName}" do catálogo?`)) return;
+  try {
+    const res = await fetch(`/api/admin/modules/${modId}`, { method: 'DELETE' });
+    if (res.ok) {
+      await loadModules();
+      loadUsers();
+    } else {
+      alert('Erro ao excluir ferramenta.');
+    }
+  } catch (err) {
+    alert('Erro de conexão ao excluir ferramenta.');
+  }
+}
+
+// Filtro em tempo real no catálogo de módulos
+const searchModulesInput = document.getElementById('searchModules');
+if (searchModulesInput) searchModulesInput.addEventListener('input', renderModules);
+
+// ==========================================
+// 6. EDIÇÃO DE CADASTRO DO COLABORADOR (ADMIN)
+// ==========================================
+let currentEditingUserId = null;
+
+function openEditUserModal(userId) {
+  const user = allUsers.find(u => u.id === userId);
+  if (!user) return;
+  currentEditingUserId = userId;
+
+  document.getElementById('editUserId').value = user.id;
+  document.getElementById('editUserNome').value = user.nome_completo || '';
+  document.getElementById('editUserLogin').value = user.login_claro || '';
+  document.getElementById('editUserEmail').value = user.email_claro || '';
+  document.getElementById('editUserTelefone').value = user.telefone || '';
+  document.getElementById('editUserArea').value = user.area || '';
+  document.getElementById('editUserFuncao').value = user.funcao || '';
+
+  // Renderiza campos dinâmicos adicionais
+  const dynamicContainer = document.getElementById('editUserDynamicFields');
+  let meta = {};
+  if (user.profile_metadata) {
+    try { meta = typeof user.profile_metadata === 'object' ? user.profile_metadata : JSON.parse(user.profile_metadata); } catch(e) { meta = {}; }
+  }
+
+  // Identifica campos obrigatórios que não são os padrões de coluna
+  const extraFields = allProfileFields.filter(f => f.key !== 'telefone');
+  if (extraFields.length === 0 && Object.keys(meta).length === 0) {
+    dynamicContainer.innerHTML = `<div style="font-size:11.5px;color:var(--ink3)">Nenhum parâmetro dinâmico adicional configurado.</div>`;
+  } else {
+    const keys = Array.from(new Set([...extraFields.map(f => f.key), ...Object.keys(meta)]));
+    dynamicContainer.innerHTML = keys.map(k => {
+      const fieldDef = allProfileFields.find(f => f.key === k);
+      const label = fieldDef ? fieldDef.label : k;
+      const type = fieldDef ? fieldDef.field_type : 'text';
+      const val = meta[k] || '';
+      return `
+        <div class="form-group" style="margin-bottom:8px">
+          <label class="form-label" style="font-size:10.5px">${escapeHtml(label)} (<code>${escapeHtml(k)}</code>)</label>
+          <input type="${type}" data-meta-key="${escapeHtml(k)}" class="form-input edit-dynamic-input" value="${escapeHtml(val)}">
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('modalEditUser').classList.add('on');
+}
+
+async function saveUserProfile() {
+  if (!currentEditingUserId) return;
+
+  const nome_completo = document.getElementById('editUserNome').value.trim();
+  const login_claro = document.getElementById('editUserLogin').value.trim();
+  const email_claro = document.getElementById('editUserEmail').value.trim();
+  const telefone = document.getElementById('editUserTelefone').value.trim();
+  const area = document.getElementById('editUserArea').value.trim();
+  const funcao = document.getElementById('editUserFuncao').value.trim();
+
+  if (!nome_completo || !login_claro || !email_claro) {
+    alert('Nome completo, login e e-mail corporativo são obrigatórios.');
+    return;
+  }
+
+  // Coleta campos dinâmicos adicionais
+  const metadata = {};
+  document.querySelectorAll('.edit-dynamic-input').forEach(inp => {
+    const k = inp.dataset.metaKey;
+    if (k) metadata[k] = inp.value.trim();
+  });
+
+  try {
+    const res = await fetch(`/api/admin/users/${currentEditingUserId}/profile`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nome_completo,
+        login_claro,
+        email_claro,
+        telefone,
+        area,
+        funcao,
+        profile_metadata: metadata
+      })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      document.getElementById('modalEditUser').classList.remove('on');
+      loadUsers();
+    } else {
+      alert(data.error || 'Erro ao salvar dados cadastrais do colaborador.');
+    }
+  } catch (err) {
+    alert('Erro de comunicação com o servidor.');
+  }
+}
+
+// ==========================================
+// 7. GESTÃO DE PARÂMETROS OBRIGATÓRIOS DE PERFIL
+// ==========================================
+async function loadProfileFields() {
+  try {
+    const res = await fetch('/api/admin/profile-fields');
+    if (!res.ok) return;
+    allProfileFields = await res.json();
+    renderProfileFields();
+  } catch (err) {
+    console.error('Erro loadProfileFields:', err);
+  }
+}
+
+function renderProfileFields() {
+  const tbody = document.getElementById('requiredFieldsTbody');
+  if (!tbody) return;
+
+  if (allProfileFields.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink3);padding:18px">Nenhum campo obrigatório configurado além do padrão inicial.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = allProfileFields.map(f => {
+    const isCore = f.key === 'telefone';
+    const isReq = Boolean(f.is_required);
+    return `
+      <tr>
+        <td>
+          <div style="font-weight:700;color:var(--ink)">${escapeHtml(f.label)}</div>
+          ${f.placeholder ? `<div style="font-size:10.5px;color:var(--ink3)">Ex: ${escapeHtml(f.placeholder)}</div>` : ''}
+        </td>
+        <td><code>${escapeHtml(f.key)}</code></td>
+        <td><span style="font-size:11px;color:var(--ink2)">${escapeHtml(f.field_type || 'text')}</span></td>
+        <td>
+          <span class="badge ${isReq ? 'aprovado' : 'colab'}">
+            ${isReq ? 'Obrigatório no Login' : 'Opcional'}
+          </span>
+        </td>
+        <td>
+          <div class="actions-cell">
+            ${!isCore ? `
+              <button class="btn-act danger" onclick="deleteProfileField('${f.key}', '${escapeHtml(f.label)}')">
+                Excluir
+              </button>
+            ` : '<span style="font-size:10.5px;color:var(--ink3);padding:4px">Campo Base Padrão</span>'}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function openAddProfileFieldModal() {
+  document.getElementById('fieldKey').value = '';
+  document.getElementById('fieldLabel').value = '';
+  document.getElementById('fieldType').value = 'text';
+  document.getElementById('fieldPlaceholder').value = '';
+  document.getElementById('fieldRequired').value = '1';
+  document.getElementById('fieldRegex').value = '';
+  document.getElementById('modalAddProfileField').classList.add('on');
+}
+
+async function saveProfileField() {
+  const key = document.getElementById('fieldKey').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+  const label = document.getElementById('fieldLabel').value.trim();
+  const field_type = document.getElementById('fieldType').value;
+  const placeholder = document.getElementById('fieldPlaceholder').value.trim();
+  const is_required = parseInt(document.getElementById('fieldRequired').value || '1', 10);
+  const validation_regex = document.getElementById('fieldRegex').value.trim();
+
+  if (!key || !label) {
+    alert('Chave e rótulo do campo são obrigatórios.');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/admin/profile-fields', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key, label, field_type, placeholder, is_required, validation_regex })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      document.getElementById('modalAddProfileField').classList.remove('on');
+      loadProfileFields();
+    } else {
+      alert(data.error || 'Erro ao cadastrar parâmetro obrigatório.');
+    }
+  } catch (err) {
+    alert('Erro de comunicação com o servidor.');
+  }
+}
+
+async function deleteProfileField(key, label) {
+  if (!confirm(`Deseja realmente remover o requisito cadastral "${label}"?`)) return;
+  try {
+    const res = await fetch(`/api/admin/profile-fields/${key}`, { method: 'DELETE' });
+    if (res.ok) {
+      loadProfileFields();
+    } else {
+      alert('Erro ao excluir requisito.');
+    }
+  } catch (err) {
+    alert('Erro de conexão com o servidor.');
+  }
+}
+
+// ==========================================
+// CENTRAL DE CARGA DE INSUMOS & UPLOADS
+// ==========================================
+let uploadsConfigData = null;
+let uploadDelegationsList = [];
+
+async function loadUploadsConfig() {
+  const grid = document.getElementById('uploadsGrid');
+  try {
+    const res = await fetch('/api/uploads/config');
+    if (res.status === 401 || res.status === 403) {
+      window.location.href = '/login/?redirect=/admin/';
+      return;
+    }
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erro ao consultar configuração de uploads.');
+    
+    uploadsConfigData = data;
+    
+    // Controle de visibilidade administrativa
+    const btnDelegations = document.getElementById('btnOpenDelegations');
+    if (btnDelegations) {
+      btnDelegations.style.display = data.is_admin ? 'inline-flex' : 'none';
+    }
+
+    if (!data.is_admin) {
+      // Usuário delegado: ajusta cabeçalho e esconde abas de admin puro
+      document.getElementById('userTag').textContent = `Conectado como Colaborador Delegado (${escapeHtml(data.user.nome)})`;
+      [tabUsersBtn, tabStatsBtn, tabLogsBtn, tabControlsBtn, tabModulesBtn].forEach(b => b.style.display = 'none');
+      const bcast = document.getElementById('btnOpenBroadcast');
+      if (bcast) bcast.style.display = 'none';
+    } else {
+      document.getElementById('userTag').textContent = `Conectado como Responsável pela Ferramenta (${escapeHtml(data.user.nome)})`;
+    }
+
+    renderUploadsGrid(data.inputs || []);
+  } catch (err) {
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--red)">
+        Falha ao carregar insumos: ${escapeHtml(err.message)}
+      </div>
+    `;
+  }
+}
+
+function renderUploadsGrid(inputs) {
+  const grid = document.getElementById('uploadsGrid');
+  if (!inputs.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--ink3);padding:24px">Nenhum insumo configurado no sistema.</div>';
+    return;
+  }
+
+  document.getElementById('totalUploadsCount').textContent = inputs.length;
+
+  grid.innerHTML = inputs.map(inp => {
+    const canUpload = Boolean(inp.can_upload);
+    const last = inp.last_upload;
+    const hasLast = Boolean(last && last.id);
+    const formatsList = Array.isArray(inp.accepted_formats)
+      ? inp.accepted_formats
+      : (Array.isArray(inp.formats) ? inp.formats : ['.xlsx', '.csv']);
+    const formatsStr = formatsList.join(', ');
+    const formatsAccept = formatsList.join(',');
+    const maxSize = inp.max_size_mb || 50;
+
+    return `
+      <div class="upload-card ${!canUpload ? 'disabled' : ''}" id="card_${inp.key}">
+        <div class="upload-card-hd">
+          <div>
+            <div class="upload-card-title">
+              <span>${escapeHtml(inp.name)}</span>
+            </div>
+            <div class="upload-card-desc">${escapeHtml(inp.description)}</div>
+          </div>
+          <div>
+            <span class="badge ${canUpload ? 'aprovado' : 'bloqueado'}" title="${canUpload ? 'Você possui permissão de carga' : 'Sem permissão delegada'}">
+              ${canUpload ? 'Autorizado' : 'Apenas Leitura'}
+            </span>
+          </div>
+        </div>
+
+        <div class="upload-card-bd">
+          <div class="upload-info-box">
+            <div class="upload-info-row">
+              <span class="upload-info-label">Painel Alimentado:</span>
+              <span class="upload-info-val"><code style="font-size:11px">${escapeHtml(inp.destination_module)}</code></span>
+            </div>
+            <div class="upload-info-row">
+              <span class="upload-info-label">Tabela D1:</span>
+              <span class="upload-info-val"><code style="font-size:11px">${escapeHtml(inp.target_table)}</code></span>
+            </div>
+            <div class="upload-info-row">
+              <span class="upload-info-label">Formatos Aceitos:</span>
+              <span class="upload-info-val">${escapeHtml(formatsStr)} (Máx ${maxSize}MB)</span>
+            </div>
+            <div class="upload-info-row" style="margin-top:6px;border-top:1px dashed var(--line2);padding-top:6px">
+              <span class="upload-info-label">Último Envio:</span>
+              <span class="upload-info-val" style="color:${hasLast ? 'var(--ink)' : 'var(--ink3)'}">
+                ${hasLast ? `${escapeHtml(last.filename)} (${formatBytes(last.filesize)})` : 'Nenhum envio registrado'}
+              </span>
+            </div>
+            ${hasLast ? `
+              <div class="upload-info-row">
+                <span class="upload-info-label">Responsável:</span>
+                <span class="upload-info-val" style="font-size:11px">${escapeHtml(last.uploader_name)} (${formatRelativeTime(last.created_at)})</span>
+              </div>
+            ` : ''}
+          </div>
+
+          ${canUpload ? `
+            <div class="upload-dropzone" id="dropzone_${inp.key}" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event, '${inp.key}', ${maxSize})">
+              <input type="file" accept="${formatsAccept}" onchange="handleFileSelect(event, '${inp.key}', ${maxSize})">
+              <div class="upload-drop-text">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;color:var(--blue)"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Clique para selecionar ou arraste o arquivo aqui
+              </div>
+              <div class="upload-drop-sub">Extensões permitidas: ${formatsStr} · Limite ${maxSize}MB</div>
+            </div>
+
+            <div class="upload-progress" id="progress_wrap_${inp.key}">
+              <div class="upload-progress-bar">
+                <div class="upload-progress-fill" id="progress_fill_${inp.key}"></div>
+              </div>
+              <div class="upload-progress-text">
+                <span id="progress_status_${inp.key}">Enviando…</span>
+                <span id="progress_pct_${inp.key}">0%</span>
+              </div>
+            </div>
+          ` : `
+            <div style="padding:12px;background:#f7f8fa;border:1px dashed var(--line);border-radius:4px;text-align:center;font-size:11.5px;color:var(--ink3)">
+              Você não possui permissão delegada para carregar este insumo. Solicite autorização formal ao administrador.
+            </div>
+          `}
+        </div>
+
+        <div class="upload-card-ft" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <div>
+            ${hasLast ? `
+              <a href="/api/uploads/download/${last.id}" class="btn-act" title="Baixar último arquivo enviado">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Baixar Atual
+              </a>
+            ` : '<span style="font-size:11px;color:var(--ink3)">Sem arquivo ativo</span>'}
+          </div>
+          <button class="btn-act" onclick="downloadBaseStructure('${inp.key}')" title="Baixar tabela/modelo com a estrutura de colunas oficial desta base" style="color:var(--blue);font-weight:600">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Baixar Estrutura
+          </button>
+          <button class="btn-act" onclick="openUploadHistory('${inp.key}', '${escapeHtml(inp.name)}')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+            Histórico
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function downloadBaseStructure(reportKey) {
+  if (!reportKey) return;
+  const link = document.createElement('a');
+  link.href = `/api/uploads/template/${encodeURIComponent(reportKey)}`;
+  link.download = `estrutura_base_${reportKey}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  e.currentTarget.classList.add('dragover');
+}
+
+function handleDragLeave(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  e.currentTarget.classList.remove('dragover');
+}
+
+function handleFileDrop(e, reportKey, maxMb) {
+  e.preventDefault();
+  e.stopPropagation();
+  e.currentTarget.classList.remove('dragover');
+  const files = e.dataTransfer.files;
+  if (files && files.length > 0) {
+    processUploadFile(reportKey, files[0], maxMb);
+  }
+}
+
+function handleFileSelect(e, reportKey, maxMb) {
+  const files = e.target.files;
+  if (files && files.length > 0) {
+    processUploadFile(reportKey, files[0], maxMb);
+  }
+  e.target.value = '';
+}
+
+function formatBytes(bytes) {
+  if (!bytes || bytes === 0) return '0 B';
+  const k = 1024;
+  const dm = 1;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+function readSliceAsBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result || '';
+      const commaIdx = dataUrl.indexOf(',');
+      resolve(commaIdx !== -1 ? dataUrl.slice(commaIdx + 1) : dataUrl);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function processUploadFile(reportKey, file, maxMb = 300) {
+  if (!file) return;
+
+  const fileSizeMb = file.size / (1024 * 1024);
+  if (fileSizeMb > maxMb) {
+    alert(`O arquivo selecionado (${fileSizeMb.toFixed(1)}MB) ultrapassa o limite máximo permitido de ${maxMb}MB.`);
+    return;
+  }
+
+  const pWrap = document.getElementById(`progress_wrap_${reportKey}`);
+  const pFill = document.getElementById(`progress_fill_${reportKey}`);
+  const pStatus = document.getElementById(`progress_status_${reportKey}`);
+  const pPct = document.getElementById(`progress_pct_${reportKey}`);
+
+  if (pWrap) pWrap.style.display = 'block';
+  if (pFill) {
+    pFill.style.background = 'linear-gradient(90deg,#2f7d5d,#3b9b73)';
+    pFill.style.width = '3%';
+  }
+  if (pStatus) pStatus.textContent = 'Iniciando transmissão otimizada…';
+  if (pPct) pPct.textContent = '3%';
+
+  try {
+    // Slicing nativo em blocos de 512KB para consumo mínimo de memória (<5MB)
+    const SLICE_SIZE = 512 * 1024;
+    const totalChunks = Math.max(1, Math.ceil(file.size / SLICE_SIZE));
+    const uploadId = crypto.randomUUID();
+
+    for (let chunkIdx = 0; chunkIdx < totalChunks; chunkIdx++) {
+      const start = chunkIdx * SLICE_SIZE;
+      const end = Math.min(start + SLICE_SIZE, file.size);
+      const sliceBlob = file.slice(start, end);
+      const chunkBase64 = await readSliceAsBase64(sliceBlob);
+
+      const pct = Math.round(((chunkIdx + 1) / totalChunks) * 100);
+      if (pFill) pFill.style.width = `${pct}%`;
+      if (pStatus) pStatus.textContent = `Enviando bloco ${chunkIdx + 1} de ${totalChunks} (${(end / (1024*1024)).toFixed(1)}MB / ${fileSizeMb.toFixed(1)}MB)…`;
+      if (pPct) pPct.textContent = `${pct}%`;
+
+      const payload = {
+        upload_id: uploadId,
+        report_key: reportKey,
+        filename: file.name,
+        filesize: file.size,
+        filetype: file.type || 'application/octet-stream',
+        chunk_index: chunkIdx,
+        total_chunks: totalChunks,
+        chunk_data: chunkBase64,
+        records_count: 0,
+        metadata: {
+          original_name: file.name,
+          client_uploaded_at: new Date().toISOString()
+        }
+      };
+
+      const res = await fetch('/api/uploads/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const resData = await res.json();
+      if (!res.ok) {
+        throw new Error(resData.error || 'Erro durante envio de dados ao servidor.');
+      }
+    }
+
+    if (pStatus) pStatus.textContent = 'Carga concluída com sucesso!';
+    setTimeout(() => {
+      if (pWrap) pWrap.style.display = 'none';
+      loadUploadsConfig();
+    }, 1200);
+
+  } catch (err) {
+    if (pStatus) pStatus.textContent = `Erro: ${err.message}`;
+    if (pFill) pFill.style.background = 'var(--red)';
+    alert(`Erro ao enviar insumo: ${err.message}`);
+  }
+}
+
+// Histórico de Envios
+async function openUploadHistory(reportKey, reportName) {
+  const modal = document.getElementById('modalUploadHistory');
+  const title = document.getElementById('modalUploadHistoryTitle');
+  const tbody = document.getElementById('uploadHistoryTbody');
+
+  title.textContent = `Histórico de Cargas: ${reportName}`;
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:20px">Consultando histórico…</td></tr>';
+  modal.classList.add('on');
+
+  try {
+    const res = await fetch(`/api/uploads/history?report=${encodeURIComponent(reportKey)}`);
+    const list = await res.json();
+    if (!res.ok) throw new Error(list.error || 'Erro ao consultar histórico.');
+
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:20px">Nenhum envio realizado para este relatório até o momento.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = list.map(item => `
+      <tr>
+        <td style="white-space:nowrap;font-size:11.5px">${formatRelativeTime(item.created_at)}</td>
+        <td><strong>${escapeHtml(item.filename)}</strong></td>
+        <td style="white-space:nowrap">${formatBytes(item.filesize)}</td>
+        <td style="font-size:11.5px">${escapeHtml(item.uploader_name)}</td>
+        <td><span class="badge ${item.status === 'completed' ? 'aprovado' : 'bloqueado'}">${escapeHtml(item.status)}</span></td>
+        <td style="text-align:right">
+          <a href="/api/uploads/download/${item.id}" class="btn-act" style="font-size:11px" download="${escapeHtml(item.filename)}">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download
+          </a>
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--red);padding:20px">Falha: ${escapeHtml(err.message)}</td></tr>`;
+  }
+}
+
+// Gestão de Delegações
+async function openUploadDelegations() {
+  const modal = document.getElementById('modalUploadDelegations');
+  modal.classList.add('on');
+  populateDelegationUserSelect();
+  loadUploadDelegations();
+}
+
+function populateDelegationUserSelect() {
+  const select = document.getElementById('delegationUserSelect');
+  if (!select) return;
+  if (!allUsers || !allUsers.length) {
+    select.innerHTML = '<option value="">Nenhum usuário carregado</option>';
+    return;
+  }
+  const approvedUsers = allUsers.filter(u => u.status === 'aprovado' && !u.is_admin);
+  select.innerHTML = '<option value="">Selecione um colaborador…</option>' + approvedUsers.map(u => `
+    <option value="${u.id}">${escapeHtml(u.nome_completo)} — ${escapeHtml(u.email_claro)} (${escapeHtml(u.funcao || u.area || 'Colaborador')})</option>
+  `).join('');
+}
+
+async function loadUploadDelegations() {
+  const tbody = document.getElementById('delegationsTbody');
+  try {
+    const res = await fetch('/api/uploads/delegations');
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erro ao listar delegações.');
+
+    uploadDelegationsList = data;
+    document.getElementById('delegationsCount').textContent = data.length;
+
+    if (!data.length) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--ink3);padding:16px">Nenhum colaborador delegado no momento. Apenas administradores podem enviar insumos.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = data.map(del => {
+      const scopeLabel = del.scope_type === 'ALL' ? 'Todos os Relatórios & Insumos' : del.scope_type;
+      return `
+        <tr>
+          <td>
+            <strong>${escapeHtml(del.delegated_user_name)}</strong>
+            <div style="font-size:11px;color:var(--ink2)">${escapeHtml(del.delegated_user_email)}</div>
+          </td>
+          <td><span class="badge ${del.scope_type === 'ALL' ? 'admin' : 'aprovado'}">${escapeHtml(scopeLabel)}</span></td>
+          <td style="font-size:11.5px;white-space:nowrap">${formatRelativeTime(del.created_at)}</td>
+          <td style="text-align:right">
+            <button class="btn-act danger" onclick="revokeDelegation('${del.id}', '${escapeHtml(del.delegated_user_name)}')">
+              Revogar
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--red);padding:16px">Erro: ${escapeHtml(err.message)}</td></tr>`;
+  }
+}
+
+async function createDelegation() {
+  const userSelect = document.getElementById('delegationUserSelect');
+  const scopeSelect = document.getElementById('delegationScopeSelect');
+
+  const userId = userSelect.value;
+  const scope = scopeSelect.value;
+
+  if (!userId) {
+    alert('Por favor, selecione um colaborador.');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/uploads/delegations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ delegated_user_id: userId, scope_type: scope })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      userSelect.value = '';
+      loadUploadDelegations();
+      loadUploadsConfig();
+    } else {
+      alert(data.error || 'Erro ao conceder delegação.');
+    }
+  } catch (err) {
+    alert('Falha na comunicação com o servidor.');
+  }
+}
+
+async function revokeDelegation(delId, userName) {
+  if (!confirm(`Deseja realmente revogar a delegação de upload de "${userName}"?`)) return;
+
+  try {
+    const res = await fetch(`/api/uploads/delegations/${delId}`, { method: 'DELETE' });
+    if (res.ok) {
+      loadUploadDelegations();
+      loadUploadsConfig();
+    } else {
+      alert('Erro ao revogar delegação.');
+    }
+  } catch (err) {
+    alert('Falha de conexão com o servidor.');
+  }
+}
+
+async function initAdminPanel() {
+  setDatePreset('30d');
+  try {
+    const res = await fetch('/api/uploads/config');
+    if (res.ok) {
+      const cfg = await res.json();
+      uploadsConfigData = cfg;
+      if (!cfg.is_admin) {
+        showTab('uploads');
+        return;
+      }
+    }
+  } catch (_) {}
+
+  // Fluxo normal para administradores plenos:
+  // Carrega catálogo de módulos canônicos primeiro, sincronizando todas as visões
+  await loadModules();
+  loadUsers();
+  loadSystemControls();
+  loadProfileFields();
+  loadUploadsConfig();
+}
+
+initAdminPanel();
+</script>
+
+<script src="/js/app-mobile.js"></script>
+</body>
+</html>

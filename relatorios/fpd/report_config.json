@@ -1,0 +1,8 @@
+{
+  "id": "fpd",
+  "titulo": "Panorama FPD",
+  "descricao": "Painel Analítico de FPD (Mapas Geoespaciais, Matriz de Safras, Esteira e Dimensões)",
+  "rota_pephub": "fpd",
+  "categoria": "Inadimplência",
+  "bot_enabled": true
+}

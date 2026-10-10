@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>TV Corporativa — Regional Norte | Pephub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Segoe+UI:wght@400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #000000;
+  --panel: #11161d;
+  --cyan: #00e5ff;
+  --accent: #f9b233;
+  --red: #c0191f;
+  --ink: #f0f3f6;
+  --ink2: #8b949e;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: "Segoe UI", -apple-system, Roboto, sans-serif;
+  color: var(--ink);
+  user-select: none;
+}
+
+/* Container Principal Widescreen 16:9 */
+.tv-screen {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  overflow: hidden;
+}
+
+/* Contêiner de Mídias (Zero Alocação Dinâmica para Hardware TV / Firestick) */
+.media-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+.media-item {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+  transform: translateZ(0);
+}
+
+/* Cronômetro Digital Radial Futurista (Otimizado sem filtros pesados de GPU) */
+.tv-radial-timer {
+  position: fixed;
+  top: 20px;
+  right: 22px;
+  z-index: 100;
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 12, 18, 0.90);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+  transition: opacity 0.3s ease;
+  transform: translateZ(0);
+}
+
+.tv-radial-timer svg.gauge-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 54px;
+  height: 54px;
+  transform: rotate(-90deg);
+}
+
+.gauge-tick {
+  stroke: rgba(255, 255, 255, 0.18);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+.gauge-tick.active {
+  stroke: #ffffff;
+}
+
+.gauge-tick.urgent {
+  stroke: #ff334b;
+}
+
+.tv-timer-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.tv-timer-digits {
+  font-family: 'Orbitron', 'Share Tech Mono', Consolas, monospace;
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+  letter-spacing: -0.3px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  transition: color 0.2s ease;
+}
+
+.tv-timer-digits.urgent {
+  color: #ff334b;
+  text-shadow: 0 1px 4px rgba(255, 51, 75, 0.6);
+}
+
+/* Rodapé Translúcido Ultramoderno (Sem backdrop-blur para alívio total da GPU no Firestick) */
+.tv-footer {
+  position: fixed;
+  bottom: 22px;
+  left: 28px;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(8, 12, 18, 0.90);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 8px 18px 8px 12px;
+  border-radius: 40px;
+  max-width: calc(100vw - 56px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
+  transition: opacity 0.4s ease;
+  transform: translateZ(0);
+}
+
+/* Pílula de Hora e Data Resumida (dd/mm) */
+.tv-time-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 4px 12px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+.tv-time-pill .clock-txt {
+  font-family: 'Share Tech Mono', Consolas, monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+}
+
+.tv-time-pill .sep {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 11px;
+}
+
+.tv-time-pill .date-txt {
+  font-family: 'Segoe UI', -apple-system, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.2px;
+}
+
+.tv-media-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.tv-progress-dots {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.tv-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  transition: all 0.3s ease;
+}
+.tv-dot.active {
+  width: 18px;
+  border-radius: 6px;
+  background: var(--accent);
+}
+
+/* Tela de Espera / Standby */
+.tv-standby {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+  z-index: 10;
+  height: 100vh;
+}
+.tv-standby.active {
+  display: flex;
+}
+
+.tv-standby-logo {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #8a0f18, #c0191f 40%, #e23a1e 80%, #f9b233);
+  box-shadow: 0 12px 40px rgba(192, 25, 31, 0.4);
+}
+
+.tv-standby h1 {
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+.tv-standby h1 span {
+  color: var(--accent);
+  font-weight: 300;
+}
+.tv-standby p {
+  color: var(--ink2);
+  font-size: 16px;
+  max-width: 580px;
+  line-height: 1.6;
+}
+
+/* Botões de Controle Flutuante (Ocultados por padrão) */
+.tv-controls {
+  position: fixed;
+  bottom: 22px;
+  right: 28px;
+  z-index: 100;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+body:hover .tv-controls {
+  opacity: 1;
+}
+
+.tv-ctrl-btn {
+  background: rgba(8, 12, 18, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.tv-ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.08);
+}
+</style>
+</head>
+<body>
+
+<div class="tv-screen" id="tvScreen">
+
+  <!-- Contador Digital Radial Futurista (54px Branco) -->
+  <div class="tv-radial-timer" id="timerRing">
+    <svg class="gauge-svg" id="gaugeSvg" viewBox="0 0 100 100">
+      <!-- Ticks gerados estaticamente via JS na inicialização -->
+    </svg>
+    <div class="tv-timer-center">
+      <div class="tv-timer-digits" id="timerSeconds">10</div>
+    </div>
+  </div>
+
+  <!-- Contêiner de Mídias com Elementos Fixos Estáticos (Zero Memory Leak no Silk/Firestick) -->
+  <div class="media-container" id="mediaContainer">
+    <img id="staticImg" class="media-item" alt="TV Corporativa" style="display:none;">
+    <video id="staticVideo" class="media-item" muted playsinline webkit-playsinline preload="auto" style="display:none;"></video>
+  </div>
+
+  <!-- Rodapé Translúcido com Hora, Data dd/mm e Título da Mídia -->
+  <div class="tv-footer" id="tvFooter" style="display:none">
+    <div class="tv-time-pill">
+      <span class="clock-txt" id="footerClock">00:00:00</span>
+      <span class="sep">·</span>
+      <span class="date-txt" id="footerDate">00/00</span>
+    </div>
+    <div class="tv-media-title" id="footerTitle">Título da Divulgação</div>
+    <div class="tv-progress-dots" id="footerDots"></div>
+  </div>
+
+  <!-- Standby Screen (Quando não há itens veiculando) -->
+  <div class="tv-standby active" id="standbyScreen">
+    <div class="tv-standby-logo">
+      <svg viewBox="0 0 48 48" width="52" height="52" aria-hidden="true">
+        <circle cx="24" cy="24" r="21" fill="none" stroke="#fff" stroke-width="2.6"/>
+        <path d="M31.5 16.5 L26.5 26.5 L16.5 31.5 L21.5 21.5 Z" fill="#fff"/>
+      </svg>
+    </div>
+    <h1>Pephub <span>TV Corporativa</span></h1>
+    <p>Aguardando novas divulgações aprovadas para veiculação nas telas corporativas da Regional Norte.</p>
+    <div style="margin-top:24px;font-family:Consolas,monospace;font-size:13px;color:var(--accent);letter-spacing:1px">
+      SISTEMA EM OPERAÇÃO · REPRODUÇÃO CONTÍNUA
+    </div>
+  </div>
+
+  <!-- Controles Flutuantes -->
+  <div class="tv-controls">
+    <button class="tv-ctrl-btn" id="btnPrev" title="Mídia Anterior">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="tv-ctrl-btn" id="btnPause" title="Pausar / Retomar">
+      <svg id="iconPause" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+    </button>
+    <button class="tv-ctrl-btn" id="btnNext" title="Próxima Mídia">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <button class="tv-ctrl-btn" id="btnFullscreen" title="Tela Cheia (F11)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+    </button>
+  </div>
+
+</div>
+
+<script>
+// Constantes do Mostrador Radial
+const TOTAL_TICKS = 48;
+const CX = 50, CY = 50, R1 = 37, R2 = 46;
+
+// Estado Geral da Playlist
+let playlist = [];
+let currentIndex = 0;
+let defaultImageDuration = 10;
+let timerInterval = null;
+let currentRemainingMs = 0;
+let currentTotalDurationMs = 10000;
+let isPaused = false;
+let videoSafetyTimer = null;
+const pageStartTime = Date.now();
+
+// Elementos DOM Estáticos e Fixos
+const staticImg = document.getElementById('staticImg');
+const staticVideo = document.getElementById('staticVideo');
+const timerRing = document.getElementById('timerRing');
+const gaugeSvg = document.getElementById('gaugeSvg');
+const timerSeconds = document.getElementById('timerSeconds');
+const standbyScreen = document.getElementById('standbyScreen');
+const tvFooter = document.getElementById('tvFooter');
+const footerClock = document.getElementById('footerClock');
+const footerDate = document.getElementById('footerDate');
+const footerTitle = document.getElementById('footerTitle');
+const footerDots = document.getElementById('footerDots');
+const btnPause = document.getElementById('btnPause');
+
+// Construção Estática dos Nós SVG (Feita UMA VEZ na carga inicial)
+let cachedTicks = [];
+function buildGaugeTicks() {
+  gaugeSvg.innerHTML = '';
+  cachedTicks = [];
+  for (let i = 0; i < TOTAL_TICKS; i++) {
+    const angleRad = (i / TOTAL_TICKS) * (2 * Math.PI);
+    const x1 = CX + R1 * Math.cos(angleRad);
+    const y1 = CY + R1 * Math.sin(angleRad);
+    const x2 = CX + R2 * Math.cos(angleRad);
+    const y2 = CY + R2 * Math.sin(angleRad);
+
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1.toFixed(2));
+    line.setAttribute('y1', y1.toFixed(2));
+    line.setAttribute('x2', x2.toFixed(2));
+    line.setAttribute('y2', y2.toFixed(2));
+    line.setAttribute('class', 'gauge-tick active');
+    gaugeSvg.appendChild(line);
+    cachedTicks.push(line);
+  }
+}
+buildGaugeTicks();
+
+// Configuração dos Event Listeners do Elemento Vídeo Fixo
+staticVideo.addEventListener('ended', () => {
+  if (videoSafetyTimer) clearTimeout(videoSafetyTimer);
+  nextMedia();
+});
+
+staticVideo.addEventListener('error', (e) => {
+  console.warn('Alerta na reprodução do vídeo corporativo:', staticVideo.error);
+  if (videoSafetyTimer) clearTimeout(videoSafetyTimer);
+  setTimeout(nextMedia, 3000);
+});
+
+// Atualização do Relógio e Data resumida (dd/mm)
+function updateClockAndDate() {
+  const now = new Date();
+  footerClock.textContent = now.toLocaleTimeString('pt-BR');
+  
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  footerDate.textContent = `${day}/${month}`;
+}
+setInterval(updateClockAndDate, 1000);
+updateClockAndDate();
+
+// Buscar Playlist Ativa da TV via API
+async function fetchPlaylist() {
+  try {
+    const res = await fetch('/api/tv/playlist');
+    if (!res.ok) throw new Error('Falha ao obter playlist');
+    const data = await res.json();
+    
+    if (data.config && data.config.image_duration) {
+      defaultImageDuration = parseInt(data.config.image_duration, 10) || 10;
+    }
+
+    const newItems = data.items || [];
+    const hadItems = playlist.length > 0;
+    playlist = newItems;
+
+    if (playlist.length === 0) {
+      standbyScreen.classList.add('active');
+      timerRing.style.opacity = '0';
+      tvFooter.style.display = 'none';
+      staticImg.style.display = 'none';
+      staticVideo.pause();
+      staticVideo.removeAttribute('src');
+      staticVideo.load();
+      staticVideo.style.display = 'none';
+      if (timerInterval) clearInterval(timerInterval);
+    } else {
+      standbyScreen.classList.remove('active');
+      timerRing.style.opacity = '1';
+      tvFooter.style.display = 'flex';
+      renderDots();
+      if (!hadItems) {
+        currentIndex = 0;
+        showCurrentMedia();
+      }
+    }
+  } catch (err) {
+    console.warn('Erro ao atualizar playlist:', err);
+  }
+}
+
+// Renderiza pontos de progresso no rodapé
+function renderDots() {
+  footerDots.innerHTML = playlist.map((_, i) => `
+    <div class="tv-dot ${i === currentIndex ? 'active' : ''}"></div>
+  `).join('');
+}
+
+// Exibir Mídia Atual (Arquitetura 100% Estática - Sem Criação Dinâmica de Nós)
+function showCurrentMedia() {
+  if (playlist.length === 0) return;
+  if (timerInterval) clearInterval(timerInterval);
+  if (videoSafetyTimer) clearTimeout(videoSafetyTimer);
+
+  const item = playlist[currentIndex];
+  renderDots();
+
+  // Atualiza Rodapé (Título da Mídia)
+  footerTitle.textContent = item.titulo || 'Comunicado Oficial';
+
+  if (item.tipo_midia === 'video') {
+    // 1. Desativa e esconde a imagem fixa
+    staticImg.style.display = 'none';
+    staticImg.removeAttribute('src');
+
+    // 2. Prepara e exibe o elemento de vídeo fixo
+    staticVideo.style.display = 'block';
+    staticVideo.src = item.media_url;
+    staticVideo.currentTime = 0;
+
+    const playPromise = staticVideo.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        staticVideo.muted = true;
+        staticVideo.volume = 0;
+        staticVideo.play().catch(() => {});
+      });
+    }
+
+    // Configuração do Contador Radial
+    const durSec = item.duracao_segundos || 30;
+    startRadialCountdown(durSec * 1000, () => {
+      if (videoSafetyTimer) clearTimeout(videoSafetyTimer);
+      nextMedia();
+    }, staticVideo);
+
+    // Watchdog de segurança para garantir fluidez contínua mesmo se houver soluço de rede
+    videoSafetyTimer = setTimeout(() => {
+      nextMedia();
+    }, (durSec + 6) * 1000);
+
+  } else {
+    // 1. Libera o hardware decoder do Android MediaCodec imediatamente
+    staticVideo.pause();
+    staticVideo.removeAttribute('src');
+    staticVideo.load();
+    staticVideo.style.display = 'none';
+
+    // 2. Configura e exibe a imagem fixa diretamente
+    staticImg.style.display = 'block';
+    staticImg.src = item.media_url;
+
+    const durationSec = item.duracao_segundos || defaultImageDuration;
+    startRadialCountdown(durationSec * 1000, () => {
+      nextMedia();
+    });
+  }
+}
+
+// Contador Radial Futurista com Atualização Condicional (Economia de CPU/GPU na TV)
+function startRadialCountdown(totalMs, onComplete, videoRef = null) {
+  if (timerInterval) clearInterval(timerInterval);
+  currentTotalDurationMs = totalMs;
+  currentRemainingMs = totalMs;
+
+  let lastActiveTicks = -1;
+  let lastUrgentState = null;
+  let lastDigitsText = '';
+
+  const updateDisplay = () => {
+    let remSeconds;
+    let ratioRemaining;
+
+    if (videoRef && !isNaN(videoRef.duration) && videoRef.duration > 0) {
+      remSeconds = Math.max(0, Math.ceil(videoRef.duration - videoRef.currentTime));
+      ratioRemaining = Math.max(0, (videoRef.duration - videoRef.currentTime) / videoRef.duration);
+    } else {
+      remSeconds = Math.max(0, Math.ceil(currentRemainingMs / 1000));
+      ratioRemaining = Math.max(0, currentRemainingMs / currentTotalDurationMs);
+    }
+
+    // Atualiza dígitos apenas se o segundo mudar
+    const secStr = remSeconds < 10 ? `0${remSeconds}` : String(remSeconds);
+    if (secStr !== lastDigitsText) {
+      lastDigitsText = secStr;
+      timerSeconds.textContent = secStr;
+
+      const isUrgent = remSeconds <= 3;
+      if (isUrgent !== lastUrgentState) {
+        lastUrgentState = isUrgent;
+        timerSeconds.classList.toggle('urgent', isUrgent);
+      }
+
+      // Atualiza marcas SVG apenas se os ticks ou estado urgente mudarem
+      const activeTicksCount = Math.round(ratioRemaining * TOTAL_TICKS);
+      if (activeTicksCount !== lastActiveTicks) {
+        lastActiveTicks = activeTicksCount;
+        const targetClassActive = isUrgent ? 'gauge-tick urgent' : 'gauge-tick active';
+        for (let i = 0; i < TOTAL_TICKS; i++) {
+          const tick = cachedTicks[i];
+          if (!tick) continue;
+          const targetCls = i < activeTicksCount ? targetClassActive : 'gauge-tick';
+          if (tick.getAttribute('class') !== targetCls) {
+            tick.setAttribute('class', targetCls);
+          }
+        }
+      }
+    }
+  };
+
+  updateDisplay();
+
+  const TICK_MS = 500; // 2 vezes por segundo (otimizado para processadores ARM de TV)
+  let videoStartedTracking = false;
+
+  timerInterval = setInterval(() => {
+    if (isPaused) return;
+
+    if (videoRef) {
+      updateDisplay();
+      if (videoRef.currentTime > 0.1) {
+        videoStartedTracking = true;
+      }
+
+      if (videoStartedTracking && (videoRef.ended || (videoRef.duration > 0 && videoRef.currentTime >= videoRef.duration - 0.2))) {
+        clearInterval(timerInterval);
+        onComplete();
+        return;
+      }
+    } else {
+      currentRemainingMs -= TICK_MS;
+      updateDisplay();
+      if (currentRemainingMs <= 0) {
+        clearInterval(timerInterval);
+        onComplete();
+      }
+    }
+  }, TICK_MS);
+}
+
+// Avançar e Retroceder Mídia com Recarga Preventiva de Longo Prazo
+function nextMedia() {
+  if (playlist.length === 0) return;
+  currentIndex = (currentIndex + 1) % playlist.length;
+
+  // Auto-renovação limpa a cada 4 horas no retorno ao item inicial da grade
+  const hoursAlive = (Date.now() - pageStartTime) / 3600000;
+  if (currentIndex === 0 && hoursAlive >= 4) {
+    location.reload();
+    return;
+  }
+
+  showCurrentMedia();
+}
+
+function prevMedia() {
+  if (playlist.length === 0) return;
+  currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+  showCurrentMedia();
+}
+
+// Pausa / Retomada
+btnPause.addEventListener('click', () => {
+  isPaused = !isPaused;
+  btnPause.innerHTML = isPaused 
+    ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>' 
+    : '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+  if (staticVideo && staticVideo.style.display !== 'none') {
+    if (isPaused) staticVideo.pause();
+    else staticVideo.play().catch(()=>{});
+  }
+});
+
+document.getElementById('btnNext').addEventListener('click', nextMedia);
+document.getElementById('btnPrev').addEventListener('click', prevMedia);
+
+// Tela Cheia (F11 ou botão)
+document.getElementById('btnFullscreen').addEventListener('click', () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen().catch(() => {});
+  }
+});
+
+// Atalhos de teclado para TVs/Firestick com controle remoto ou teclado
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') nextMedia();
+  else if (e.key === 'ArrowLeft') prevMedia();
+  else if (e.key === 'p' || e.key === 'P') btnPause.click();
+  else if (e.key === 'f' || e.key === 'F') document.getElementById('btnFullscreen').click();
+});
+
+// Inicialização: Carrega playlist e agenda sincronização a cada 60s
+fetchPlaylist();
+setInterval(fetchPlaylist, 60000);
+</script>
+
+</body>
+</html>

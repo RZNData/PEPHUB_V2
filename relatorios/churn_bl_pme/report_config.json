@@ -1,0 +1,8 @@
+{
+  "id": "churn_bl_pme",
+  "titulo": "Painel de Churn Banda Larga PME",
+  "descricao": "Acompanhamento de Churn Horizontal BL PME",
+  "rota_pephub": "churn-bl-pme",
+  "categoria": "Churn",
+  "bot_enabled": true
+}

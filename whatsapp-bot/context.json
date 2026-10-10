@@ -1,0 +1,40 @@
+{
+  "updated_at": "2026-10-03T01:00:00Z",
+  "regional": "Regional Norte (Claro Brasil)",
+  "modulos": {
+    "churn": {
+      "safra_foco": "mai/26",
+      "status": "madura",
+      "desconexoes_total": 348866,
+      "taxa_media": "12.4%",
+      "janela_dias": 120,
+      "segmentos": ["Residencial", "PME", "Total"]
+    },
+    "fpd": {
+      "safra_foco": "mai/26",
+      "instalacoes_totais": 53972,
+      "taxa_fpd60_oficial": "25.90%",
+      "taxa_fpd30_prorata": "58.25%",
+      "taxa_cura_30d": "55.50%",
+      "taxa_100_em_dia": "41.74%",
+      "nunca_pagou_volume": 13979,
+      "risco": {
+        "baixissimo": "6.4%",
+        "baixo": "8.9%",
+        "medio": "17.0%",
+        "alto": "30.1%",
+        "altissimo": "45.0%"
+      }
+    },
+    "bl_total": {
+      "segmento": "Banda Larga Residencial",
+      "instalacoes": 44794,
+      "taxa_fpd60": "23.61%"
+    },
+    "bl_pme": {
+      "segmento": "PME",
+      "instalacoes": 4346,
+      "taxa_fpd60": "27.01%"
+    }
+  }
+}

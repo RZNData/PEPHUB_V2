@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PEP HUB Deep Dive — Podcast dos Manuais do Sistema</title>
+  <style>
+    :root {
+      --bg-dark: #0f1117;
+      --card-bg: rgba(26, 31, 46, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent-red: #e02424;
+      --accent-red-hover: #c81e1e;
+      --accent-purple: #7e3af2;
+      --accent-cyan: #06b6d4;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-stack);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 120px;
+      overflow-y: scroll;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 860px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Header & Badge */
+    .header-card {
+      background: linear-gradient(135deg, rgba(224, 36, 36, 0.15), rgba(126, 58, 242, 0.15));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 32px 28px;
+      backdrop-filter: blur(12px);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .badge-notebook {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #cbd5e1;
+      margin-bottom: 14px;
+    }
+
+    .header-card h1 {
+      font-size: 2.1rem;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 10px;
+      background: linear-gradient(90deg, #ffffff, #fca5a5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-card p {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 650px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    /* Hosts bar */
+    .hosts-bar {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .host-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 40px;
+      padding: 6px 16px;
+    }
+
+    .host-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      background: #374151;
+    }
+
+    .host-avatar.carol {
+      background: linear-gradient(135deg, #ec4899, #f43f5e);
+    }
+
+    .host-avatar.lucas {
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    }
+
+    .host-info {
+      text-align: left;
+    }
+
+    .host-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .host-role {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Main Floating Player Dock */
+    .player-dock {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 860px;
+      background: rgba(18, 22, 34, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 16px 24px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(16px);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .dock-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .dock-controls {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #fff;
+    }
+
+    .btn-play {
+      width: 52px;
+      height: 52px;
+      background: var(--accent-red);
+      font-size: 1.4rem;
+      box-shadow: 0 4px 14px rgba(224, 36, 36, 0.4);
+    }
+
+    .btn-play:hover {
+      background: var(--accent-red-hover);
+      transform: scale(1.05);
+    }
+
+    .btn-skip {
+      background: rgba(255, 255, 255, 0.08);
+      font-size: 0.95rem;
+    }
+
+    .btn-skip:hover {
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    .dock-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .equalizer {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 20px;
+    }
+
+    .eq-bar {
+      width: 3px;
+      background: var(--accent-red);
+      border-radius: 2px;
+      height: 4px;
+      transition: height 0.15s ease;
+    }
+
+    .equalizer.playing .eq-bar:nth-child(1) { animation: eq 0.6s infinite ease-in-out; }
+    .equalizer.playing .eq-bar:nth-child(2) { animation: eq 0.4s infinite 0.1s ease-in-out; }
+    .equalizer.playing .eq-bar:nth-child(3) { animation: eq 0.8s infinite 0.2s ease-in-out; }
+    .equalizer.playing .eq-bar:nth-child(4) { animation: eq 0.5s infinite 0.3s ease-in-out; }
+
+    @keyframes eq {
+      0%, 100% { height: 4px; }
+      50% { height: 18px; }
+    }
+
+    .track-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .track-status {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .dock-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .speed-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: #cbd5e1;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .speed-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .btn-download {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: #cbd5e1;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-download:hover {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+    }
+
+    /* Progress bar */
+    .dock-progress {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .time-label {
+      font-size: 0.78rem;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-muted);
+      min-width: 44px;
+    }
+
+    .seek-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .seek-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent-red);
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(224, 36, 36, 0.8);
+    }
+
+    /* Transcript Section */
+    .transcript-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      padding: 0 8px;
+    }
+
+    .transcript-header h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hint-click {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .transcript-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .dialogue-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      gap: 16px;
+      position: relative;
+    }
+
+    .dialogue-card:hover {
+      background: rgba(38, 45, 66, 0.8);
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-2px);
+    }
+
+    .dialogue-card.active {
+      background: rgba(224, 36, 36, 0.12);
+      border-color: rgba(224, 36, 36, 0.5);
+      box-shadow: 0 0 20px rgba(224, 36, 36, 0.15);
+    }
+
+    .dialogue-card.active::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 16px;
+      bottom: 16px;
+      width: 4px;
+      border-radius: 0 4px 4px 0;
+      background: var(--accent-red);
+    }
+
+    .card-avatar-wrap {
+      flex-shrink: 0;
+    }
+
+    .card-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-speaker {
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .card-speaker.carol { color: #f43f5e; }
+    .card-speaker.lucas { color: #38bdf8; }
+
+    .card-time {
+      font-size: 0.76rem;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .card-text {
+      font-size: 0.98rem;
+      line-height: 1.55;
+      color: #e5e7eb;
+    }
+
+    /* Return button */
+    .top-nav {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .btn-back {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.2s ease;
+    }
+
+    .btn-back:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    @media (max-width: 640px) {
+      .header-card h1 { font-size: 1.6rem; }
+      .dock-actions .speed-btn { display: none; }
+      .dialogue-card { padding: 14px; gap: 12px; }
+      .btn-play { width: 46px; height: 46px; font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="top-nav">
+      <a href="/" class="btn-back">← Voltar ao PEP HUB</a>
+      <span style="font-size: 0.8rem; color: #9ca3af;">Regional Norte da Claro</span>
+    </div>
+
+    <!-- Header Card -->
+    <div class="header-card">
+      <div class="badge-notebook">✨ Google NotebookLM Style • Audio Overview</div>
+      <h1>PEP HUB Deep Dive</h1>
+      <p>Um bate-papo descontraído e completo entre a Carol e o Lucas explicando tudo o que mudou no sistema de ontem até hoje, por que mudou e o que vem pela frente.</p>
+
+      <div class="hosts-bar">
+        <div class="host-pill">
+          <div class="host-avatar carol">👩‍💼</div>
+          <div class="host-info">
+            <div class="host-name">Carol</div>
+            <div class="host-role">Host / Inovação & Negócios</div>
+          </div>
+        </div>
+        <div class="host-pill">
+          <div class="host-avatar lucas">👨‍💻</div>
+          <div class="host-info">
+            <div class="host-name">Lucas</div>
+            <div class="host-role">Host / Arquiteto de Software</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transcript Section -->
+    <div class="transcript-header">
+      <h2>📝 Roteiro Sincronizado do Podcast</h2>
+      <span class="hint-click">💡 Clique em qualquer fala para pular direto no áudio</span>
+    </div>
+
+    <div class="transcript-list" id="transcriptList">
+      <!-- Inserido dinamicamente via JS -->
+    </div>
+  </div>
+
+  <!-- Audio Element -->
+  <audio id="audioElement" preload="metadata">
+    <source src="/podcast/pephub_deepdive_podcast.mp3" type="audio/mpeg">
+    <source src="pephub_podcast.mp3" type="audio/mpeg">
+    Seu navegador não suporta áudio HTML5.
+  </audio>
+
+  <!-- Player Dock -->
+  <div class="player-dock">
+    <div class="dock-top">
+      <div class="dock-controls">
+        <button class="btn-circle btn-skip" id="btnRewind" title="Voltar 10s">↺ 10s</button>
+        <button class="btn-circle btn-play" id="btnPlayPause" title="Tocar / Pausar">▶</button>
+        <button class="btn-circle btn-skip" id="btnForward" title="Avançar 10s">↻ 10s</button>
+      </div>
+
+      <div class="dock-info">
+        <div class="equalizer" id="equalizer">
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+          <div class="eq-bar"></div>
+        </div>
+        <div>
+          <div class="track-title" id="trackTitle">Episódio Especial: A Grande Reforma do PEP HUB</div>
+          <div class="track-status" id="trackStatus">Clique no play para ouvir</div>
+        </div>
+      </div>
+
+      <div class="dock-actions">
+        <button class="speed-btn" id="btnSpeed" title="Velocidade de reprodução">1.0x</button>
+        <a href="/podcast/pephub_deepdive_podcast.mp3" download="pephub_podcast.mp3" class="btn-download" title="Baixar MP3">
+          ⬇ MP3
+        </a>
+      </div>
+    </div>
+
+    <div class="dock-progress">
+      <span class="time-label" id="currentTime">00:00</span>
+      <input type="range" class="seek-slider" id="seekSlider" value="0" min="0" max="100" step="0.1">
+      <span class="time-label" id="duration">--:--</span>
+    </div>
+  </div>
+
+  <script>
+    const audio = document.getElementById('audioElement');
+    const btnPlayPause = document.getElementById('btnPlayPause');
+    const btnRewind = document.getElementById('btnRewind');
+    const btnForward = document.getElementById('btnForward');
+    const btnSpeed = document.getElementById('btnSpeed');
+    const seekSlider = document.getElementById('seekSlider');
+    const currentTimeEl = document.getElementById('currentTime');
+    const durationEl = document.getElementById('duration');
+    const equalizer = document.getElementById('equalizer');
+    const trackStatus = document.getElementById('trackStatus');
+    const transcriptList = document.getElementById('transcriptList');
+
+    let transcriptData = [];
+    let speeds = [1.0, 1.25, 1.5, 0.8];
+    let speedIndex = 0;
+
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return "00:00";
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    // Carregar JSON da transcrição
+    transcriptData = [{"id": 0, "speaker": "Carol", "start": 0.0, "end": 19.8, "text": "Olá pessoal! Sejam muito bem-vindos ao Deep Dive do PEP HUB! Sabe aquela funcionalidade incrível do Google NotebookLM que transforma relatórios e manuais técnicos num bate-papo de podcast super gostoso de ouvir? Pois é, hoje a gente fez exatamente isso aqui para o PEP HUB da Regional Norte da Claro!"}, {"id": 1, "speaker": "Lucas", "start": 19.8, "end": 42.5, "text": "É isso aí, Carol! E hoje a gente tem uma história fascinante de engenharia para contar. De ontem para hoje, o PEP HUB passou por uma transformação completa. Pegamos um sistema que já era muito bom, mas que estava ficando pesado e complexo, e transformamos numa verdadeira Ferrari: ultraveloz, organizada e blindada com nota máxima de segurança!"}, {"id": 2, "speaker": "Carol", "start": 42.5, "end": 52.0, "text": "Demais, Lucas! Mas antes de falar dos códigos, explica para o nosso ouvinte: o que é o PEP HUB na prática? O que ele faz no dia a dia da Claro?"}, {"id": 3, "speaker": "Lucas", "start": 52.0, "end": 82.2, "text": "Imagina que a Regional Norte é um castelo gigantesco que cuida de cidades como Manaus, Belém, Porto Velho, Macapá, Rio Branco e Santarém. Milhares de pessoas assinam internet e televisão todos os dias. O PEP HUB é como o mapa mágico desse castelo! Ele mostra aos coordenadores e diretores quem está navegando feliz, quem pagou a primeira fatura certinho, e quem por algum motivo está pensando em cancelar, para a equipe poder ajudar antes que isso aconteça."}, {"id": 4, "speaker": "Carol", "start": 82.2, "end": 97.1, "text": "Sensacional! E para esse castelo funcionar sem travar, vocês fizeram sete grandes reformas de ontem para hoje, né? Vamos começar pela primeira: a história da 'Mochila Escolar'. Me conta o que aconteceu no Worker da Cloudflare!"}, {"id": 5, "speaker": "Lucas", "start": 97.1, "end": 125.9, "text": "Carol, pensa numa criança indo para a escola carregando todos os livros do ano inteiro na mochila de uma vez só! Uma dor nas costas daquelas! O arquivo principal do servidor, o index ponto jota ésse, tinha mais de duas mil e quinhentas linhas. Lá dentro ficava misturado o login, a TV corporativa, a administração de usuários e a segurança. Se você quisesse mudar uma vírgula na página de login, corria o risco de mexer no código da TV!"}, {"id": 6, "speaker": "Carol", "start": 125.9, "end": 129.6, "text": "Nossa, que perigo! E como vocês arrumaram essa estante?"}, {"id": 7, "speaker": "Lucas", "start": 129.6, "end": 155.6, "text": "Dividimos tudo em pastas e arquivos especialistas! O index agora tem só duzentas e quarenta linhas e funciona como um recepcionista educado: quem quer fazer login vai para a sala de crachás, a rota de autenticação. Quem quer mexer nos painéis vai para a sala de administração. E a segurança agora tem uma caixa de ferramentas de ferro isolada. Ficou limpo, leve e muito fácil de dar manutenção!"}, {"id": 8, "speaker": "Carol", "start": 155.6, "end": 167.4, "text": "Ficou muito mais organizado! E teve também a segunda reforma, que você chamou de 'A Viagem Única ao Supermercado'. O famoso problema do N mais um no banco de dados. Como era isso?"}, {"id": 9, "speaker": "Lucas", "start": 167.4, "end": 190.1, "text": "Olha essa analogia, Carol: imagina que a sua mãe te pediu dez maçãs. Em vez de ir ao mercado uma vez e trazer as dez maçãs na sacola, você vai ao mercado, compra uma maçã, volta para casa... aí vai de novo, compra a segunda maçã... dez viagens seguidas! Era exatamente isso que a tela de módulos fazia no banco de dados. Perguntava uma por uma!"}, {"id": 10, "speaker": "Carol", "start": 190.1, "end": 193.6, "text": "Que canseira pro computador! E como vocês resolveram?"}, {"id": 11, "speaker": "Lucas", "start": 193.6, "end": 210.7, "text": "Reescrevemos a consulta! Agora o sistema vai ao banco de dados uma única vez, traz tudo na cesta e monta a resposta em milissegundos na memória. O fiscal de banco de dados, que antes dava alertas vermelhos, agora zerou todas as pendências. Ficou instantâneo!"}, {"id": 12, "speaker": "Carol", "start": 210.7, "end": 224.4, "text": "E no painel de F P D, o First Payment Default, que mede se o cliente pagou a primeira conta? Tinha muita gente dizendo que ele ficava travado na tela de 'descompactando dados'. O que estava travando o motor?"}, {"id": 13, "speaker": "Lucas", "start": 224.4, "end": 257.3, "text": "Era o clássico brinquedo com a pilha colocada ao contrário! Tinha uma aspa de texto sem fechar e uma variável que não acordava a tempo. Além disso, o relatório tinha colunas vazias de noventa e cento e vinte dias que só ocupavam espaço à toa, já que o F P D corporativo analisa os primeiros sessenta dias. Corrigimos tudo isso e ainda resolvemos o nome dos nós dos postes, o C D underline NODE. Agora, cem por cento dos quase cinquenta e quatro mil contratos encontraram seus bairros e nodes reais!"}, {"id": 14, "speaker": "Carol", "start": 257.3, "end": 268.2, "text": "Uau, cem por cento dos clientes mapeados com precisão cirúrgica! E na Banda Larga, rolou uma mágica de compressão que parece aquelas malas de viagem a vácuo, não foi?"}, {"id": 15, "speaker": "Lucas", "start": 268.2, "end": 296.8, "text": "Exatamente! Sabe quando você vai viajar e usa um aspirador de pó para tirar o ar do saco de roupas? Um edredom gigante vira uma folha fininha. Os painéis de Banda Larga pesavam mais de quinhentos kilobytes em texto aberto. Nós aplicamos o algoritmo Zlib Deflate e o arquivo encolheu para duzentos kilobytes, uma redução de mais de sessenta por cento! Quem acessa pelo celular no meio da rua agora vê a tela abrir num piscar de olhos."}, {"id": 16, "speaker": "Carol", "start": 296.8, "end": 307.4, "text": "Isso faz toda a diferença para o coordenador que está visitando uma operação em campo! E sobre a segurança, Lucas? Teve melhorias nas trancas do castelo também?"}, {"id": 17, "speaker": "Lucas", "start": 307.4, "end": 331.3, "text": "Com certeza! Colocamos uma fechadura inteligente com Rate Limiting: se alguém ou algum robô tentar adivinhar senhas e errar cinco vezes seguidas, o sistema coloca a conta de castigo por quinze minutos. Além disso, as senhas usam o algoritmo P B K D F 2 com cem mil rodadas de criptografia. Nem com supercomputadores alguém descobre as senhas guardadas lá dentro."}, {"id": 18, "speaker": "Carol", "start": 331.3, "end": 340.0, "text": "E o nosso robô do WhatsApp, que atende as equipes de vendas e técnicos tirando dúvidas direto no celular? Ele também foi promovido?"}, {"id": 19, "speaker": "Lucas", "start": 340.0, "end": 357.2, "text": "Foi sim! Ele ganhou rodinhas de apoio e um supervisor chamado P M 2, além de configuração completa em Docker. Se a internet oscilar ou o processo tropeçar em alguma pedra, o supervisor acorda o robô em menos de três segundos. Ele não fica mudo de jeito nenhum!"}, {"id": 20, "speaker": "Carol", "start": 357.2, "end": 365.0, "text": "E para coroar tudo isso, rolou uma auditoria completa com notas, não é? Como ficou o boletim de notas final do PEP HUB?"}, {"id": 21, "speaker": "Lucas", "start": 365.0, "end": 383.4, "text": "Olha só o orgulho da turma: nota noventa e sete em Arquitetura, noventa e sete em Segurança AppSec, noventa e cinco em Visual e Design, zero alertas no Banco de Dados e zero scripts temporários perdidos. O Release Gate deu a nota máxima: A plus com deploy totalmente autorizado!"}, {"id": 22, "speaker": "Carol", "start": 383.4, "end": 390.8, "text": "Que resultado espetacular, Lucas! E olhando para a frente, o que a gente ainda pode esperar no futuro do PEP HUB?"}, {"id": 23, "speaker": "Lucas", "start": 390.8, "end": 409.7, "text": "Vem muita coisa boa: a chegada das novas safras de dados consolidados dos próximos meses, a divisão da tela de administração em módulos menores e alertas proativos no WhatsApp para avisar os gestores assim que um indicador sair da curva. O sistema está pronto para voar ainda mais alto!"}, {"id": 24, "speaker": "Carol", "start": 409.7, "end": 424.1, "text": "Sensacional! Esse foi o nosso Deep Dive especial em áudio do PEP HUB, no mais puro estilo Google NotebookLM. Se você gostou desse formato, compartilhe com a equipe e continue acompanhando as novidades do nosso portal!"}, {"id": 25, "speaker": "Lucas", "start": 424.1, "end": 427.4, "text": "Um grande abraço a todos e até o próximo episódio!"}, {"id": 26, "speaker": "Carol", "start": 427.4, "end": 428.7, "text": "Tchau tchau pessoal!"}];
+    renderTranscript(transcriptData);
+
+    function renderTranscript(items) {
+      transcriptList.innerHTML = '';
+      items.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'dialogue-card';
+        card.id = `segment-${item.id}`;
+        card.dataset.start = item.start;
+        card.dataset.end = item.end;
+
+        const isCarol = item.speaker === 'Carol';
+        const avatar = isCarol ? '👩‍💼' : '👨‍💻';
+        const speakerClass = isCarol ? 'carol' : 'lucas';
+
+        card.innerHTML = `
+          <div class="card-avatar-wrap">
+            <div class="host-avatar ${speakerClass}">${avatar}</div>
+          </div>
+          <div class="card-content">
+            <div class="card-meta">
+              <span class="card-speaker ${speakerClass}">${item.speaker}</span>
+              <span class="card-time">${formatTime(item.start)}</span>
+            </div>
+            <p class="card-text">${item.text}</p>
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          audio.currentTime = item.start;
+          if (audio.paused) {
+            audio.play();
+          }
+        });
+
+        transcriptList.appendChild(card);
+      });
+    }
+
+    // Play / Pause
+    btnPlayPause.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
+    });
+
+    audio.addEventListener('play', () => {
+      btnPlayPause.textContent = '⏸';
+      equalizer.classList.add('playing');
+      trackStatus.textContent = 'Reproduzindo agora...';
+    });
+
+    audio.addEventListener('pause', () => {
+      btnPlayPause.textContent = '▶';
+      equalizer.classList.remove('playing');
+      trackStatus.textContent = 'Pausado';
+    });
+
+    // Pular 10s
+    btnRewind.addEventListener('click', () => {
+      audio.currentTime = Math.max(0, audio.currentTime - 10);
+    });
+
+    btnForward.addEventListener('click', () => {
+      audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10);
+    });
+
+    // Velocidade
+    btnSpeed.addEventListener('click', () => {
+      speedIndex = (speedIndex + 1) % speeds.length;
+      const spd = speeds[speedIndex];
+      audio.playbackRate = spd;
+      btnSpeed.textContent = `${spd}x`;
+    });
+
+    // Atualização de tempo e scrubber
+    audio.addEventListener('loadedmetadata', () => {
+      durationEl.textContent = formatTime(audio.duration);
+      seekSlider.max = audio.duration;
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      const cur = audio.currentTime;
+      currentTimeEl.textContent = formatTime(cur);
+      seekSlider.value = cur;
+
+      // Destaque sincronizado da transcrição
+      if (transcriptData && transcriptData.length > 0) {
+        let activeFound = false;
+        transcriptData.forEach(item => {
+          const el = document.getElementById(`segment-${item.id}`);
+          if (!el) return;
+
+          if (cur >= item.start && cur <= item.end) {
+            if (!el.classList.contains('active')) {
+              document.querySelectorAll('.dialogue-card.active').forEach(c => c.classList.remove('active'));
+              el.classList.add('active');
+              el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+            activeFound = true;
+          }
+        });
+      }
+    });
+
+    seekSlider.addEventListener('input', () => {
+      audio.currentTime = seekSlider.value;
+    });
+  </script>
+</body>
+</html>

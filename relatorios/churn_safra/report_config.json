@@ -1,0 +1,8 @@
+{
+  "id": "churn_safra",
+  "titulo": "Painel de Churn Safra",
+  "descricao": "Acompanhamento de Churn Safra da Regional Norte",
+  "rota_pephub": "churn",
+  "categoria": "Churn",
+  "bot_enabled": true
+}

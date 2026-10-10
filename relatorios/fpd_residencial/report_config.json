@@ -1,0 +1,10 @@
+{
+  "id": "fpd_residencial",
+  "titulo": "FPD Executivo",
+  "descricao": "Relatório Executivo Oficial de FPD 60 da Fixa por Canal, Cidade e Parceiro",
+  "rota_pephub": "fpd-residencial",
+  "categoria": "Inadimplência",
+  "responsavel": "Regional Norte",
+  "frequencia_atualizacao": "Início do Mês",
+  "bot_enabled": false
+}

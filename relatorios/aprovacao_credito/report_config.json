@@ -1,0 +1,8 @@
+{
+  "id": "aprovacao_credito",
+  "titulo": "Painel de Taxa de Aprovação de Crédito",
+  "descricao": "Taxa de aprovação por canal, parceiro e cidade",
+  "rota_pephub": "aprovacao-credito",
+  "categoria": "Crédito",
+  "bot_enabled": true
+}

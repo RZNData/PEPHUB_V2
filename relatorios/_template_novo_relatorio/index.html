@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Novo Relatório | Claro Regional Norte</title>
+  <style>
+    :root {
+      --claro-red: #e3262e;
+      --bg-main: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --border-radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; padding: 24px; }
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); }
+    .header-title { display: flex; align-items: center; gap: 12px; }
+    .badge-rno { background: var(--claro-red); color: white; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.5px; }
+    h1 { font-size: 1.5rem; font-weight: 700; color: #1e293b; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .card { background: var(--card-bg); padding: 20px; border-radius: var(--border-radius); border: 1px solid var(--border-color); box-shadow: var(--shadow); }
+    .card-title { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
+    .card-val { font-size: 1.8rem; font-weight: 700; color: #1e293b; }
+    .main-content { background: var(--card-bg); padding: 24px; border-radius: var(--border-radius); border: 1px solid var(--border-color); box-shadow: var(--shadow); }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-title">
+      <span class="badge-rno">CLARO RNO</span>
+      <h1>Novo Relatório Operacional</h1>
+    </div>
+    <div style="font-size: 0.9rem; color: var(--text-muted);">
+      <i class="fa-regular fa-calendar-days"></i> Atualizado em Outubro / 2026
+    </div>
+  </header>
+
+  <main>
+    <section class="grid">
+      <div class="card">
+        <div class="card-title">Indicador Principal</div>
+        <div class="card-val">100.0%</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Volume Realizado</div>
+        <div class="card-val">1.250</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Meta Corporativa</div>
+        <div class="card-val">1.200</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Desvio RxO</div>
+        <div class="card-val" style="color: #16a34a;">+50 (+4.2%)</div>
+      </div>
+    </section>
+
+    <section class="main-content">
+      <h2 style="font-size: 1.1rem; margin-bottom: 12px;">Visão Geral do Painel</h2>
+      <p style="color: var(--text-muted); line-height: 1.6;">
+        Substitua este conteúdo pela lógica visual, tabelas ou gráficos do seu relatório.
+      </p>
+    </section>
+  </main>
+</body>
+</html>

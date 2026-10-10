@@ -1,0 +1,16 @@
+# Segredos e Chaves de API
+.env
+.env.*
+*.key
+
+# Credenciais e Sessão do WhatsApp (QR Code / Tokens)
+auth_info/
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*

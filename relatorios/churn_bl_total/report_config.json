@@ -1,0 +1,8 @@
+{
+  "id": "churn_bl_total",
+  "titulo": "Painel de Churn Banda Larga Total",
+  "descricao": "Acompanhamento de Churn Horizontal BL Total (Residencial + PME)",
+  "rota_pephub": "churn-bl-total",
+  "categoria": "Churn",
+  "bot_enabled": true
+}
