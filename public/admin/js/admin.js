@@ -191,6 +191,7 @@ let statsDateFilter = {
 
 // Navegação de Abas
 const tabUsersBtn = document.getElementById('tabUsersBtn');
+const tabNotificationsBtn = document.getElementById('tabNotificationsBtn');
 const tabStatsBtn = document.getElementById('tabStatsBtn');
 const tabLogsBtn = document.getElementById('tabLogsBtn');
 const tabControlsBtn = document.getElementById('tabControlsBtn');
@@ -199,6 +200,7 @@ const tabUploadsBtn = document.getElementById('tabUploadsBtn');
 const tabRequestsBtn = document.getElementById('tabRequestsBtn');
 
 const sectionUsers = document.getElementById('sectionUsers');
+const sectionNotifications = document.getElementById('sectionNotifications');
 const sectionStats = document.getElementById('sectionStats');
 const sectionLogs = document.getElementById('sectionLogs');
 const sectionControls = document.getElementById('sectionControls');
@@ -208,8 +210,8 @@ const sectionRequests = document.getElementById('sectionRequests');
 
 function showTab(tab) {
   closeActionMenu();
-  [tabUsersBtn, tabRequestsBtn, tabStatsBtn, tabLogsBtn, tabControlsBtn, tabModulesBtn, tabUploadsBtn].forEach(b => b.classList.remove('active'));
-  [sectionUsers, sectionRequests, sectionStats, sectionLogs, sectionControls, sectionModules, sectionUploads].forEach(s => s.style.display = 'none');
+  [tabUsersBtn, tabRequestsBtn, tabNotificationsBtn, tabStatsBtn, tabLogsBtn, tabControlsBtn, tabModulesBtn, tabUploadsBtn].filter(Boolean).forEach(b => b.classList.remove('active'));
+  [sectionUsers, sectionRequests, sectionNotifications, sectionStats, sectionLogs, sectionControls, sectionModules, sectionUploads].filter(Boolean).forEach(s => s.style.display = 'none');
 
   if (tab === 'users') {
     tabUsersBtn.classList.add('active');
@@ -219,6 +221,10 @@ function showTab(tab) {
     tabRequestsBtn.classList.add('active');
     sectionRequests.style.display = 'block';
     loadAccessRequests();
+  } else if (tab === 'notifications') {
+    if (tabNotificationsBtn) tabNotificationsBtn.classList.add('active');
+    if (sectionNotifications) sectionNotifications.style.display = 'block';
+    loadAdminNotifications();
   } else if (tab === 'stats') {
     tabStatsBtn.classList.add('active');
     sectionStats.style.display = 'block';
@@ -244,6 +250,7 @@ function showTab(tab) {
 }
 
 tabUsersBtn.addEventListener('click', () => showTab('users'));
+if (tabNotificationsBtn) tabNotificationsBtn.addEventListener('click', () => showTab('notifications'));
 tabRequestsBtn.addEventListener('click', () => showTab('requests'));
 tabStatsBtn.addEventListener('click', () => showTab('stats'));
 tabLogsBtn.addEventListener('click', () => showTab('logs'));
@@ -2394,6 +2401,389 @@ async function revokeDelegation(delId, userName) {
   }
 }
 
+// ==========================================
+// 9. CENTRAL DE NOTIFICAÇÕES CORPORATIVAS
+// ==========================================
+let allAdminNotifications = [];
+
+const NOTIF_TYPE_CONFIG = {
+  info: { label: 'Informativo', color: '#0f5499', bg: '#e8f0fe', border: '#b8d5fa' },
+  update: { label: 'Lançamento', color: '#634199', bg: '#f3e8fd', border: '#dec6f8' },
+  security: { label: 'Segurança', color: '#be185d', bg: '#fce7f3', border: '#f9a8d4' },
+  warning: { label: 'Alerta', color: '#c05621', bg: '#fef3c7', border: '#fde68a' },
+  success: { label: 'Sucesso', color: '#237804', bg: '#eaf2ec', border: '#b8dcbf' }
+};
+
+const NOTIF_PRESETS = {
+  first_login: {
+    type: 'info',
+    audience: 'ALL',
+    title: 'Bem-vindo ao PEP HUB Regional Norte',
+    message: 'Explore os módulos analíticos de Churn Safra, FPD, Churn BL e a nova Evolução da Carteira. Mantenha seu perfil corporativo sempre atualizado e com número funcional.',
+    action_url: '/perfil/',
+    action_label: 'Acessar Meu Perfil'
+  },
+  password_change: {
+    type: 'security',
+    audience: 'ALL',
+    title: 'Segurança Corporativa: Lembrete de Alteração de Senha',
+    message: 'Por diretriz de conformidade da Regional Norte, recomendamos atualizar sua senha de acesso a cada 90 dias para salvaguardar suas credenciais.',
+    action_url: '/redefinir-senha/',
+    action_label: 'Atualizar Senha Agora'
+  },
+  new_report: {
+    type: 'update',
+    audience: 'ALL',
+    title: 'Novo Painel Disponível: Evolução da Carteira Safra',
+    message: 'Já está em produção o novo painel de Evolução da Carteira com acompanhamento de saldos ativos, migração, churn involuntário e ticket médio por segmento.',
+    action_url: '/evolucao-carteira/',
+    action_label: 'Explorar Novo Painel'
+  },
+  maintenance: {
+    type: 'warning',
+    audience: 'ALL',
+    title: 'Janela Programada de Consolidação de Safra',
+    message: 'Informamos que realizaremos a consolidação e carga de novos dados no próximo fim de semana. O ambiente permanecerá disponível para consultas operacionais.',
+    action_url: '',
+    action_label: ''
+  }
+};
+
+async function loadAdminNotifications() {
+  const tbody = document.getElementById('notificationsTbody');
+  if (tbody) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--ink3);padding:24px">Carregando notificações…</td></tr>`;
+  }
+
+  try {
+    const res = await fetch('/api/admin/notifications');
+    if (!res.ok) {
+      if (tbody) tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--red);padding:24px">Falha ao carregar notificações.</td></tr>`;
+      return;
+    }
+    const data = await res.json();
+    allAdminNotifications = Array.isArray(data) ? data : (data.notifications || []);
+    renderAdminNotifications();
+  } catch (err) {
+    console.error('Erro loadAdminNotifications:', err);
+    if (tbody) tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--red);padding:24px">Erro de comunicação com o servidor.</td></tr>`;
+  }
+}
+
+function renderAdminNotifications() {
+  const tbody = document.getElementById('notificationsTbody');
+  if (!tbody) return;
+
+  const total = allAdminNotifications.length;
+  const activeCount = allAdminNotifications.filter(n => n.is_active === 1 || n.is_active === true).length;
+  const totalReads = allAdminNotifications.reduce((acc, n) => acc + (Number(n.read_count) || 0), 0);
+  const totalDismisses = allAdminNotifications.reduce((acc, n) => acc + (Number(n.dismissed_count) || 0), 0);
+
+  const kpiAct = document.getElementById('kpiNotifActive');
+  const kpiAud = document.getElementById('kpiNotifAudience');
+  const kpiReads = document.getElementById('kpiNotifReads');
+  const kpiDism = document.getElementById('kpiNotifDismisses');
+
+  if (kpiAct) kpiAct.textContent = activeCount;
+  if (kpiAud) kpiAud.textContent = total;
+  if (kpiReads) kpiReads.textContent = totalReads.toLocaleString('pt-BR');
+  if (kpiDism) kpiDism.textContent = totalDismisses.toLocaleString('pt-BR');
+
+  if (total === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--ink3);padding:32px">Nenhuma notificação corporativa cadastrada no momento.<br><span style="font-size:11px">Utilize os botões acima para criar uma nova notificação ou carregar um preset em 1 clique.</span></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = allAdminNotifications.map(n => {
+    const typeCfg = NOTIF_TYPE_CONFIG[n.type] || NOTIF_TYPE_CONFIG.info;
+    const isActive = n.is_active === 1 || n.is_active === true;
+    const isScheduled = n.starts_at && new Date(n.starts_at) > new Date();
+    const isExpired = n.expires_at && new Date(n.expires_at) < new Date();
+
+    let statusBadge = '';
+    if (!isActive) {
+      statusBadge = `<span class="badge-mod suspenso" style="font-size:10.5px">Inativa</span>`;
+    } else if (isExpired) {
+      statusBadge = `<span class="badge-mod oculto" style="font-size:10.5px">Expirada</span>`;
+    } else if (isScheduled) {
+      statusBadge = `<span class="badge-mod em_andamento" style="font-size:10.5px">Agendada</span>`;
+    } else {
+      statusBadge = `<span class="badge-mod ativo" style="font-size:10.5px">Ativa</span>`;
+    }
+
+    const audLabel = n.audience === 'admin' ? 'Apenas Admins' : (n.audience === 'regular' ? 'Não-Admins' : 'Todos');
+
+    const vigencia = [];
+    if (n.starts_at) {
+      vigencia.push(`Início: ${new Date(n.starts_at).toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}`);
+    }
+    if (n.expires_at) {
+      vigencia.push(`Fim: ${new Date(n.expires_at).toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}`);
+    }
+    const vigenciaStr = vigencia.length > 0 ? vigencia.join('<br>') : '<span style="color:var(--ink3)">Sem expiração</span>';
+
+    const safeTitle = (n.title || '').replace(/"/g, '&quot;');
+
+    return `
+      <tr>
+        <td>
+          <span style="display:inline-block;padding:3px 8px;border-radius:3px;font-size:10.5px;font-weight:700;background:${typeCfg.bg};color:${typeCfg.color};border:1px solid ${typeCfg.border}">
+            ${typeCfg.label}
+          </span>
+        </td>
+        <td>
+          <div style="font-weight:700;color:var(--ink);font-size:12px;margin-bottom:2px">${escapeHtml(n.title)}</div>
+          <div style="font-size:11px;color:var(--ink2);line-height:1.35;max-width:340px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">
+            ${escapeHtml(n.message)}
+          </div>
+          ${n.action_url ? `<div style="font-size:10.5px;color:var(--blue);margin-top:3px">↳ Destino: <a href="${escapeHtml(n.action_url)}" target="_blank" style="color:var(--blue);text-decoration:underline">${escapeHtml(n.action_label || n.action_url)}</a></div>` : ''}
+        </td>
+        <td>
+          <span style="font-size:11px;font-weight:600;color:var(--ink)">${audLabel}</span>
+        </td>
+        <td style="font-size:10.5px;color:var(--ink2);line-height:1.3">
+          ${vigenciaStr}
+        </td>
+        <td>
+          <div style="font-size:11px;font-weight:600;color:var(--ink)">
+            <span style="color:#2f7d5d">👁️ ${n.read_count || 0}</span> lidas
+          </div>
+          <div style="font-size:10.5px;color:var(--ink3);margin-top:1px">
+            ✖ ${n.dismissed_count || 0} dispensadas
+          </div>
+        </td>
+        <td>
+          ${statusBadge}
+        </td>
+        <td style="text-align:right">
+          <div class="actions-cell">
+            <button class="btn-act ${isActive ? 'danger' : 'approve'}" onclick="toggleNotificationStatus('${n.id}')" title="${isActive ? 'Desativar notificação' : 'Ativar notificação'}">
+              ${isActive ? 'Pausar' : 'Ativar'}
+            </button>
+            <button class="btn-act primary" onclick="openNotificationModal(null, '${n.id}')" title="Editar notificação">
+              Editar
+            </button>
+            <button class="btn-act danger" onclick="deleteNotification('${n.id}', '${safeTitle}')" title="Excluir notificação">
+              Excluir
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function openNotificationModal(presetKey = null, notifId = null) {
+  const modal = document.getElementById('modalNotification');
+  if (!modal) return;
+
+  const titleEl = document.getElementById('modalNotificationTitle');
+  const notifIdInput = document.getElementById('notifId');
+  const presetSelect = document.getElementById('notifPreset');
+
+  if (notifId) {
+    const notif = allAdminNotifications.find(n => n.id === notifId);
+    if (!notif) return;
+
+    if (titleEl) titleEl.textContent = 'Editar Notificação Corporativa';
+    if (notifIdInput) notifIdInput.value = notif.id;
+    if (presetSelect) presetSelect.value = 'custom';
+
+    document.getElementById('notifType').value = notif.type || 'info';
+    document.getElementById('notifAudience').value = notif.audience || 'ALL';
+    document.getElementById('notifTitle').value = notif.title || '';
+    document.getElementById('notifMessage').value = notif.message || '';
+    document.getElementById('notifActionUrl').value = notif.action_url || '';
+    document.getElementById('notifActionLabel').value = notif.action_label || '';
+
+    const formatDt = (iso) => iso ? new Date(iso).toISOString().slice(0, 16) : '';
+    document.getElementById('notifStartsAt').value = formatDt(notif.starts_at);
+    document.getElementById('notifExpiresAt').value = formatDt(notif.expires_at);
+    document.getElementById('notifActive').checked = notif.is_active === 1 || notif.is_active === true;
+  } else {
+    if (titleEl) titleEl.textContent = 'Criar Notificação Corporativa';
+    if (notifIdInput) notifIdInput.value = '';
+    
+    // Resetar campos
+    document.getElementById('notifType').value = 'info';
+    document.getElementById('notifAudience').value = 'ALL';
+    document.getElementById('notifTitle').value = '';
+    document.getElementById('notifMessage').value = '';
+    document.getElementById('notifActionUrl').value = '';
+    document.getElementById('notifActionLabel').value = '';
+    document.getElementById('notifStartsAt').value = '';
+    document.getElementById('notifExpiresAt').value = '';
+    document.getElementById('notifActive').checked = true;
+
+    if (presetKey && NOTIF_PRESETS[presetKey]) {
+      if (presetSelect) presetSelect.value = presetKey;
+      applyNotificationPreset(presetKey);
+    } else {
+      if (presetSelect) presetSelect.value = 'custom';
+    }
+  }
+
+  updateNotifModalPreview();
+  modal.classList.add('on');
+}
+
+function applyNotificationPreset(presetKey) {
+  if (!presetKey || presetKey === 'custom') return;
+  const p = NOTIF_PRESETS[presetKey];
+  if (!p) return;
+
+  if (p.type) document.getElementById('notifType').value = p.type;
+  if (p.audience) document.getElementById('notifAudience').value = p.audience;
+  if (p.title) document.getElementById('notifTitle').value = p.title;
+  if (p.message) document.getElementById('notifMessage').value = p.message;
+  if (p.action_url !== undefined) document.getElementById('notifActionUrl').value = p.action_url;
+  if (p.action_label !== undefined) document.getElementById('notifActionLabel').value = p.action_label;
+
+  updateNotifModalPreview();
+}
+
+function updateNotifModalPreview() {
+  const box = document.getElementById('notifModalPreviewBox');
+  if (!box) return;
+
+  const type = document.getElementById('notifType').value || 'info';
+  const title = document.getElementById('notifTitle').value.trim() || 'Título da Notificação';
+  const msg = document.getElementById('notifMessage').value.trim() || 'Texto explicativo ou comunicado direcionado ao colaborador…';
+  const actionUrl = document.getElementById('notifActionUrl').value.trim();
+  const actionLabel = document.getElementById('notifActionLabel').value.trim() || 'Acessar Link';
+
+  const typeCfg = NOTIF_TYPE_CONFIG[type] || NOTIF_TYPE_CONFIG.info;
+
+  box.innerHTML = `
+    <div style="background:#fff;border:1px solid #dfe3e8;border-left:4px solid ${typeCfg.color};border-radius:4px;padding:12px;position:relative">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px">
+        <span style="font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 6px;border-radius:2px;background:${typeCfg.bg};color:${typeCfg.color};border:1px solid ${typeCfg.border}">
+          ${typeCfg.label}
+        </span>
+        <span style="font-size:10px;color:var(--ink3)">Agora mesmo</span>
+      </div>
+      <div style="font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px">
+        ${escapeHtml(title)}
+      </div>
+      <div style="font-size:11.5px;color:var(--ink2);line-height:1.4">
+        ${escapeHtml(msg)}
+      </div>
+      ${actionUrl ? `
+        <div style="margin-top:10px">
+          <span style="display:inline-block;padding:5px 12px;background:#1b2430;color:#fff;font-size:11px;font-weight:700;border-radius:3px">
+            ${escapeHtml(actionLabel)} →
+          </span>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+async function saveNotification() {
+  const id = document.getElementById('notifId').value.trim();
+  const type = document.getElementById('notifType').value;
+  const audience = document.getElementById('notifAudience').value;
+  const title = document.getElementById('notifTitle').value.trim();
+  const message = document.getElementById('notifMessage').value.trim();
+  const action_url = document.getElementById('notifActionUrl').value.trim() || null;
+  const action_label = document.getElementById('notifActionLabel').value.trim() || null;
+  const starts_at = document.getElementById('notifStartsAt').value || null;
+  const expires_at = document.getElementById('notifExpiresAt').value || null;
+  const is_active = document.getElementById('notifActive').checked ? 1 : 0;
+
+  if (!title) {
+    showToast('Informe o título do comunicado.', 'error');
+    document.getElementById('notifTitle').focus();
+    return;
+  }
+  if (!message) {
+    showToast('Informe a mensagem da notificação.', 'error');
+    document.getElementById('notifMessage').focus();
+    return;
+  }
+
+  const payload = {
+    type,
+    audience,
+    title,
+    message,
+    action_url,
+    action_label,
+    starts_at: starts_at ? new Date(starts_at).toISOString() : null,
+    expires_at: expires_at ? new Date(expires_at).toISOString() : null,
+    is_active
+  };
+
+  const btn = document.getElementById('btnSaveNotification');
+  if (btn) btn.disabled = true;
+
+  try {
+    const url = id ? `/api/admin/notifications/${id}` : '/api/admin/notifications';
+    const method = id ? 'PUT' : 'POST';
+
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      showToast(id ? 'Notificação atualizada com sucesso!' : 'Notificação corporativa criada com sucesso!', 'success');
+      document.getElementById('modalNotification').classList.remove('on');
+      loadAdminNotifications();
+    } else {
+      showToast(data.error || 'Erro ao salvar notificação.', 'error');
+    }
+  } catch (err) {
+    console.error('Erro saveNotification:', err);
+    showToast('Falha na comunicação com o servidor.', 'error');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function toggleNotificationStatus(id) {
+  try {
+    const res = await fetch(`/api/admin/notifications/${id}/toggle`, { method: 'POST' });
+    const data = await res.json();
+    if (res.ok) {
+      showToast(`Status da notificação alterado para: ${data.is_active ? 'Ativa' : 'Inativa'}.`, 'success');
+      loadAdminNotifications();
+    } else {
+      showToast(data.error || 'Erro ao alterar status.', 'error');
+    }
+  } catch (err) {
+    showToast('Falha de conexão com o servidor.', 'error');
+  }
+}
+
+async function deleteNotification(id, title) {
+  if (!confirm(`Deseja realmente excluir a notificação "${title}"?\nEsta ação não poderá ser desfeita.`)) return;
+
+  try {
+    const res = await fetch(`/api/admin/notifications/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (res.ok) {
+      showToast('Notificação excluída com sucesso.', 'success');
+      loadAdminNotifications();
+    } else {
+      showToast(data.error || 'Erro ao excluir notificação.', 'error');
+    }
+  } catch (err) {
+    showToast('Falha de conexão com o servidor.', 'error');
+  }
+}
+
+// Expor métodos globais para uso inline no HTML
+window.loadAdminNotifications = loadAdminNotifications;
+window.openNotificationModal = openNotificationModal;
+window.applyNotificationPreset = applyNotificationPreset;
+window.updateNotifModalPreview = updateNotifModalPreview;
+window.saveNotification = saveNotification;
+window.toggleNotificationStatus = toggleNotificationStatus;
+window.deleteNotification = deleteNotification;
+
 async function initAdminPanel() {
   setDatePreset('30d');
   try {
@@ -2415,6 +2805,7 @@ async function initAdminPanel() {
   loadSystemControls();
   loadProfileFields();
   loadUploadsConfig();
+  loadAdminNotifications();
 
   // O botão "Online" do cabeçalho é montado pelo header-widget.js ([data-pephub-online])
   refreshPendingRequestsCount();

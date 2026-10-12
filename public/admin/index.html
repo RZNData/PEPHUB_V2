@@ -336,6 +336,10 @@ tbody tr:hover{background:#f7f9fb}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       Carga de Insumos & Uploads (<span id="totalUploadsCount">7</span>)
     </button>
+    <button class="main-tab" id="tabNotificationsBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Central de Notificações (<span id="totalNotificationsCount">0</span>)
+    </button>
   </div>
 
   <!-- Banner Global de Travas Ativas -->
@@ -780,6 +784,94 @@ tbody tr:hover{background:#f7f9fb}
       </div>
     </div>
   </div>
+
+  <!-- ABA 7: CENTRAL DE CONTROLE DE NOTIFICAÇÕES & PRESETS -->
+  <div id="sectionNotifications" style="display:none">
+    <div class="panel">
+      <div class="sub-bar">
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            Central de Notificações & Comunicados Corporativos
+          </div>
+          <div style="font-size:11.5px;color:var(--ink2);margin-top:2px">
+            Crie, programe e gerencie comunicados exibidos no sino de notificações de todos os colaboradores, incluindo presets de primeiro acesso, segurança e novos relatórios.
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <button id="btnOpenNewNotification" class="btn-primary" onclick="openNotificationModal()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova Notificação
+          </button>
+          <button class="btn-act" onclick="loadAdminNotifications()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Atualizar Lista
+          </button>
+        </div>
+      </div>
+
+      <!-- Micro KPIs de Notificações -->
+      <div class="kpis" style="border-bottom:1px solid var(--line2);padding:14px 18px;margin-bottom:0">
+        <div class="kpi">
+          <div class="k">Total Cadastradas</div>
+          <div class="v" id="kpiTotalNotifs">0</div>
+          <div class="d">Comunicados no sistema</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Ativas no Sino</div>
+          <div class="v" style="color:var(--green)" id="kpiActiveNotifs">0</div>
+          <div class="d">Exibindo para usuários</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Leituras Confirmadas</div>
+          <div class="v" style="color:var(--blue)" id="kpiReadNotifs">0</div>
+          <div class="d">Visualizações registradas</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Dispensas / Limpezas</div>
+          <div class="v" style="color:var(--amber)" id="kpiDismissNotifs">0</div>
+          <div class="d">Avisos dispensados</div>
+        </div>
+      </div>
+
+      <!-- Presets Rápidos em 1 Clique -->
+      <div style="background:#f7f8fa;border-bottom:1px solid var(--line2);padding:10px 18px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px">Criar a partir de Preset:</span>
+        <button type="button" class="sub-filter-btn" onclick="openNotificationModal('first_login')" title="Configurar mensagem de boas-vindas para primeiro acesso">
+          🌟 Boas-vindas (1º Acesso)
+        </button>
+        <button type="button" class="sub-filter-btn" onclick="openNotificationModal('password_change')" title="Configurar lembrete de atualização de senha periódica">
+          🛡️ Lembrete de Alteração de Senha
+        </button>
+        <button type="button" class="sub-filter-btn" onclick="openNotificationModal('new_report')" title="Avisar lançamento de novo relatório oficial">
+          🚀 Lançamento: Novo Relatório
+        </button>
+        <button type="button" class="sub-filter-btn" onclick="openNotificationModal('maintenance')" title="Comunicar manutenção ou consolidação programada">
+          ⚠️ Janela de Manutenção
+        </button>
+      </div>
+
+      <!-- Tabela de Notificações -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:14%">Tipo / Categoria</th>
+              <th style="width:28%">Título & Mensagem</th>
+              <th style="width:14%">Público-alvo</th>
+              <th style="width:14%">Vigência</th>
+              <th style="width:12%">Engajamento</th>
+              <th style="width:8%">Status</th>
+              <th style="width:10%;text-align:right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="notificationsTbody">
+            <tr><td colspan="7" style="text-align:center;color:var(--ink3);padding:24px">Carregando notificações…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Modal: Gerenciamento de Delegações de Upload -->
@@ -1212,6 +1304,103 @@ tbody tr:hover{background:#f7f9fb}
     <div class="modal-ft">
       <button class="sub-filter-btn modal-close" data-close="modalAddProfileField">Cancelar</button>
       <button id="btnSaveProfileField" class="btn-primary" onclick="saveProfileField()">Salvar Requisito</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Criar / Editar Notificação Corporativa -->
+<div class="modal" id="modalNotification">
+  <div class="modal-box" style="max-width:640px">
+    <div class="modal-hd">
+      <h3 id="modalNotificationTitle">Criar Notificação Corporativa</h3>
+      <button class="modal-close" data-close="modalNotification">×</button>
+    </div>
+    <div class="modal-bd">
+      <input type="hidden" id="notifId">
+
+      <!-- Seletor de Preset -->
+      <div style="background:#f7f8fa;border:1px solid var(--line2);border-radius:4px;padding:10px 14px;margin-bottom:14px">
+        <label class="form-label" for="notifPreset" style="margin-bottom:4px">Carregar Modelo Predefinido (Preset)</label>
+        <select id="notifPreset" class="form-select" onchange="applyNotificationPreset(this.value)" style="margin-bottom:0">
+          <option value="custom">Mensagem Personalizada (Em Branco)</option>
+          <option value="first_login">🌟 Boas-vindas (Primeiro Acesso ao PEP HUB)</option>
+          <option value="password_change">🛡️ Lembrete de Alteração de Senha Corporativa</option>
+          <option value="new_report">🚀 Lançamento: Novo Painel Evolução da Carteira</option>
+          <option value="maintenance">⚠️ Janela de Manutenção ou Consolidação de Safra</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="flex:1">
+          <label class="form-label" for="notifType">Categoria / Estilo Visual</label>
+          <select id="notifType" class="form-select" onchange="updateNotifModalPreview()">
+            <option value="info">🔵 Informativo (Azul Institucional)</option>
+            <option value="update">🟣 Lançamento / Novo Painel (Roxo)</option>
+            <option value="security">🔴 Segurança & Senha (Vermelho Claro)</option>
+            <option value="warning">🟡 Alerta / Manutenção (Âmbar)</option>
+            <option value="success">🟢 Sucesso / Concluído (Verde)</option>
+          </select>
+        </div>
+        <div class="form-group" style="flex:1">
+          <label class="form-label" for="notifAudience">Público-alvo / Destinatários</label>
+          <select id="notifAudience" class="form-select">
+            <option value="ALL">Todos os Colaboradores (Regional Norte)</option>
+            <option value="regular">Apenas Colaboradores Comuns (Não-Admins)</option>
+            <option value="admin">Apenas Administradores do Sistema</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="notifTitle">Título do Comunicado</label>
+        <input type="text" id="notifTitle" class="form-input" placeholder="Ex: Novo Painel Disponível: Evolução da Carteira" maxlength="90" oninput="updateNotifModalPreview()" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="notifMessage">Mensagem / Conteúdo da Notificação</label>
+        <textarea id="notifMessage" class="form-textarea" rows="3" placeholder="Descreva de forma clara a comunicação direcionada aos colaboradores…" oninput="updateNotifModalPreview()" required></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="flex:1">
+          <label class="form-label" for="notifActionUrl">Link de Ação / Destino (Opcional)</label>
+          <input type="text" id="notifActionUrl" class="form-input" placeholder="Ex: /evolucao-carteira/ ou /perfil/" oninput="updateNotifModalPreview()">
+        </div>
+        <div class="form-group" style="flex:1">
+          <label class="form-label" for="notifActionLabel">Texto do Botão de Ação</label>
+          <input type="text" id="notifActionLabel" class="form-input" placeholder="Ex: Acessar Painel" oninput="updateNotifModalPreview()">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="flex:1">
+          <label class="form-label" for="notifStartsAt">Data/Hora Início (Vigência)</label>
+          <input type="datetime-local" id="notifStartsAt" class="form-input">
+        </div>
+        <div class="form-group" style="flex:1">
+          <label class="form-label" for="notifExpiresAt">Data/Hora Término (Expiração)</label>
+          <input type="datetime-local" id="notifExpiresAt" class="form-input">
+        </div>
+      </div>
+
+      <div class="checkbox-row" style="margin-top:6px;display:flex;align-items:center;gap:8px">
+        <input type="checkbox" id="notifActive" checked style="width:auto;margin:0">
+        <label for="notifActive" style="margin:0;text-transform:none;font-weight:600;font-size:12px;color:var(--ink)">Notificação ativa imediatamente no sino dos colaboradores</label>
+      </div>
+
+      <!-- Pré-visualização Dinâmica ao Vivo -->
+      <div style="margin-top:14px;border-top:1px solid var(--line2);padding-top:12px">
+        <div style="font-size:10.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">
+          Pré-visualização ao Vivo (Como o usuário verá no sino):
+        </div>
+        <div id="notifModalPreviewBox" style="background:#f7f9fb;border:1px solid #dfe3e8;border-radius:4px;padding:12px">
+          <!-- Renderizado via updateNotifModalPreview() -->
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="sub-filter-btn modal-close" data-close="modalNotification">Cancelar</button>
+      <button id="btnSaveNotification" class="btn-primary" onclick="saveNotification()">Salvar Notificação</button>
     </div>
   </div>
 </div>

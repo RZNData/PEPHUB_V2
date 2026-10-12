@@ -295,3 +295,37 @@ CREATE INDEX IF NOT EXISTS idx_knowledge_keywords ON bot_knowledge_chunks(palavr
 
 CREATE INDEX IF NOT EXISTS idx_upload_del_user ON upload_delegations(delegated_user_id);
 CREATE INDEX IF NOT EXISTS idx_report_uploads_key ON report_uploads(report_key, created_at DESC);
+
+-- =====================================================================
+-- 7. NOTIFICAÇÕES CORPORATIVAS & PRESETS DO SISTEMA
+-- =====================================================================
+CREATE TABLE IF NOT EXISTS notifications (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    message TEXT NOT NULL,
+    type TEXT NOT NULL DEFAULT 'info',         -- 'info', 'warning', 'success', 'update', 'security'
+    preset TEXT NOT NULL DEFAULT 'custom',     -- 'custom', 'first_login', 'password_change', 'new_report', 'maintenance'
+    target_audience TEXT NOT NULL DEFAULT 'ALL',-- 'ALL', 'regular', 'admin', ou área
+    action_url TEXT,
+    action_label TEXT,
+    starts_at TEXT,
+    expires_at TEXT,
+    is_active INTEGER NOT NULL DEFAULT 1,
+    created_by TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS user_notifications_read (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT NOT NULL,
+    notification_id TEXT NOT NULL,
+    read_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    dismissed INTEGER NOT NULL DEFAULT 0,
+    UNIQUE(user_id, notification_id),
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY(notification_id) REFERENCES notifications(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_notifications_active ON notifications(is_active, starts_at, expires_at);
+CREATE INDEX IF NOT EXISTS idx_user_notif_read_user ON user_notifications_read(user_id, notification_id);

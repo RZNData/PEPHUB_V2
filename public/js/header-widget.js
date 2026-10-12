@@ -232,6 +232,272 @@
     .ou-btn.primary { background: #1c2430; border-color: #1c2430; color: #fff; }
     .ou-btn.primary:hover { background: #2b3647; }
     .ou-res { font-size: 10px; color: #7b8794; margin-top: 3px; }
+
+    /* ================================================================
+       SINO & FLYOUT CORPORATIVO DE NOTIFICAÇÕES (UNIVERSAL)
+       ================================================================ */
+    .notif-wrapper { position: relative; display: inline-flex; }
+    .hd-btn.btn-notifications {
+      position: relative !important;
+      padding: 6px 10px !important;
+      background: rgba(255, 255, 255, 0.22) !important;
+      border-color: rgba(255, 255, 255, 0.55) !important;
+      gap: 5px !important;
+    }
+    .hd-btn.btn-notifications:hover {
+      background: rgba(255, 255, 255, 0.38) !important;
+    }
+    .notif-bell-icon {
+      width: 15px; height: 15px; display: inline-block; flex: none;
+    }
+    .notif-badge {
+      background: #c0191f;
+      color: #ffffff;
+      min-width: 17px;
+      height: 17px;
+      padding: 0 4px;
+      border-radius: 9px;
+      font-size: 10px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      box-shadow: 0 0 0 1.5px rgba(255,255,255,.9);
+      line-height: 1;
+    }
+    .notif-badge.pulse {
+      animation: notifPulse 2s infinite ease-in-out;
+    }
+    @keyframes notifPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); box-shadow: 0 0 0 3px rgba(192, 25, 31, .35); }
+    }
+    .notif-badge.empty { display: none !important; }
+
+    /* Popover / Drawer Flutuante */
+    .notif-popover {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      width: 410px;
+      max-width: 92vw;
+      margin-top: 8px;
+      z-index: 99999;
+      font-family: "Segoe UI", Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+      cursor: default;
+    }
+    .notif-popover.show { display: block; animation: ouFade .16s ease-out; }
+    .notif-card-box {
+      background: #ffffff;
+      border: 1px solid #dfe3e8;
+      border-radius: 4px;
+      box-shadow: 0 16px 42px rgba(28, 36, 48, .28);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .notif-card-box::before {
+      content: '';
+      display: block;
+      height: 4px;
+      background: linear-gradient(90deg,#8a0f18 0%,#c0191f 26%,#e23a1e 50%,#f47a1f 74%,#f9b233 100%);
+    }
+    .notif-hd {
+      background: #1c2430;
+      color: #ffffff;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .notif-hd-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .notif-hd-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .1px;
+      margin: 0;
+    }
+    .notif-hd-sub {
+      font-size: 11px;
+      color: #aab4c0;
+      font-weight: 500;
+    }
+    .notif-btn-all-read {
+      background: rgba(255,255,255,.16);
+      border: 1px solid rgba(255,255,255,.3);
+      color: #ffffff;
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 4px 9px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .notif-btn-all-read:hover {
+      background: rgba(255,255,255,.28);
+    }
+    .notif-tabs-bar {
+      display: flex;
+      background: #f4f6f8;
+      border-bottom: 1px solid #e6e9ed;
+      padding: 0 12px;
+      gap: 4px;
+    }
+    .notif-tab {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 8px 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #5b6675;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .notif-tab:hover { color: #1c2430; }
+    .notif-tab.active {
+      color: #c0191f;
+      border-bottom-color: #c0191f;
+      background: #ffffff;
+    }
+    .notif-body {
+      max-height: 360px;
+      overflow-y: auto;
+      padding: 10px 12px;
+      background: #f7f9fb;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .notif-item {
+      background: #ffffff;
+      border: 1px solid #e5e8ec;
+      border-left: 3px solid #2a5d8f;
+      border-radius: 3px;
+      padding: 10px 12px;
+      transition: transform .15s, box-shadow .15s;
+      position: relative;
+    }
+    .notif-item:hover {
+      box-shadow: 0 3px 10px rgba(0,0,0,.04);
+      border-color: #cbd5e1;
+    }
+    .notif-item.unread {
+      background: #ffffff;
+      border-left-width: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.03);
+    }
+    .notif-item.type-info { border-left-color: #2a5d8f; }
+    .notif-item.type-warning { border-left-color: #c98a15; }
+    .notif-item.type-update { border-left-color: #6b4b8a; }
+    .notif-item.type-security { border-left-color: #c0191f; }
+    .notif-item.type-success { border-left-color: #2f7d5d; }
+
+    .notif-item-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+    .notif-tag {
+      font-size: 9.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .notif-tag.type-info { background: #edf4fa; color: #2a5d8f; }
+    .notif-tag.type-warning { background: #fef9ee; color: #a16207; }
+    .notif-tag.type-update { background: #f6f0fa; color: #6b4b8a; }
+    .notif-tag.type-security { background: #fdf2f2; color: #991b1b; }
+    .notif-tag.type-success { background: #eaf5f0; color: #2f7d5d; }
+
+    .notif-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .notif-btn-dismiss {
+      background: none;
+      border: none;
+      color: #9aa5b1;
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+    .notif-btn-dismiss:hover { color: #c0191f; background: #fdece9; }
+
+    .notif-item-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #1c2430;
+      margin: 0 0 4px;
+      line-height: 1.35;
+    }
+    .notif-item-msg {
+      font-size: 11.5px;
+      color: #5b6675;
+      line-height: 1.5;
+      margin: 0 0 8px;
+    }
+    .notif-item-ft {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-top: 6px;
+      border-top: 1px dashed #eceef1;
+    }
+    .notif-time {
+      font-size: 10px;
+      color: #8b95a3;
+      font-weight: 500;
+    }
+    .notif-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #2a5d8f;
+      text-decoration: none;
+      background: #f0f6fc;
+      border: 1px solid #d0e2f5;
+      padding: 3px 8px;
+      border-radius: 3px;
+      transition: all .15s;
+    }
+    .notif-cta:hover {
+      background: #2a5d8f;
+      color: #ffffff;
+      border-color: #2a5d8f;
+    }
+    .notif-empty {
+      padding: 32px 16px;
+      text-align: center;
+      color: #5b6675;
+      font-size: 12px;
+    }
+    .notif-empty-ico {
+      width: 32px;
+      height: 32px;
+      margin: 0 auto 8px;
+      color: #94a3b8;
+    }
   `;
   if (!document.getElementById('pephub-header-styles')) {
     document.head.appendChild(style);
@@ -541,7 +807,268 @@
   }
 
   // ------------------------------------------------------------------
-  // Cabeçalho dos relatórios
+  // SISTEMA CORPORATIVO DE NOTIFICAÇÕES (UNIVERSAL: TODOS OS USUÁRIOS)
+  // ------------------------------------------------------------------
+  let _userNotifications = [];
+  let _activeNotifFilter = 'all';
+  let _notifPollingTimer = null;
+
+  async function fetchUserNotifications() {
+    try {
+      const res = await fetch('/api/notifications');
+      if (!res.ok) return [];
+      const data = await res.json();
+      _userNotifications = data.notifications || [];
+      updateNotificationsUI(data.unread_count || 0);
+      return _userNotifications;
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function formatRelativeDate(isoStr) {
+    if (!isoStr) return 'Recente';
+    try {
+      const d = new Date(isoStr.replace(' ', 'T') + (isoStr.endsWith('Z') ? '' : 'Z'));
+      const diffMs = Date.now() - d.getTime();
+      const diffMin = Math.floor(diffMs / 60000);
+      if (diffMin < 2) return 'Agora mesmo';
+      if (diffMin < 60) return `Há ${diffMin} min`;
+      const diffH = Math.floor(diffMin / 60);
+      if (diffH < 24) return `Há ${diffH} hora${diffH > 1 ? 's' : ''}`;
+      const diffDays = Math.floor(diffH / 24);
+      if (diffDays === 1) return 'Ontem';
+      if (diffDays < 7) return `Há ${diffDays} dias`;
+      return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    } catch (_) {
+      return 'Recente';
+    }
+  }
+
+  function getNotifTypeMeta(type) {
+    const map = {
+      info: { label: 'Informativo', icon: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>' },
+      warning: { label: 'Atenção', icon: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' },
+      update: { label: 'Novo Painel', icon: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>' },
+      security: { label: 'Segurança', icon: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>' },
+      success: { label: 'Sucesso', icon: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>' }
+    };
+    return map[type] || map.info;
+  }
+
+  function updateNotificationsUI(unreadCount) {
+    document.querySelectorAll('.notif-badge').forEach(badge => {
+      badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+      if (unreadCount > 0) {
+        badge.classList.remove('empty');
+        badge.classList.add('pulse');
+      } else {
+        badge.classList.add('empty');
+        badge.classList.remove('pulse');
+      }
+    });
+
+    const subEl = document.getElementById('notifHeaderSub');
+    if (subEl) {
+      subEl.textContent = unreadCount > 0 ? `${unreadCount} não lida${unreadCount > 1 ? 's' : ''}` : 'Todas lidas';
+    }
+
+    const tabUnreadEl = document.getElementById('notifTabUnreadCount');
+    if (tabUnreadEl) {
+      tabUnreadEl.textContent = unreadCount;
+    }
+  }
+
+  function renderNotificationList() {
+    const body = document.getElementById('notifListBody');
+    if (!body) return;
+
+    let filtered = _userNotifications;
+    if (_activeNotifFilter === 'unread') {
+      filtered = _userNotifications.filter(n => !n.is_read);
+    }
+
+    if (!filtered || filtered.length === 0) {
+      body.innerHTML = `
+        <div class="notif-empty">
+          <svg class="notif-empty-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            <polyline points="9 11 11 13 15 9"/>
+          </svg>
+          <div style="font-weight:700;color:var(--ink);margin-bottom:3px">Você está em dia!</div>
+          <div>Nenhum comunicado pendente para você no momento.</div>
+        </div>
+      `;
+      return;
+    }
+
+    body.innerHTML = filtered.map(item => {
+      const meta = getNotifTypeMeta(item.type);
+      return `
+        <div class="notif-item type-${escapeHtml(item.type)} ${item.is_read ? '' : 'unread'}" id="notif-item-${escapeHtml(item.id)}" data-id="${escapeHtml(item.id)}">
+          <div class="notif-item-top">
+            <span class="notif-tag type-${escapeHtml(item.type)}">
+              ${meta.icon}
+              ${escapeHtml(meta.label)}
+            </span>
+            <div class="notif-item-actions">
+              ${!item.is_read ? `<button type="button" class="notif-btn-dismiss" title="Marcar como lida" onclick="window.__pephubMarkRead('${escapeHtml(item.id)}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></button>` : ''}
+              <button type="button" class="notif-btn-dismiss" title="Dispensar aviso" onclick="window.__pephubDismissNotif('${escapeHtml(item.id)}')">&times;</button>
+            </div>
+          </div>
+          <div class="notif-item-title">${escapeHtml(item.title)}</div>
+          <div class="notif-item-msg">${escapeHtml(item.message)}</div>
+          <div class="notif-item-ft">
+            <span class="notif-time">${formatRelativeDate(item.created_at)}</span>
+            ${item.action_url ? `
+              <a href="${escapeHtml(item.action_url)}" class="notif-cta" onclick="window.__pephubMarkRead('${escapeHtml(item.id)}')">
+                ${escapeHtml(item.action_label || 'Acessar')} &rarr;
+              </a>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  window.__pephubMarkRead = async function(notifId) {
+    try {
+      const item = _userNotifications.find(n => n.id === notifId);
+      if (item) item.is_read = true;
+      const unreadCount = _userNotifications.filter(n => !n.is_read).length;
+      updateNotificationsUI(unreadCount);
+      renderNotificationList();
+      await fetch(`/api/notifications/${notifId}/read`, { method: 'POST' });
+    } catch (_) {}
+  };
+
+  window.__pephubDismissNotif = async function(notifId) {
+    try {
+      const el = document.getElementById(`notif-item-${notifId}`);
+      if (el) {
+        el.style.opacity = '0';
+        el.style.transform = 'translateX(10px)';
+      }
+      setTimeout(() => {
+        _userNotifications = _userNotifications.filter(n => n.id !== notifId);
+        const unreadCount = _userNotifications.filter(n => !n.is_read).length;
+        updateNotificationsUI(unreadCount);
+        renderNotificationList();
+      }, 150);
+      await fetch(`/api/notifications/${notifId}/dismiss`, { method: 'POST' });
+    } catch (_) {}
+  };
+
+  window.__pephubMarkAllRead = async function() {
+    try {
+      _userNotifications.forEach(n => { n.is_read = true; });
+      updateNotificationsUI(0);
+      renderNotificationList();
+      await fetch('/api/notifications/read-all', { method: 'POST' });
+    } catch (_) {}
+  };
+
+  window.pephubMountNotificationsWidget = function(host) {
+    if (!host || host.dataset.pephubNotifMounted === '1') return;
+    host.dataset.pephubNotifMounted = '1';
+
+    host.innerHTML = `
+      <div class="notif-wrapper">
+        <button type="button" class="hd-btn btn-notifications" id="btnHeaderNotifications" aria-haspopup="true" title="Notificações & Comunicados">
+          <svg class="notif-bell-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span class="notif-badge empty">0</span>
+        </button>
+        <div id="pephubNotificationsPopover" class="notif-popover" role="dialog" aria-label="Notificações corporativas">
+          <div class="notif-card-box">
+            <div class="notif-hd">
+              <div class="notif-hd-left">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                <div>
+                  <h4 class="notif-hd-title">Notificações</h4>
+                  <div class="notif-hd-sub" id="notifHeaderSub">Carregando…</div>
+                </div>
+              </div>
+              <button type="button" class="notif-btn-all-read" onclick="window.__pephubMarkAllRead()" title="Marcar todas como lidas">
+                Limpar não lidas
+              </button>
+            </div>
+            <div class="notif-tabs-bar">
+              <button type="button" class="notif-tab active" id="btnNotifTabAll">Todas</button>
+              <button type="button" class="notif-tab" id="btnNotifTabUnread">Não lidas (<span id="notifTabUnreadCount">0</span>)</button>
+            </div>
+            <div class="notif-body" id="notifListBody">
+              <div class="notif-empty">Carregando avisos…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const btn = host.querySelector('#btnHeaderNotifications');
+    const popover = host.querySelector('#pephubNotificationsPopover');
+    const tabAll = host.querySelector('#btnNotifTabAll');
+    const tabUnread = host.querySelector('#btnNotifTabUnread');
+
+    const togglePopover = () => {
+      const isOpen = popover.classList.contains('show');
+      if (isOpen) {
+        popover.classList.remove('show');
+      } else {
+        popover.classList.add('show');
+        renderNotificationList();
+      }
+    };
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      togglePopover();
+    });
+
+    tabAll.addEventListener('click', () => {
+      _activeNotifFilter = 'all';
+      tabAll.classList.add('active');
+      tabUnread.classList.remove('active');
+      renderNotificationList();
+    });
+
+    tabUnread.addEventListener('click', () => {
+      _activeNotifFilter = 'unread';
+      tabUnread.classList.add('active');
+      tabAll.classList.remove('active');
+      renderNotificationList();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (popover.classList.contains('show') && !host.contains(e.target)) {
+        popover.classList.remove('show');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && popover.classList.contains('show')) {
+        popover.classList.remove('show');
+      }
+    });
+
+    // Carga inicial
+    fetchUserNotifications().then(() => renderNotificationList());
+    if (!_notifPollingTimer) {
+      _notifPollingTimer = setInterval(fetchUserNotifications, 45000);
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') fetchUserNotifications();
+      });
+    }
+  };
+
+  // ------------------------------------------------------------------
+  // Cabeçalho dos relatórios (Universal)
   // ------------------------------------------------------------------
   window.initPephubHeader = async function(containerId) {
     const container = document.getElementById(containerId);
@@ -556,16 +1083,20 @@
 
       if (user.is_admin) {
         container.innerHTML = `
+          <span data-pephub-notifications></span>
           <span data-pephub-online></span>
           <a href="/admin/" class="hd-btn" title="Ir para Central Administrativa">Admin</a>
           <button id="btnHeaderLogout" class="hd-btn" title="Encerrar sessão corporativa">Sair</button>
         `;
+        window.pephubMountNotificationsWidget(container.querySelector('[data-pephub-notifications]'));
         window.pephubMountOnlineWidget(container.querySelector('[data-pephub-online]'));
       } else {
-        // Colaborador comum: somente o botão Sair (Voltar ao Catálogo já está no HTML)
+        // Colaborador comum: botão de Notificações e botão Sair
         container.innerHTML = `
+          <span data-pephub-notifications></span>
           <button id="btnHeaderLogout" class="hd-btn" title="Encerrar sessão corporativa">Sair</button>
         `;
+        window.pephubMountNotificationsWidget(container.querySelector('[data-pephub-notifications]'));
       }
 
       const btnLogout = document.getElementById('btnHeaderLogout');
@@ -587,11 +1118,23 @@
   // ------------------------------------------------------------------
   function autoInit() {
     startHeartbeat();
-    const hosts = document.querySelectorAll('[data-pephub-online]');
-    if (hosts.length) {
+
+    // Monta notificações para qualquer elemento anotado (para todos os usuários autenticados)
+    const notifHosts = document.querySelectorAll('[data-pephub-notifications]');
+    if (notifHosts.length) {
+      getMe().then(me => {
+        if (me && me.authenticated) {
+          notifHosts.forEach(h => window.pephubMountNotificationsWidget(h));
+        }
+      });
+    }
+
+    // Monta widget "Online" apenas para administradores
+    const onlineHosts = document.querySelectorAll('[data-pephub-online]');
+    if (onlineHosts.length) {
       getMe().then(me => {
         if (me && me.authenticated && me.is_admin) {
-          hosts.forEach(h => window.pephubMountOnlineWidget(h));
+          onlineHosts.forEach(h => window.pephubMountOnlineWidget(h));
         }
       });
     }
