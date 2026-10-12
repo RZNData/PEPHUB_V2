@@ -292,6 +292,43 @@ export const REPORT_REGISTRY = {
     rules: {
       defaultCidade: 'Regional Norte'
     }
+  },
+
+  EVOLUCAO_CARTEIRA: {
+    id: 'EVOLUCAO_CARTEIRA',
+    num: '8',
+    name: 'Evolução de Carteira Móvel & B2B',
+    title: 'Relatório Oficial de Evolução de Carteira (Gross, Churn, Migrações & Net Adds)',
+    icon: '📈',
+    primaryTable: 'fato_evolucao_carteira',
+    dateColumn: 'mes_referencia',
+    orderColumn: 'mes_referencia',
+    defaultMes: '202610',
+    defaultMetric: 'net_adds',
+    metricLabel: 'Net Adds (Adições Líquidas)',
+    metrics: [
+      { key: 'net_adds', label: 'Net Adds', unit: '', direction: 'DESC', isDefault: true, desc: 'Crescimento líquido da carteira de clientes' },
+      { key: 'gross_bruto', label: 'Gross Bruto', unit: '', direction: 'DESC', isDefault: false, desc: 'Total de ativações brutas no mês' },
+      { key: 'gross_liquido', label: 'Gross Líquido', unit: '', direction: 'DESC', isDefault: false, desc: 'Ativações líquidas após expurgos de descontos e fakes' },
+      { key: 'churn_involuntario', label: 'Churn Involuntário', unit: '', direction: 'ASC', isDefault: false, desc: 'Desconexões involuntárias por inadimplência, fraude e FPD' },
+      { key: 'churn_voluntario', label: 'Churn Voluntário', unit: '', direction: 'ASC', isDefault: false, desc: 'Desconexões voluntárias solicitadas pelos clientes' }
+    ],
+    dimensions: [
+      { key: 'regional', label: 'Regional', examples: ['CLARO NO', 'CLARO SP1', 'CLARO RJ/ES', 'CLARO MG', 'TOTAL BRASIL'] },
+      { key: 'mercado', label: 'Mercado', examples: ['CONS', 'PME', 'GE'] }
+    ],
+    keywords: [
+      /\bevolucao\s+(de\s+)?carteira\b/i,
+      /\bnet\s*adds\b/i,
+      /\bgross\s+bruto\b/i,
+      /\bgross\s+liquido\b/i,
+      /\bmatriz\s+(de\s+)?migrac(ao|oes|ões)\b/i,
+      /\bmovimentacao\s+(de\s+)?carteira\b/i,
+      /\btendencia\s+(de\s+)?produtos\b/i
+    ],
+    rules: {
+      defaultRegional: 'CLARO NO'
+    }
   }
 };
 

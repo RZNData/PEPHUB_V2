@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Acesso à Plataforma — Regional Norte | Pephub</title>
+<meta name="description" content="Acesso corporativo seguro ao PEP HUB — Portal de Churn & Qualidade da Regional Norte.">
 <link rel="manifest" href="/manifest.webmanifest">
-<meta name="theme-color" content="#121822">
+<meta name="theme-color" content="#f4f6f9">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,867 +15,190 @@
 <link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon.png">
 <link rel="stylesheet" href="/css/app-mobile.css">
-<style>
-:root {
-  --bg: #0f141d;
-  --bg-card: #ffffff;
-  --nav: #121822;
-  --nav-surface: #1a2332;
-  --nav-border: #283548;
-  --ink: #1c2430;
-  --ink2: #5b6675;
-  --ink3: #8b95a3;
-  --line: #dfe3e8;
-  --line2: #eceef1;
-  --red: #c0191f;
-  --red-dark: #8a0f18;
-  --red-light: #fdece9;
-  --green: #2f7d5d;
-  --green-light: #eaf2ec;
-  --amber: #c98a15;
-  --amber-light: #fdf3e2;
-  --blue: #2a5d8f;
-  --grad-claro: linear-gradient(90deg, #8a0f18 0%, #c0191f 26%, #e23a1e 50%, #f47a1f 74%, #f9b233 100%);
-  --grad-surface: linear-gradient(135deg, #16202e 0%, #0f141d 100%);
-}
-
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font: 13px/1.5 "Segoe UI", Roboto, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Layout Split-Screen Corporativo */
-.login-wrapper {
-  display: flex;
-  min-height: 100vh;
-  width: 100%;
-  overflow: hidden;
-  position: relative;
-}
-
-/* Lado Esquerdo: Showcase Institucional */
-.login-hero {
-  flex: 1.15;
-  background: radial-gradient(circle at 18% 22%, rgba(192, 25, 31, 0.22) 0%, transparent 45%),
-              radial-gradient(circle at 85% 75%, rgba(244, 122, 31, 0.12) 0%, transparent 50%),
-              linear-gradient(145deg, #151e2b 0%, #0d121a 100%);
-  border-right: 1px solid var(--nav-border);
-  padding: 48px 56px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position: relative;
-  overflow: hidden;
-}
-
-.login-hero::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--grad-claro);
-  z-index: 2;
-}
-
-.hero-mesh {
-  position: absolute;
-  inset: 0;
-  background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
-  background-size: 32px 32px;
-  pointer-events: none;
-  opacity: 0.8;
-}
-
-.hero-top {
-  position: relative;
-  z-index: 1;
-}
-
-.hero-badge-wrap {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 32px;
-}
-
-.hero-logo-ico {
-  width: 48px;
-  height: 48px;
-  min-width: 48px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #8a0f18, #c0191f);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 24px rgba(192, 25, 31, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.hero-brand h1 {
-  margin: 0;
-  color: #ffffff;
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.6px;
-  line-height: 1.1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.hero-brand h1 span {
-  font-weight: 300;
-  color: #f9b233;
-  font-size: 22px;
-}
-
-.hero-brand p {
-  margin: 4px 0 0;
-  color: #94a3b8;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
-}
-
-.hero-headline {
-  margin-top: 40px;
-}
-
-.hero-headline h2 {
-  margin: 0 0 16px;
-  color: #ffffff;
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.8px;
-}
-
-.hero-headline h2 b {
-  background: linear-gradient(90deg, #ffffff 0%, #f9b233 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.hero-headline p {
-  margin: 0;
-  color: #a0aec0;
-  font-size: 14.5px;
-  line-height: 1.6;
-  max-width: 520px;
-}
-
-.hero-pillars {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-  margin-top: 36px;
-  max-width: 540px;
-}
-
-.pillar-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  padding: 14px 16px;
-  border-radius: 8px;
-  backdrop-filter: blur(8px);
-  transition: transform 0.2s ease, border-color 0.2s ease;
-}
-
-.pillar-item:hover {
-  transform: translateX(4px);
-  border-color: rgba(249, 178, 51, 0.35);
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.pillar-ico {
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #f9b233;
-}
-
-.pillar-content b {
-  display: block;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 700;
-  margin-bottom: 2px;
-}
-
-.pillar-content span {
-  color: #94a3b8;
-  font-size: 11.5px;
-  line-height: 1.4;
-  display: block;
-}
-
-.hero-footer {
-  position: relative;
-  z-index: 1;
-  padding-top: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  color: #718096;
-  font-size: 11.5px;
-}
-
-.hero-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #3ddc84;
-  box-shadow: 0 0 0 2px rgba(61, 220, 132, 0.25);
-  animation: pulseLive 2s infinite;
-}
-
-@keyframes pulseLive {
-  0% { transform: scale(0.95); opacity: 0.8; }
-  50% { transform: scale(1.15); opacity: 1; }
-  100% { transform: scale(0.95); opacity: 0.8; }
-}
-
-/* Lado Direito: Formulário Executivo */
-.login-panel {
-  flex: 0.85;
-  background: #f8fafc;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 40px 48px;
-  overflow-y: auto;
-  position: relative;
-}
-
-.panel-header-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 28px;
-}
-
-.btn-back-portal {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: #475569;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 12px;
-  padding: 7px 12px;
-  border-radius: 6px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  transition: all 0.15s ease;
-}
-
-.btn-back-portal:hover {
-  color: var(--red);
-  border-color: #cbd5e1;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
-
-.panel-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #e2e8f0;
-  color: #334155;
-  font-size: 10.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  padding: 4px 10px;
-  border-radius: 20px;
-}
-
-.card-center-wrap {
-  width: 100%;
-  max-width: 430px;
-  margin: 0 auto;
-}
-
-.auth-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.06);
-  padding: 34px 32px 30px;
-  position: relative;
-  overflow: hidden;
-}
-
-.auth-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--grad-claro);
-}
-
-.card-title {
-  margin: 0 0 6px;
-  color: var(--ink);
-  font-size: 21px;
-  font-weight: 800;
-  letter-spacing: -0.4px;
-}
-
-.card-subtitle {
-  margin: 0 0 22px;
-  color: var(--ink2);
-  font-size: 12.5px;
-  line-height: 1.45;
-}
-
-/* Alertas & Toasts */
-.alert {
-  padding: 11px 14px;
-  border-radius: 6px;
-  font-size: 12.5px;
-  margin-bottom: 18px;
-  display: none;
-  line-height: 1.45;
-  font-weight: 600;
-  animation: fadeIn 0.2s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.alert.error { background: var(--red-light); border: 1px solid #f6c8c2; color: #9b1c1c; display: flex; align-items: flex-start; gap: 8px; }
-.alert.warning { background: var(--amber-light); border: 1px solid #f0dcb4; color: #8a5d06; display: flex; align-items: flex-start; gap: 8px; }
-.alert.success { background: var(--green-light); border: 1px solid #c9dfd2; color: #235c44; display: flex; align-items: flex-start; gap: 8px; }
-
-/* Grupos de Formulário */
-.form-group {
-  margin-bottom: 18px;
-  position: relative;
-}
-
-.form-group label {
-  display: block;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--ink2);
-  margin-bottom: 6px;
-}
-
-.input-icon-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.input-icon-wrap .lead-ico {
-  position: absolute;
-  left: 12px;
-  color: #94a3b8;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.15s ease;
-}
-
-.input-icon-wrap input {
-  width: 100%;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  padding: 11px 40px 11px 38px;
-  font: 13.5px "Segoe UI", -apple-system, sans-serif;
-  color: var(--ink);
-  background: #ffffff;
-  transition: all 0.15s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-}
-
-.input-icon-wrap input:focus {
-  outline: none;
-  border-color: var(--red);
-  box-shadow: 0 0 0 3px rgba(192, 25, 31, 0.14);
-}
-
-.input-icon-wrap input:focus + .lead-ico,
-.input-icon-wrap input:focus ~ .lead-ico {
-  color: var(--red);
-}
-
-.btn-toggle-eye {
-  position: absolute;
-  right: 10px;
-  background: none;
-  border: none;
-  padding: 6px;
-  color: #94a3b8;
-  cursor: pointer;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.15s ease, background-color 0.15s ease;
-}
-
-.btn-toggle-eye:hover {
-  color: var(--ink);
-  background: #f1f5f9;
-}
-
-.caps-warning {
-  display: none;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  color: #c98a15;
-  font-weight: 700;
-  margin-top: 5px;
-  animation: fadeIn 0.15s ease-out;
-}
-
-.form-options-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 6px 0 22px;
-  font-size: 12px;
-}
-
-.remember-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  color: var(--ink2);
-  cursor: pointer;
-  user-select: none;
-  font-weight: 500;
-}
-
-.remember-label input[type="checkbox"] {
-  width: 15px;
-  height: 15px;
-  cursor: pointer;
-  accent-color: var(--red);
-}
-
-.forgot-link {
-  color: var(--red);
-  text-decoration: none;
-  font-weight: 700;
-  transition: color 0.15s;
-}
-
-.forgot-link:hover {
-  color: var(--red-dark);
-  text-decoration: underline;
-}
-
-/* Botões de Ação */
-.btn-submit {
-  width: 100%;
-  background: linear-gradient(135deg, #8a0f18 0%, #c0191f 100%);
-  color: #ffffff;
-  border: 1px solid rgba(138, 15, 24, 0.4);
-  border-radius: 6px;
-  padding: 12px;
-  font: 700 13.5px "Segoe UI", Roboto, sans-serif;
-  cursor: pointer;
-  transition: all 0.18s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  box-shadow: 0 4px 14px rgba(192, 25, 31, 0.28);
-}
-
-.btn-submit:hover {
-  background: linear-gradient(135deg, #7a0d15 0%, #ad161b 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(192, 25, 31, 0.38);
-}
-
-.btn-submit:active {
-  transform: translateY(0);
-}
-
-.btn-submit:disabled {
-  opacity: 0.65;
-  cursor: wait;
-  transform: none;
-}
-
-.btn-biometric {
-  width: 100%;
-  margin-top: 10px;
-  background: #ffffff;
-  color: #1e293b;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  padding: 11px;
-  font: 700 12.5px "Segoe UI", Roboto, sans-serif;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.btn-biometric:hover {
-  background: #f8fafc;
-  border-color: #94a3b8;
-  color: #0f172a;
-}
-
-.spinner {
-  width: 15px;
-  height: 15px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #ffffff;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-  display: none;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* Rodapé do Cartão */
-.auth-bottom-nav {
-  margin-top: 24px;
-  padding-top: 18px;
-  border-top: 1px solid #f1f5f9;
-  text-align: center;
-  font-size: 12px;
-  color: var(--ink2);
-}
-
-.auth-bottom-nav a {
-  color: var(--red);
-  text-decoration: none;
-  font-weight: 700;
-  margin-left: 4px;
-}
-
-.auth-bottom-nav a:hover {
-  text-decoration: underline;
-}
-
-.panel-footer-legal {
-  text-align: center;
-  color: #94a3b8;
-  font-size: 11px;
-  margin-top: 20px;
-}
-
-/* Responsividade Mobile e Telas Menores */
-@media (max-width: 980px) {
-  .login-wrapper { flex-direction: column; }
-  .login-hero {
-    flex: none;
-    padding: 32px 24px;
-    border-right: none;
-    border-bottom: 1px solid var(--nav-border);
-  }
-  .hero-headline { margin-top: 20px; }
-  .hero-headline h2 { font-size: 24px; }
-  .hero-pillars { display: none; }
-  .hero-footer { display: none; }
-  .login-panel { padding: 32px 20px; }
-}
-
-@media (max-width: 480px) {
-  .hero-brand h1 { font-size: 22px; }
-  .hero-brand h1 span { font-size: 18px; }
-  .auth-card { padding: 26px 20px 22px; }
-}
-</style>
+<link rel="stylesheet" href="/css/auth.css">
 </head>
-<body>
+<body class="auth-split-body">
 
-<div class="login-wrapper">
-  <!-- Painel Esquerdo: Identidade Institucional PEP HUB -->
-  <aside class="login-hero" aria-label="Apresentação Institucional">
-    <div class="hero-mesh" aria-hidden="true"></div>
+<div class="auth-split">
+  <!-- Lado Esquerdo: Painel Institucional e Animação Sóbria -->
+  <aside class="auth-aside" aria-label="Apresentação institucional">
+    <canvas id="authBg" class="auth-aside-canvas" aria-hidden="true"></canvas>
+    <div class="auth-aside-aurora" aria-hidden="true"><i></i><i></i></div>
 
-    <div class="hero-top">
-      <div class="hero-badge-wrap">
-        <div class="hero-logo-ico">
-          <svg viewBox="0 0 48 48" width="28" height="28" aria-hidden="true">
-            <circle cx="24" cy="24" r="21" fill="none" stroke="#ffffff" stroke-width="2.6"/>
-            <path d="M31.5 16.5 L26.5 26.5 L16.5 31.5 L21.5 21.5 Z" fill="#ffffff"/>
-          </svg>
-        </div>
-        <div class="hero-brand">
-          <h1>PEP HUB <span>RNO</span></h1>
-          <p>Regional Norte · Claro Brasil</p>
+    <div class="aside-content">
+      <div class="aside-top">
+        <a class="aside-brand" href="/" title="PEP HUB Regional Norte">
+          <div class="aside-logo-symbol">
+            <svg viewBox="0 0 48 48" width="26" height="26" aria-hidden="true">
+              <circle cx="24" cy="24" r="21" fill="none" stroke="#fff" stroke-width="2.6"/>
+              <path d="M31.5 16.5 L26.5 26.5 L16.5 31.5 L21.5 21.5 Z" fill="#fff"/>
+            </svg>
+          </div>
+          <div class="aside-brand-text">
+            <b>PEP HUB<span>RNO</span></b>
+            <small>Regional Norte · Inteligência &amp; Qualidade</small>
+          </div>
+        </a>
+      </div>
+
+      <div class="aside-hero">
+        <h2 class="aside-tagline">Decisão estratégica orientada a <em>dados em tempo real</em>.</h2>
+        <p class="aside-desc">Ecossistema analítico integrado da Regional Norte para acompanhamento de churn, qualidade de vendas e gestão de safras Claro.</p>
+
+        <div class="aside-pillars">
+          <div class="aside-pillar">
+            <div class="aside-pillar-icon">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 3v18h18"/><path d="M18 9l-5 5-4-4-6 6"/></svg>
+            </div>
+            <div class="aside-pillar-body">
+              <strong>Telemetria de Safras &amp; Churn</strong>
+              <p>Acompanhamento dinâmico do comportamento de safras móvel e residencial.</p>
+            </div>
+          </div>
+
+          <div class="aside-pillar">
+            <div class="aside-pillar-icon">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div class="aside-pillar-body">
+              <strong>FPD &amp; Qualidade da Venda</strong>
+              <p>Monitoramento proativo de faturas de primeiros dias e estornos.</p>
+            </div>
+          </div>
+
+          <div class="aside-pillar">
+            <div class="aside-pillar-icon">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="aside-pillar-body">
+              <strong>Segurança Corporativa &amp; RBAC</strong>
+              <p>Controle granular de acesso por canal, cargo e diretoria.</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="hero-headline">
-        <h2>Plataforma Integrada de <b>Inteligência Operacional</b></h2>
-        <p>Acompanhamento de ponta a ponta dos indicadores estratégicos de Churn, Qualidade, FPD e Market Share com consolidação em tempo real.</p>
+      <div class="aside-footer">
+        <span>Claro Brasil · Regional Norte (PA, AM, AP, MA, RR)</span>
+        <div class="aside-badge-secure"><span class="sec-dot"></span><span>Ambiente Seguro</span></div>
       </div>
-
-      <div class="hero-pillars">
-        <div class="pillar-item">
-          <div class="pillar-ico">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-          </div>
-          <div class="pillar-content">
-            <b>Indicadores Oficiais Auditados</b>
-            <span>Painéis unificados de FPD, Churn Safra e Banda Larga com dados em tempo real.</span>
-          </div>
-        </div>
-
-        <div class="pillar-item">
-          <div class="pillar-ico">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          </div>
-          <div class="pillar-content">
-            <b>Segurança & Controle de Acesso</b>
-            <span>Autenticação criptográfica PBKDF2 e permissões granulares por colaborador.</span>
-          </div>
-        </div>
-
-        <div class="pillar-item">
-          <div class="pillar-ico">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          </div>
-          <div class="pillar-content">
-            <b>Infraestrutura Serverless Edge</b>
-            <span>Alta disponibilidade Cloudflare Workers e persistência distribuída D1.</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="hero-footer">
-      <div class="hero-status">
-        <span class="status-dot"></span>
-        <span>Ambiente Operacional Ativo</span>
-      </div>
-      <div>Horário de Brasília (DF)</div>
     </div>
   </aside>
 
-  <!-- Painel Direito: Formulário Executivo de Autenticação -->
-  <main class="login-panel">
-    <div class="panel-header-nav">
-      <a href="/" class="btn-back-portal" title="Ir para a página inicial">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        <span>Voltar ao Catálogo</span>
-      </a>
-      <span class="panel-badge">Acesso Seguro</span>
+  <!-- Lado Direito: Palco do Formulário (Sóbrio & Executivo) -->
+  <main class="auth-stage">
+    <div class="stage-top-meta">
+      <span class="env-pill">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Acesso Corporativo Seguro
+      </span>
     </div>
 
-    <div class="card-center-wrap">
-      <div class="auth-card">
-        <h2 class="card-title">Acesso Corporativo</h2>
-        <p class="card-subtitle">Entre com suas credenciais de rede Claro ou seu e-mail corporativo cadastrado.</p>
+    <div class="auth-form-wrap">
+      <div class="form-header">
+        <span class="form-eyebrow">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Autenticação
+        </span>
+        <h1 class="form-title" id="formTitle">Bem-vindo de volta</h1>
+        <p class="form-sub">Entre com seu e-mail corporativo Claro ou login de rede para acessar os painéis da Regional Norte.</p>
+      </div>
 
-        <div id="alertBox" class="alert" role="alert"></div>
+      <div id="alertBox" class="alert" role="alert"></div>
 
-        <form id="loginForm" autocomplete="on">
-          <div class="form-group">
-            <label for="email">E-mail Corporativo ou Login</label>
-            <div class="input-icon-wrap">
-              <input 
-                type="text" 
-                id="email" 
-                name="email" 
-                placeholder="ex.: nome.sobrenome@claro.com.br ou login" 
-                required 
-                autocomplete="username"
-                autofocus
-              >
-              <div class="lead-ico">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              </div>
-            </div>
+      <form id="loginForm" autocomplete="on">
+        <div class="field">
+          <label for="email">E-mail corporativo ou login</label>
+          <div class="input-wrap">
+            <input type="text" id="email" name="email" placeholder="nome.sobrenome@claro.com.br ou login" required autocomplete="username" autofocus>
+            <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
           </div>
-
-          <div class="form-group">
-            <label for="password">Senha Corporativa</label>
-            <div class="input-icon-wrap">
-              <input 
-                type="password" 
-                id="password" 
-                name="password" 
-                placeholder="Digite sua senha de acesso" 
-                required 
-                autocomplete="current-password"
-              >
-              <div class="lead-ico">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              </div>
-              <button type="button" id="btnTogglePassword" class="btn-toggle-eye" aria-label="Mostrar ou ocultar senha" title="Mostrar/Ocultar senha">
-                <svg id="eyeIconOpen" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                <svg id="eyeIconClosed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-              </button>
-            </div>
-            <div id="capsLockWarning" class="caps-warning">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-              Caps Lock está ativado
-            </div>
-          </div>
-
-          <div class="form-options-row">
-            <label class="remember-label">
-              <input type="checkbox" id="rememberMe">
-              <span>Lembrar meu usuário</span>
-            </label>
-            <a href="/forgot-password/" class="forgot-link">Esqueceu sua senha?</a>
-          </div>
-
-          <button type="submit" id="btnSubmit" class="btn-submit">
-            <div id="btnSpinner" class="spinner"></div>
-            <span id="btnText">Entrar no Portal</span>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-
-          <button type="button" id="btnBiometricLogin" class="btn-biometric" style="display:none" onclick="attemptBiometricLogin()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 004 11m0 0a8.003 8.003 0 0015.357 3.168"/></svg>
-            <span>Acessar com Biometria / Windows Hello</span>
-          </button>
-        </form>
-
-        <div class="auth-bottom-nav">
-          Ainda não possui acesso autorizado? 
-          <a href="/register/">Solicitar Cadastro</a>
         </div>
+
+        <div class="field">
+          <label for="password">Senha</label>
+          <div class="input-wrap">
+            <input type="password" id="password" name="password" placeholder="Digite sua senha" required autocomplete="current-password">
+            <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+            <button type="button" class="eye-btn" id="btnTogglePassword" aria-label="Mostrar ou ocultar senha">
+              <svg class="eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="eye-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+          <div id="capsLockWarning" class="caps-warn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            Caps Lock ativado
+          </div>
+        </div>
+
+        <div class="row-between">
+          <label class="check"><input type="checkbox" id="rememberMe"><span>Lembrar meu usuário</span></label>
+          <a href="/forgot-password/" class="lnk">Esqueceu sua senha?</a>
+        </div>
+
+        <button type="submit" id="btnSubmit" class="btn-primary">
+          <span id="btnSpinner" class="spinner"></span>
+          <span id="btnText">Entrar no Portal</span>
+          <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+
+        <button type="button" id="btnBiometricLogin" class="btn-ghost" style="display:none" onclick="attemptBiometricLogin()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 004 11m0 0a8.003 8.003 0 0015.357 3.168"/></svg>
+          <span>Acessar com Biometria / Windows Hello</span>
+        </button>
+      </form>
+
+      <div class="form-footer-nav">
+        Ainda não possui acesso corporativo? <a href="/register/" class="lnk">Solicitar cadastro</a>
       </div>
     </div>
 
-    <footer class="panel-footer-legal">
-      PEP HUB Regional Norte · Uso Corporativo Restrito aos Colaboradores Claro
-    </footer>
+    <div class="stage-footer">
+      PEP HUB Regional Norte · Uso corporativo restrito aos colaboradores Claro
+    </div>
   </main>
 </div>
 
+<script src="/js/auth-ui.js"></script>
 <script>
 const params = new URLSearchParams(window.location.search);
 const redirectTarget = params.get('redirect') || '/';
+const { showAlert, setBusy } = window.PepAuth;
+
+PepAuth.bindPasswordToggle('btnTogglePassword', 'password');
+PepAuth.bindCapsLock('password', 'capsLockWarning');
 
 // Recupera usuário lembrado
 const savedUser = localStorage.getItem('pephub_last_user');
 if (savedUser) {
-  const emailInput = document.getElementById('email');
-  emailInput.value = savedUser;
+  document.getElementById('email').value = savedUser;
   document.getElementById('rememberMe').checked = true;
   document.getElementById('password').focus();
 }
 
-// Mensagens informativas por parâmetro URL
+// Mensagens informativas por parâmetro de URL
 if (params.get('msg') === 'registered') {
-  showAlert('Solicitação de cadastro recebida com sucesso. Você receberá um e-mail formal assim que o acesso for liberado pelo responsável.', 'success');
+  showAlert('Solicitação de cadastro recebida com sucesso. Você receberá um e-mail assim que o acesso for liberado pelo responsável pela ferramenta.', 'success');
 } else if (params.get('msg') === 'reset_done') {
-  showAlert('Senha redefinida com sucesso. Efetue o login corporativo com sua nova senha.', 'success');
+  showAlert('Senha redefinida com sucesso. Efetue o login com sua nova senha corporativa.', 'success');
 } else if (params.get('msg') === 'approved') {
-  showAlert('Cadastro aprovado com sucesso. Já é possível efetuar o login no portal.', 'success');
+  showAlert('Cadastro aprovado com sucesso. Já é possível efetuar o login corporativo.', 'success');
 } else if (params.get('logout') === '1') {
-  showAlert('Sessão encerrada com sucesso e cache de segurança limpo.', 'success');
+  showAlert('Sessão encerrada com sucesso.', 'success');
 }
 
-function showAlert(text, type = 'error') {
-  const box = document.getElementById('alertBox');
-  box.className = 'alert ' + type;
-  
-  let iconSvg = '';
-  if (type === 'error') {
-    iconSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
-  } else if (type === 'success') {
-    iconSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="flex-shrink:0;margin-top:1px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
-  } else {
-    iconSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
-  }
-
-  box.innerHTML = iconSvg + '<div>' + escapeHtml(text) + '</div>';
-  box.style.display = 'flex';
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-// Toggle mostrar / ocultar senha
-const btnTogglePassword = document.getElementById('btnTogglePassword');
-const passwordInput = document.getElementById('password');
-const eyeOpen = document.getElementById('eyeIconOpen');
-const eyeClosed = document.getElementById('eyeIconClosed');
-
-if (btnTogglePassword) {
-  btnTogglePassword.addEventListener('click', () => {
-    const isPass = passwordInput.type === 'password';
-    passwordInput.type = isPass ? 'text' : 'password';
-    eyeOpen.style.display = isPass ? 'none' : 'block';
-    eyeClosed.style.display = isPass ? 'block' : 'none';
-  });
-}
-
-// Detector de Caps Lock
-const capsWarn = document.getElementById('capsLockWarning');
-passwordInput.addEventListener('keyup', (e) => {
-  if (e.getModifierState && e.getModifierState('CapsLock')) {
-    capsWarn.style.display = 'flex';
-  } else {
-    capsWarn.style.display = 'none';
-  }
-});
-
-// Envio do Formulário de Login
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
   const remember = document.getElementById('rememberMe').checked;
-  const btn = document.getElementById('btnSubmit');
-  const sp = document.getElementById('btnSpinner');
-  const txt = document.getElementById('btnText');
 
   if (!email || !password) {
-    showAlert('Preencha o e-mail/login e a respectiva senha corporativa.');
+    showAlert('Preencha o e-mail/login e a respectiva senha.');
     return;
   }
 
-  btn.disabled = true;
-  sp.style.display = 'inline-block';
-  txt.textContent = 'Autenticando…';
+  setBusy(true, 'Autenticando…');
 
   try {
     const res = await fetch('/api/auth/login', {
@@ -887,40 +211,31 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
     if (!res.ok) {
       if (data.status === 'pendente') {
-        showAlert('Seu cadastro está pendente de aprovação pelo responsável pela ferramenta. Você receberá um e-mail assim que liberado.', 'warning');
+        showAlert('Seu cadastro está pendente de aprovação pelo responsável pela ferramenta. Você receberá um e-mail de confirmação.', 'warning');
       } else if (data.status === 'bloqueado' || data.status === 'rejeitado') {
         showAlert('Acesso corporativo suspenso ou não autorizado pelo responsável pela ferramenta.', 'error');
       } else {
-        showAlert(data.error || 'Credenciais inválidas. Verifique seu login/e-mail e senha.');
+        showAlert(data.error || 'Credenciais inválidas. Verifique seu e-mail/login e senha.');
       }
-      btn.disabled = false;
-      sp.style.display = 'none';
-      txt.textContent = 'Entrar no Portal';
+      setBusy(false, 'Entrar no Portal');
       return;
     }
 
-    // Se a senha for temporária de uso único, exige troca
+    // Se a senha for temporária de uso único, exige a troca
     if (data.must_change_password) {
       showAlert('Senha provisória identificada. Redirecionando para definição de senha pessoal…', 'warning');
-      setTimeout(() => {
-        window.location.href = '/reset-password/?forced=1';
-      }, 500);
+      setTimeout(() => { window.location.href = '/reset-password/?forced=1'; }, 500);
       return;
     }
 
-    // Salva ou remove identificador lembrado
-    if (remember) {
-      localStorage.setItem('pephub_last_user', email);
-    } else {
-      localStorage.removeItem('pephub_last_user');
-    }
+    // Lembrar usuário / oferta de biometria futura
+    if (remember) localStorage.setItem('pephub_last_user', email);
+    else localStorage.removeItem('pephub_last_user');
 
-    // Pré-gravação de permissões para carregamento instantâneo no catálogo (elimina flicker)
+    // Pré-grava permissões para carregamento instantâneo no catálogo (elimina flicker)
     try {
       const userAllowed = (data.user && data.user.modules_allowed ? data.user.modules_allowed : '')
-        .split(',')
-        .map(m => m.trim().toLowerCase())
-        .filter(Boolean);
+        .split(',').map(m => m.trim().toLowerCase()).filter(Boolean);
       const isAdmin = Boolean(data.user && data.user.is_admin);
       const defaultModules = [
         { id: 'fpd', route: '/fpd/', name: 'FPD — Faturas Primeiros Dias' },
@@ -934,36 +249,25 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         { id: 'podcast', route: '/podcast/', name: 'PEP Cast' },
         { id: 'tv', route: '/tv/', name: 'Painel TV' }
       ];
-      const permCache = {
-        modules: defaultModules,
-        userAllowed: userAllowed,
-        isAdmin: isAdmin
-      };
+      const permCache = { modules: defaultModules, userAllowed: userAllowed, isAdmin: isAdmin };
       sessionStorage.setItem('pephub_portal_perms_cache', JSON.stringify(permCache));
       localStorage.setItem('pephub_portal_perms_cache', JSON.stringify(permCache));
     } catch (_) {}
 
-    // Sucesso
-    showAlert('Acesso confirmado com sucesso! Redirecionando ao portal…', 'success');
-    setTimeout(() => {
-      window.location.href = redirectTarget;
-    }, 350);
-
+    showAlert('Acesso confirmado. Redirecionando…', 'success');
+    setTimeout(() => { window.location.href = redirectTarget; }, 350);
   } catch (err) {
-    showAlert('Falha na comunicação com o servidor. Verifique sua conexão e tente novamente.');
-    btn.disabled = false;
-    sp.style.display = 'none';
-    txt.textContent = 'Entrar no Portal';
+    showAlert('Erro de conexão com o servidor. Tente novamente.');
+    setBusy(false, 'Entrar no Portal');
   }
 });
 
-// Suporte a Biometria (TouchID / FaceID / WebAuthn / Windows Hello)
+// Suporte a Biometria (TouchID / FaceID / WebAuthn)
 async function initBiometrics() {
-  if (window.PublicKeyCredential && 
+  if (window.PublicKeyCredential &&
       await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) {
-    const savedUser = localStorage.getItem('pephub_last_user');
     const hasBiometrics = localStorage.getItem('pephub_biometrics_enrolled');
-    if (savedUser && hasBiometrics) {
+    if (localStorage.getItem('pephub_last_user') && hasBiometrics) {
       const bioBtn = document.getElementById('btnBiometricLogin');
       if (bioBtn) bioBtn.style.display = 'flex';
     }
@@ -971,8 +275,7 @@ async function initBiometrics() {
 }
 
 async function attemptBiometricLogin() {
-  const savedUser = localStorage.getItem('pephub_last_user');
-  if (!savedUser) {
+  if (!localStorage.getItem('pephub_last_user')) {
     showAlert('Nenhum login anterior gravado para biometria.');
     return;
   }
@@ -981,11 +284,9 @@ async function attemptBiometricLogin() {
     const challenge = new Uint8Array(32);
     window.crypto.getRandomValues(challenge);
     showAlert('Biometria autenticada com sucesso! Redirecionando…', 'success');
-    setTimeout(() => {
-      window.location.href = redirectTarget;
-    }, 400);
+    setTimeout(() => { window.location.href = redirectTarget; }, 400);
   } catch (err) {
-    showAlert('Autenticação biométrica não reconhecida ou cancelada.');
+    showAlert('Autenticação biométrica cancelada ou não reconhecida.');
   }
 }
 

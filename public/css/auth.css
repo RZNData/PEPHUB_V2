@@ -1,0 +1,895 @@
+/**
+ * PEP HUB — Design System de Autenticação Corporativa (Split-Screen)
+ * Padrão Oficial Regional Norte — Claro Brasil
+ * Compartilhado por: /login, /register, /forgot-password, /reset-password
+ * Zero dependências externas — CSS nativo puro
+ */
+
+:root {
+  /* Paleta Corporativa PEP HUB (PADRAO_DESIGN_PAINEIS.md) */
+  --bg: #f4f5f7;
+  --panel: #ffffff;
+  --ink: #1c2430;
+  --ink2: #5b6675;
+  --ink3: #8b95a3;
+  --line: #dfe3e8;
+  --line2: #eceef1;
+  --nav: #1b2430;
+  --nav2: #27323f;
+  --aside-bg: #0f1722;
+  --aside-bg2: #162232;
+
+  /* Identidade Claro */
+  --claro-red: #c0191f;
+  --claro-red-dark: #8a0f18;
+  --claro-amber: #f9b233;
+  --claro-orange: #f47a1f;
+  --green: #2f7d5d;
+  --blue: #2a5d8f;
+
+  /* Gradiente Oficial */
+  --grad-claro: linear-gradient(90deg, #8a0f18 0%, #c0191f 26%, #e23a1e 50%, #f47a1f 74%, #f9b233 100%);
+  --ease: cubic-bezier(.22, .8, .24, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body.auth-split-body {
+  font: 13px/1.5 "Segoe UI", Roboto, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  color: var(--ink);
+  background: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================================================
+   LAYOUT SPLIT-SCREEN
+   ========================================================================== */
+
+.auth-split {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   LADO ESQUERDO: PAINEL INSTITUCIONAL & ANIMAÇÃO (TEMA CLARO CORPORATIVO)
+   -------------------------------------------------------------------------- */
+.auth-aside {
+  position: relative;
+  flex: 0 0 46%;
+  max-width: 46%;
+  background: linear-gradient(160deg, #fbfcfd 0%, #f4f6f9 55%, #edf1f6 100%);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 44px 48px;
+  overflow: hidden;
+  border-right: 1px solid var(--line);
+}
+
+/* Faixa superior institucional oficial Claro */
+.auth-aside::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--grad-claro);
+  z-index: 5;
+}
+
+/* Canvas da animação contido estritamente no aside */
+.auth-aside-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Aurora sutil institucional em tons claros suaves da paleta Claro */
+.auth-aside-aurora {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.auth-aside-aurora i {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.22;
+  will-change: transform;
+}
+
+.auth-aside-aurora i:nth-child(1) {
+  width: 380px;
+  height: 380px;
+  top: -80px;
+  left: -80px;
+  background: radial-gradient(circle, rgba(192, 25, 31, 0.45), transparent 70%);
+  animation: asideAuroraA 24s ease-in-out infinite alternate;
+}
+
+.auth-aside-aurora i:nth-child(2) {
+  width: 320px;
+  height: 320px;
+  bottom: -60px;
+  right: -60px;
+  background: radial-gradient(circle, rgba(249, 178, 51, 0.35), transparent 70%);
+  animation: asideAuroraB 28s ease-in-out infinite alternate;
+}
+
+@keyframes asideAuroraA {
+  to { transform: translate(60px, 80px) scale(1.1); }
+}
+@keyframes asideAuroraB {
+  to { transform: translate(-50px, -60px) scale(1.15); }
+}
+
+/* Camada de conteúdo institucional (sobre a animação) */
+.aside-content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+}
+
+/* Header da marca no aside */
+.aside-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.aside-logo-symbol {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--claro-red-dark) 0%, var(--claro-red) 100%);
+  border: 1px solid rgba(192, 25, 31, 0.2);
+  box-shadow: 0 4px 14px rgba(192, 25, 31, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.aside-logo-symbol svg {
+  animation: logoSoftSpin 36s linear infinite;
+}
+
+@keyframes logoSoftSpin {
+  to { transform: rotate(360deg); }
+}
+
+.aside-brand-text b {
+  display: block;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.aside-brand-text b span {
+  color: var(--claro-red);
+  font-weight: 700;
+  margin-left: 5px;
+}
+
+.aside-brand-text small {
+  display: block;
+  margin-top: 3px;
+  color: var(--ink2);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+/* Miolo institucional */
+.aside-hero {
+  margin: 48px 0;
+}
+
+.aside-tagline {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.28;
+  letter-spacing: -0.5px;
+  color: var(--ink);
+  margin: 0 0 14px;
+}
+
+.aside-tagline em {
+  font-style: normal;
+  background: linear-gradient(90deg, #c0191f 0%, #e23a1e 50%, #f47a1f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.aside-desc {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink2);
+  margin: 0 0 32px;
+  max-width: 440px;
+}
+
+/* Pilares corporativos em cartões discretos (fundo branco, borda line, sombra suave) */
+.aside-pillars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 460px;
+}
+
+.aside-pillar {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 13px 16px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(28, 36, 48, 0.04);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.aside-pillar:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(28, 36, 48, 0.08);
+  transform: translateX(3px);
+}
+
+.aside-pillar-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  background: #fdece9;
+  border: 1px solid #f6c8c2;
+  color: var(--claro-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.aside-pillar-body strong {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+
+.aside-pillar-body p {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--ink2);
+}
+
+/* Rodapé institucional */
+.aside-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+  color: var(--ink3);
+}
+
+.aside-badge-secure {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  color: var(--ink2);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(28, 36, 48, 0.04);
+}
+
+.aside-badge-secure .sec-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 0 rgba(47, 125, 93, 0.6);
+  animation: secDotPulse 2.4s infinite;
+}
+
+@keyframes secDotPulse {
+  0% { box-shadow: 0 0 0 0 rgba(47, 125, 93, 0.6); }
+  70% { box-shadow: 0 0 0 6px rgba(47, 125, 93, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(47, 125, 93, 0); }
+}
+
+/* --------------------------------------------------------------------------
+   LADO DIREITO: PALCO DO FORMULÁRIO (SÓBRIO & CORPORATIVO)
+   -------------------------------------------------------------------------- */
+.auth-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 40px 48px 24px;
+  overflow-y: auto;
+}
+
+.stage-top-meta {
+  width: 100%;
+  max-width: 450px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 11.5px;
+  color: var(--ink3);
+}
+
+.stage-top-meta .env-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  color: var(--ink2);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+}
+
+.auth-form-wrap {
+  width: 100%;
+  max-width: 440px;
+  margin: auto 0;
+  padding: 16px 0;
+  animation: authFormIn 0.6s var(--ease) both;
+}
+
+/* Versão alargada para a tela de cadastro */
+.auth-form-wrap.wide {
+  max-width: 580px;
+}
+
+@keyframes authFormIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cabeçalho do formulário */
+.form-header {
+  margin-bottom: 24px;
+}
+
+.form-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--claro-red);
+  margin-bottom: 8px;
+}
+
+.form-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.4px;
+  margin: 0 0 6px;
+  line-height: 1.25;
+}
+
+.form-sub {
+  font-size: 13px;
+  color: var(--ink2);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   ESTRUTURA DE CAMPOS E CONTROLES (PADRAO_DESIGN_PAINEIS)
+   -------------------------------------------------------------------------- */
+.field {
+  margin-bottom: 16px;
+}
+
+.field > label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--ink2);
+  margin-bottom: 6px;
+}
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrap .ico {
+  position: absolute;
+  left: 12px;
+  color: #94a3b8;
+  display: flex;
+  pointer-events: none;
+  transition: color 0.18s ease;
+}
+
+.input-wrap input,
+.input-wrap select,
+.field > input,
+.field > select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10.5px 38px 10.5px 38px;
+  font: 13.5px "Segoe UI", -apple-system, Roboto, Arial, sans-serif;
+  color: var(--ink);
+  background: #ffffff;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+}
+
+.field > input,
+.field > select {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.input-wrap select {
+  appearance: none;
+  cursor: pointer;
+  padding-right: 32px;
+}
+
+.input-wrap.has-chevron::after {
+  content: '';
+  position: absolute;
+  right: 13px;
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid #64748b;
+  border-bottom: 2px solid #64748b;
+  transform: rotate(45deg) translateY(-2px);
+  pointer-events: none;
+}
+
+.input-wrap input::placeholder,
+.field > input::placeholder {
+  color: #94a3b8;
+}
+
+.input-wrap input:hover,
+.input-wrap select:hover {
+  border-color: #cbd5e1;
+}
+
+.input-wrap input:focus,
+.input-wrap select:focus,
+.field > input:focus,
+.field > select:focus {
+  outline: none;
+  border-color: var(--claro-red);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(192, 25, 31, 0.12);
+}
+
+.input-wrap:focus-within .ico {
+  color: var(--claro-red);
+}
+
+/* Botão de alternar exibição de senha */
+.eye-btn {
+  position: absolute;
+  right: 6px;
+  background: none;
+  border: 0;
+  padding: 6px;
+  border-radius: 4px;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.eye-btn:hover {
+  color: var(--ink);
+  background: #f1f5f9;
+}
+
+.field-note {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--ink3);
+  line-height: 1.4;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* Alerta de Caps Lock */
+.caps-warn {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #b45309;
+}
+
+/* Medidor de força de senha */
+.strength {
+  margin-top: 7px;
+  display: none;
+}
+.strength.on { display: block; }
+.strength-bar {
+  display: flex;
+  gap: 4px;
+}
+.strength-bar span {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: #e2e8f0;
+  transition: background 0.2s ease;
+}
+.strength-label {
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink3);
+}
+.strength[data-level="1"] .strength-bar span:nth-child(-n+1) { background: #ef4444; }
+.strength[data-level="2"] .strength-bar span:nth-child(-n+2) { background: #f97316; }
+.strength[data-level="3"] .strength-bar span:nth-child(-n+3) { background: #eab308; }
+.strength[data-level="4"] .strength-bar span:nth-child(-n+4) { background: var(--green); }
+
+/* Linha auxiliar entre campos */
+.row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 4px 0 20px;
+  font-size: 12px;
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink2);
+  cursor: pointer;
+  user-select: none;
+  font-weight: 500;
+}
+
+.check input {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--claro-red);
+  cursor: pointer;
+}
+
+.lnk {
+  color: var(--claro-red);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.15s ease;
+}
+
+.lnk:hover {
+  color: var(--claro-red-dark);
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   BOTÕES CORPORATIVOS
+   -------------------------------------------------------------------------- */
+.btn-primary {
+  position: relative;
+  width: 100%;
+  border: 0;
+  border-radius: 6px;
+  padding: 11.5px 18px;
+  color: #ffffff;
+  font: 700 13.5px "Segoe UI", Roboto, sans-serif;
+  letter-spacing: 0.1px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #9b111a 0%, #c0191f 60%, #cf261a 100%);
+  box-shadow: 0 4px 12px rgba(192, 25, 31, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(192, 25, 31, 0.36);
+  filter: brightness(1.04);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.65;
+  cursor: wait;
+  transform: none;
+}
+
+.btn-primary .arrow {
+  transition: transform 0.18s ease;
+}
+
+.btn-primary:hover .arrow {
+  transform: translateX(3px);
+}
+
+.btn-ghost {
+  width: 100%;
+  margin-top: 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px;
+  background: #ffffff;
+  color: var(--ink);
+  font: 600 12.5px "Segoe UI", Roboto, sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-ghost:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.65s linear infinite;
+  display: none;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --------------------------------------------------------------------------
+   ALERTAS CORPORATIVOS
+   -------------------------------------------------------------------------- */
+.alert {
+  display: none;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 13px;
+  margin-bottom: 18px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  animation: alertDrop 0.25s var(--ease);
+}
+
+@keyframes alertDrop {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.alert.error {
+  display: flex;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.alert.warning {
+  display: flex;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+.alert.success {
+  display: flex;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+.alert svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.alert.shake {
+  animation: shake 0.35s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-3px); }
+}
+
+/* Navegação inferior do formulário */
+.form-footer-nav {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line2);
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--ink2);
+}
+
+.form-footer-nav a {
+  margin-left: 5px;
+}
+
+/* --------------------------------------------------------------------------
+   ESTADO DE CONFIRMAÇÃO / SUCESSO (CADASTRO / RECUPERAÇÃO)
+   -------------------------------------------------------------------------- */
+.done-state {
+  display: none;
+  text-align: center;
+  padding: 12px 0 8px;
+}
+
+.done-state.on {
+  display: block;
+  animation: authFormIn 0.4s var(--ease) both;
+}
+
+.done-ring {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: #ecfdf5;
+  border: 2px solid #a7f3d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.done-ring svg path {
+  stroke-dasharray: 28;
+  stroke-dashoffset: 28;
+  animation: drawDone 0.5s 0.15s ease forwards;
+}
+
+@keyframes drawDone {
+  to { stroke-dashoffset: 0; }
+}
+
+.done-state h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.done-state p {
+  margin: 0;
+  color: var(--ink2);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+/* Rodapé institucional sutil no stage */
+.stage-footer {
+  width: 100%;
+  text-align: center;
+  font-size: 11px;
+  color: var(--ink3);
+  padding-top: 16px;
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE (TABLET & MOBILE)
+   ========================================================================== */
+@media (max-width: 960px) {
+  .auth-split {
+    flex-direction: column;
+  }
+
+  .auth-aside {
+    flex: 0 0 auto;
+    max-width: 100%;
+    padding: 24px 22px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .aside-hero,
+  .aside-pillars,
+  .aside-desc {
+    display: none;
+  }
+
+  .aside-brand {
+    margin-bottom: 0;
+  }
+
+  .aside-footer {
+    display: none;
+  }
+
+  .auth-stage {
+    padding: 32px 20px 24px;
+  }
+
+  .stage-top-meta {
+    display: none;
+  }
+
+  .auth-form-wrap,
+  .auth-form-wrap.wide {
+    max-width: 100%;
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .auth-aside-canvas {
+    display: none;
+  }
+}

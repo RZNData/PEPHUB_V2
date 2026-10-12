@@ -165,3 +165,39 @@ Este documento consolida o **padrão oficial de design, arquitetura e engenharia
    - Todo cartão ou métrica de KPI deve iniciar obrigatoriamente com sua numeração sequencial: `1. Nome do Indicador`, `2. Taxa...`, `3. Volume...`.
    - Essa convenção elimina qualquer ambiguidade entre gestores, analistas e o assistente de IA ao referenciar métricas em solicitações, diagnósticos e ajustes de código.
 
+---
+
+## 9. Separação Dimensional Estrita: Segmento de Mercado vs. Produto / Plataforma
+
+1. **Vedação a Agrupamentos Ambíguos:**
+   - É **estritamente vedado** aglutinar Segmento de Mercado e Produto/Tecnologia em um mesmo seletor (ex: `SEGMENTO / PRODUTO`).
+   - São dimensões de negócio ortogonais e independentes:
+     - **Segmento de Mercado (Público-Alvo / Portfólio):** Consumo Massivo (PF), PME (PE + ME), Grandes Empresas (GE).
+     - **Produto / Plataforma (Tecnologia / Modalidade):** Controle (AUTOC / CTLFC), Pós-pago / Conta, Flex, Pré-pago.
+   - Cada dimensão deve possuir seu próprio campo de seleção independente (`.f` com `<label>` próprio e `<select>` ou drawer específico), permitindo que o gestor filtre, por exemplo, "PME" combinado com "Controle", ou analise "Consumo Massivo" para "Pós-pago".
+2. **Chips e Resumo Ativo:**
+   - Cada filtro ativo deve gerar seu chip individual (`.chip`) com remoção rápida (`×`) e badge contador (`.cnt`).
+
+---
+
+## 10. Arquitetura e Mecânica de Cards e Filtros Padrão Churn Safra
+
+1. **Painel de Filtros Integrado (`#pnFiltros`):**
+   - Estrutura em `.panel` com grade `.filters-row` (colunas responsivas `minmax(185px, 1fr)`).
+   - Cada item `.f` possui rótulo em caixa alta (`label`), contador de seleção ativa (`.cnt`), seletor estilizado (`select` ou `.drawer-btn`), barra de ações `.fbar` com botão principal (`button.primary`), botão de redefinição (`.fbtn`) e contêiner dinâmico de chips (`.chips`).
+2. **Grade Contínua de Cards de KPI (`.panel > h2` + `.kpis`):**
+   - Os cards de KPI devem ser encapsulados diretamente dentro de um `.panel` com cabeçalho `h2 Indicadores` (com nota de apoio e botão contextual `?`).
+   - Grid contínuo `.kpis` sem espaçamentos desconexos ou sombras externas individuais (`box-shadow: none`).
+   - Divisões internas limpas via `border-right: 1px solid var(--line2)` e `border-bottom: 1px solid var(--line2)`.
+   - Estrutura de cada cartão `.kpi`:
+     - `.k`: Rótulo numerado (`1. Saldo Final`, `2. Adições...`) em `10.5px`, caixa alta, cor `--ink3`.
+     - `.v`: Valor principal em `22px`, semibold (`font-weight: 600`), numerais tabulares.
+     - `.d`: Detalhamento explicativo em `11px`, cor `--ink3`.
+   - Classes de semântica visual para `.v`:
+     - `.acc`: Vermelho/alerta (`var(--red)`).
+     - `.pos`: Verde/positivo (`var(--green)`).
+     - `.np`: Roxo/inadimplência (`var(--purple)`).
+     - `.parc`: Fundo suave para períodos parciais (`var(--amber-bg)`).
+     - `.pc`: Badge âmbar (`.pc`) de sinalização de dados parciais.
+
+

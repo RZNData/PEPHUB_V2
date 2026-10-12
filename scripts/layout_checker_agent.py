@@ -30,6 +30,7 @@ ANALYTICAL_PANELS = [
     os.path.join(WORKSPACE_DIR, "public", "churn-bl-pme", "index.html"),
     os.path.join(WORKSPACE_DIR, "public", "fpd", "index.html"),
     os.path.join(WORKSPACE_DIR, "public", "fpd-residencial", "index.html"),
+    os.path.join(WORKSPACE_DIR, "public", "evolucao-carteira", "index.html"),
 ]
 
 # CDNs externos proibidos (regra Zero Dependências Externas)

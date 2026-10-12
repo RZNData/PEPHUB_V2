@@ -105,6 +105,9 @@ export default {
     if (pathname === '/churn') {
       return Response.redirect(`${url.origin}/churn/`, 301);
     }
+    if (pathname === '/evolucao-carteira') {
+      return Response.redirect(`${url.origin}/evolucao-carteira/`, 301);
+    }
 
     // 3. Bot WhatsApp Fast-Router (Atende consultas instantaneamente em 20ms sem overhead de schema)
     if (pathname.startsWith('/api/bot/')) {
@@ -283,6 +286,21 @@ export default {
         return Response.redirect(`${url.origin}/?denied=aprovacao-credito`, 302);
       }
       recordAccess(ctx, env, request, user, 'APROVACAO_CREDITO');
+    }
+
+    // Proteção de rotas do painel /evolucao-carteira/*
+    if (pathname.startsWith('/evolucao-carteira') && !pathname.includes('/download') && !pathname.includes('/export') && !isStaticAssetPath(pathname)) {
+      const user = await getSessionUser(request, env);
+      if (!user || user.status !== 'aprovado') {
+        return await enforceAuthRedirect(request, env, url, pathname + url.search);
+      }
+      if (!user.is_admin && (await getSystemControl(env, 'suspend_portal_access') || await isModuleSuspended(env, 'evolucao-carteira'))) {
+        return renderMaintenanceResponse('Painel Evolução de Carteira');
+      }
+      if (!checkReportAccess(user, 'evolucao-carteira')) {
+        return Response.redirect(`${url.origin}/?denied=evolucao-carteira`, 302);
+      }
+      recordAccess(ctx, env, request, user, 'EVOLUCAO_CARTEIRA');
     }
 
     // Proteção de rotas de PeP Tools (Divulgação Corporativa, Aniversário e Market Share)
@@ -486,6 +504,25 @@ export default {
       const res = await env.ASSETS.fetch(assetUrl);
       const headers = new Headers(res.headers);
       headers.set('Content-Disposition', 'attachment; filename="Aprovacao_Credito_Regional_Norte.html"');
+      headers.set('Content-Type', 'text/html; charset=utf-8');
+      headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+      return new Response(res.body, { status: 200, headers });
+    }
+
+    // Download /evolucao-carteira/download
+    if (pathname === '/evolucao-carteira/download' || pathname === '/evolucao-carteira/download/' || pathname === '/evolucao-carteira/export') {
+      const user = await getSessionUser(request, env);
+      if (!user || user.status !== 'aprovado') {
+        return await enforceAuthRedirect(request, env, url, '/evolucao-carteira/download');
+      }
+      if (!checkReportAccess(user, 'evolucao-carteira')) {
+        return Response.redirect(`${url.origin}/?denied=evolucao-carteira`, 302);
+      }
+      recordAccess(ctx, env, request, user, 'EXPORT_HTML:EVOLUCAO_CARTEIRA');
+      const assetUrl = new URL('/evolucao-carteira/index.html', request.url);
+      const res = await env.ASSETS.fetch(assetUrl);
+      const headers = new Headers(res.headers);
+      headers.set('Content-Disposition', 'attachment; filename="Evolucao_Carteira_Regional_Norte.html"');
       headers.set('Content-Type', 'text/html; charset=utf-8');
       headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
       return new Response(res.body, { status: 200, headers });

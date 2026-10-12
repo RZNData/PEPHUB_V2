@@ -1071,6 +1071,20 @@ export const OFFICIAL_REPORT_INPUTS = [
     icon: 'credit-card'
   },
   {
+    key: 'evolucao-carteira',
+    name: 'Evolução de Carteira Móvel & B2B',
+    panel: 'Painel Evolução de Carteira',
+    destination_module: 'Painel Evolução de Carteira',
+    panelRoute: '/evolucao-carteira/',
+    formats: ['.xlsm', '.xlsx', '.csv', '.json'],
+    accepted_formats: ['.xlsm', '.xlsx', '.csv', '.json'],
+    maxSizeMb: 100,
+    max_size_mb: 100,
+    target_table: 'fato_evolucao_carteira',
+    description: 'Acompanhamento de Gross Bruto, Descontos, Churn Involuntário/Voluntário, Matriz de Migrações e Net Adds por Regional.',
+    icon: 'trending-up'
+  },
+  {
     key: 'bot-knowledge',
     name: 'Base de Conhecimento RAG do Bot',
     panel: 'WhatsApp Bot RAG',

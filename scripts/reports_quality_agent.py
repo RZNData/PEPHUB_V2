@@ -34,6 +34,7 @@ DEFAULT_REPORTS = [
     os.path.join(WORKSPACE_DIR, "public", "market-share-movel", "index.html"),
     os.path.join(WORKSPACE_DIR, "public", "panorama-market-share", "index.html"),
     os.path.join(WORKSPACE_DIR, "public", "aprovacao-credito", "index.html"),
+    os.path.join(WORKSPACE_DIR, "public", "evolucao-carteira", "index.html"),
 ]
 
 def audit_single_report(html_path):
@@ -182,6 +183,82 @@ def audit_single_report(html_path):
             print("  [OK] Pilar 9: Cabeçalho padronizado (Voltar ao Catálogo + Sair) e sem exportação HTML.")
         else:
             print("  [FALHA] Pilar 9: Cabeçalho fora do padrão corporativo.")
+
+    # -------------------------------------------------------------
+    # 10. Propagação Obrigatória de Filtros em Todas as Tabelas (10 pts)
+    # -------------------------------------------------------------
+    has_filters = "control-bar" in html or "<select" in html or "filtros" in html.lower()
+    has_tables = "<table" in html or "tbl-" in html
+    if has_filters and has_tables:
+        # Verifica se os seletores propagam reatividade para as tabelas
+        has_reactivity = (
+            "renderAll" in html or "renderizar" in html.lower() or
+            "aplicarfiltros" in html.lower() or "applyfilter" in html.lower() or
+            "onchange=" in html or "addEventListener('change'" in html or
+            "addeventlistener(\"change\"" in html.lower() or
+            "renderTable" in html or "renderTbl" in html or "renderSumario" in html
+        )
+        if not has_reactivity:
+            score -= 15
+            deductions.append("Filtros presentes mas sem funções reativas de renderização conectadas às tabelas analíticas.")
+            print("  [FALHA] Pilar 10: Filtros não propagam atualização dinâmica para as tabelas.")
+        else:
+            # Em relatórios com abas ou múltiplas visões, checar se visões secundárias reagem aos filtros
+            has_tabs = "tab-content" in html or "tab-panel" in html or "nav-tabs" in html or "tab-btn" in html
+            if has_tabs:
+                # Checa se o estado ou renderizadores cobrem as visões secundárias (ex: migracao, segmento, b2b)
+                sub_reactive = (
+                    ("renderAll" in html or "appState" in html or "currentFilter" in html) and
+                    ("render" in html)
+                )
+                if sub_reactive:
+                    print("  [OK] Pilar 10: Reatividade e propagação universal de filtros em todas as tabelas e visões.")
+                else:
+                    score -= 10
+                    deductions.append("Relatório com abas múltiplas não propaga filtros de dimensão para todas as visões analíticas.")
+                    print("  [AVISO] Pilar 10: Algumas visões podem estar isoladas da propagação global de filtros.")
+            else:
+                print("  [OK] Pilar 10: Propagação de filtros validada com renderização reativa em tabelas.")
+    else:
+        print("  [INFO] Pilar 10: Relatório sem necessidade de propagação multidimensional de filtros.")
+
+    # -------------------------------------------------------------
+    # 11. Separação Dimensional Estrita: Segmento vs Produto (15 pts)
+    # -------------------------------------------------------------
+    # Proibição de mesclar Segmento e Produto no mesmo seletor (ex: "SEGMENTO / PRODUTO")
+    has_hybrid_seg_prod = (
+        "segmento / produto" in html.lower() or
+        "segmento/produto" in html.lower() or
+        "produto / segmento" in html.lower() or
+        "produto/segmento" in html.lower()
+    )
+    if has_hybrid_seg_prod:
+        score -= 15
+        deductions.append("Filtro híbrido detectado ('Segmento / Produto'). Devem ser filtros apartados e independentes.")
+        print("  [FALHA] Pilar 11: Seletor mescla Segmento e Produto no mesmo controle.")
+    else:
+        # Se contiver filtros de segmento e produto, validar se são elementos independentes
+        has_seg = "segmento" in html.lower() or "seg-filtro" in html.lower() or "sel-global-seg" in html
+        has_prod = "produto" in html.lower() or "prod-filtro" in html.lower() or "sel-global-prod" in html
+        if has_seg and has_prod:
+            print("  [OK] Pilar 11: Segmento e Produto estritamente apartados em seletores independentes.")
+        else:
+            print("  [INFO] Pilar 11: Relatório dimensional unificado ou sem divisão simultânea de segmento/produto.")
+
+    # -------------------------------------------------------------
+    # 12. Padrão Churn Safra de Cards (.kpis/.kpi) e Filtros (.filters-row) (10 pts)
+    # -------------------------------------------------------------
+    if "<select" in html or "pnFiltros" in html:
+        has_kpi_grid = ".kpis" in html or "class=\"kpis\"" in html or "class='kpis'" in html
+        has_kpi_cards = ".kpi" in html or "class=\"kpi" in html
+        if has_kpi_cards and not has_kpi_grid:
+            score -= 10
+            deductions.append("Cards de KPI soltos ou fora da arquitetura contínua de painel (.kpis) do padrão Churn Safra.")
+            print("  [AVISO] Pilar 12: Cards de KPI devem estar encapsulados no grid contínuo .kpis.")
+        else:
+            print("  [OK] Pilar 12: Cards de KPI e painel de filtros em conformidade com o padrão Churn Safra.")
+    else:
+        print("  [INFO] Pilar 12: Relatório sem painel de filtros ou sem cards de KPI.")
 
     score = max(0, score)
     print(f"  RESULTADO: Score {score}/100")

@@ -182,6 +182,7 @@ def audit_system_integrity():
         os.path.join(WORKSPACE_DIR, "public", "market-share-residencial", "index.html"),
         os.path.join(WORKSPACE_DIR, "public", "market-share-movel", "index.html"),
         os.path.join(WORKSPACE_DIR, "public", "aprovacao-credito", "index.html"),
+        os.path.join(WORKSPACE_DIR, "public", "evolucao-carteira", "index.html"),
     ]
     hdr_ok = True
     for r in reports:
