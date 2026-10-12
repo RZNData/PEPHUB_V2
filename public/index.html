@@ -34,6 +34,7 @@
             { id: 'market-share-movel', href: 'market-share-movel' },
             { id: 'market-share-residencial', href: 'market-share-residencial' },
             { id: 'aprovacao-credito', href: 'aprovacao-credito' },
+            { id: 'evolucao-carteira', href: 'evolucao-carteira' },
             { id: 'divulgacao', href: 'pep-tools' },
             { id: 'podcast', href: 'podcast' },
             { id: 'tv', href: '/tv/' }
@@ -47,6 +48,7 @@
                       (item.id === 'market-share-movel' && allowed.includes('market_share_movel')) ||
                       (item.id === 'market-share-residencial' && allowed.includes('market_share_residencial')) ||
                       (item.id === 'aprovacao-credito' && allowed.includes('aprovacao_credito')) ||
+                      (item.id === 'evolucao-carteira' && (allowed.includes('evolucao_carteira') || allowed.includes('evolucao-carteira'))) ||
                       (item.id === 'divulgacao' && (allowed.includes('pep_tools') || allowed.includes('divulgacao')));
             if (!has) {
               css.push('.card:has(a[href*="' + item.href + '"]) { opacity: 0.72; border-color: #e5e7eb; }');

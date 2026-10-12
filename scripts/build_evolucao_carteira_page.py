@@ -2408,6 +2408,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 </script>
+<script src="/js/header-widget.js"></script>
 </body>
 </html>''')
 

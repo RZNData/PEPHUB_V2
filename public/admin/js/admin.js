@@ -58,6 +58,12 @@ let SYSTEM_SECTIONS = [
         "name": "Painel de Taxa de Aprovação de Crédito",
         "short": "Taxa Crédito",
         "desc": "Taxa de aprovação por canal, parceiro e cidade"
+      },
+      {
+        "id": "evolucao-carteira",
+        "name": "Evolução de Carteira Móvel & B2B",
+        "short": "Evolução Carteira",
+        "desc": "Evolução temporal, net adds, desdobramento por segmento e migrações da Regional Norte"
       }
     ]
   },

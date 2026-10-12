@@ -1,0 +1,12 @@
+{
+  "id": "evolucao_carteira",
+  "titulo": "Evolução de Carteira Móvel & B2B",
+  "nome_curto": "Evolução Carteira",
+  "descricao": "Evolução temporal, net adds, desdobramento por segmento e migrações da Regional Norte",
+  "rota_pephub": "evolucao-carteira",
+  "categoria": "Painéis & Relatórios Oficiais",
+  "responsavel": "Regional Norte",
+  "frequencia_atualizacao": "Mensal",
+  "sort_order": 10,
+  "bot_enabled": false
+}

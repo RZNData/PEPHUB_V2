@@ -370,23 +370,25 @@ export const ALL_SYSTEM_MODULES = [
   'market_share_movel',
   'market_share_residencial',
   'panorama_market_share',
+  'evolucao_carteira',
   'divulgacao',
   'tv'
 ];
 export const ALL_DEFAULT_MODULES_STR = ALL_SYSTEM_MODULES.join(',');
 
 export const DEFAULT_SYSTEM_MODULES = [
-  ['churn_safra', 'Painel de Churn Safra', 'Safra', 'Painéis & Relatórios Oficiais', 'Acompanhamento de Churn Safra da Regional Norte', '/churn/', 'ativo', 1],
-  ['churn_bl_total', 'Painel de Churn Banda Larga Total', 'BL Total', 'Painéis & Relatórios Oficiais', 'Acompanhamento de Churn Horizontal BL Total (Residencial + PME)', '/churn-bl-total/', 'ativo', 2],
-  ['churn_bl_pme', 'Painel de Churn Banda Larga PME', 'BL PME', 'Painéis & Relatórios Oficiais', 'Acompanhamento de Churn Horizontal BL PME', '/churn-bl-pme/', 'ativo', 3],
-  ['fpd', 'Painel de FPD 60/30 (First Payment Default)', 'FPD Regional', 'Painéis & Relatórios Oficiais', 'Inadimplência de primeira fatura (FPD 30 e FPD 60)', '/fpd/', 'ativo', 4],
-  ['fpd_residencial', 'FPD Residencial (Executivo Fixa)', 'FPD Residencial', 'Painéis & Relatórios Oficiais', 'Relatório Executivo Oficial de FPD 60 da Fixa por Canal, Cidade e Parceiro', '/fpd-residencial/', 'ativo', 5],
-  ['market_share_movel', 'Market Share Móvel', 'MS Móvel', 'Painéis & Relatórios Oficiais', 'Relatório Executivo Oficial de Market Share Móvel (Anatel · Telefonia Móvel & 5G)', '/market-share-movel/', 'ativo', 6],
-  ['market_share_residencial', 'Market Share Residencial', 'MS Residencial', 'Painéis & Relatórios Oficiais', 'Relatório Executivo Oficial de Market Share Residencial (Anatel · Banda Larga)', '/market-share-residencial/', 'ativo', 7],
-  ['panorama_market_share', 'Panorama & Market Share', 'Panorama', 'Painéis & Relatórios Oficiais', 'Market share móvel e residencial Anatel e dinâmica concorrencial', '/panorama-market-share/', 'ativo', 8],
-  ['aprovacao_credito', 'Painel de Taxa de Aprovação de Crédito', 'Taxa Crédito', 'Painéis & Relatórios Oficiais', 'Taxa de aprovação por canal, parceiro e cidade', '/aprovacao-credito/', 'ativo', 9],
-  ['divulgacao', 'Divulgação Corporativa (TVs)', 'TV Divulgação', 'PeP Tools & Operações', 'Propostas de mídia, curadoria e exibição nas TVs da Regional', '/pep-tools/divulgacao/', 'ativo', 10],
-  ['tv', 'Player TV (16:9 Fullscreen)', 'Player TV', 'PeP Tools & Operações', 'Acesso direto ao reprodutor widescreen para recepções e salas', '/pep-tools/divulgacao/tv.html', 'ativo', 11]
+  ['churn_bl_pme', 'Painel de Churn Banda Larga PME', 'Painel de Churn', 'Churn', 'Acompanhamento de Churn Horizontal BL PME', '/churn-bl-pme/', 'ativo', 2],
+  ['churn_bl_total', 'Painel de Churn Banda Larga Total', 'Painel de Churn', 'Churn', 'Acompanhamento de Churn Horizontal BL Total (Residencial + PME)', '/churn-bl-total/', 'ativo', 3],
+  ['churn_safra', 'Painel de Churn Safra', 'Painel de Churn', 'Churn', 'Acompanhamento de Churn Safra da Regional Norte', '/churn/', 'ativo', 4],
+  ['aprovacao_credito', 'Painel de Taxa de Aprovação de Crédito', 'Painel de Taxa d', 'Crédito', 'Taxa de aprovação por canal, parceiro e cidade', '/aprovacao-credito/', 'ativo', 1],
+  ['fpd', 'Panorama FPD', 'Panorama FPD', 'Inadimplência', 'Painel Analítico de FPD (Mapas Geoespaciais, Matriz de Safras, Esteira e Dimensões)', '/fpd/', 'ativo', 6],
+  ['fpd_residencial', 'FPD Executivo', 'FPD Executivo', 'Inadimplência', 'Relatório Executivo Oficial de FPD 60 da Fixa por Canal, Cidade e Parceiro', '/fpd-residencial/', 'ativo', 7],
+  ['market_share_movel', 'Market Share Móvel', 'Market Share Móv', 'Market Share', 'Relatório Executivo Oficial de Market Share Móvel (Anatel · Telefonia Móvel & 5G)', '/market-share-movel/', 'ativo', 8],
+  ['market_share_residencial', 'Market Share Residencial', 'Market Share Res', 'Market Share', 'Relatório Executivo Oficial de Market Share Residencial (Anatel · Banda Larga)', '/market-share-residencial/', 'ativo', 9],
+  ['panorama_market_share', 'Panorama & Market Share', 'Panorama & Marke', 'Market Share', 'Market share móvel e residencial Anatel e dinâmica concorrencial', '/panorama-market-share/', 'ativo', 10],
+  ['evolucao_carteira', 'Evolução de Carteira Móvel & B2B', 'Evolução Carteira', 'Painéis & Relatórios Oficiais', 'Evolução temporal, net adds, desdobramento por segmento e migrações da Regional Norte', '/evolucao-carteira/', 'ativo', 10],
+  ['divulgacao', 'Divulgação Corporativa (TVs)', 'TV Divulgação', 'PeP Tools & Operações', 'Propostas de mídia, curadoria e exibição nas TVs da Regional', '/pep-tools/divulgacao/', 'ativo', 7],
+  ['tv', 'Player TV (16:9 Fullscreen)', 'Player TV', 'PeP Tools & Operações', 'Acesso direto ao reprodutor widescreen para recepções e salas', '/pep-tools/divulgacao/tv.html', 'ativo', 8]
 ];
 
 export async function ensureSystemModulesSeeded(env) {
@@ -413,6 +415,7 @@ export function normalizeModuleId(id) {
   if (clean === 'market-share-residencial' || clean === 'market_share_residencial' || clean === 'mkt-share-residencial') return 'market-share-residencial';
   if (clean === 'market-share-movel' || clean === 'market_share_movel' || clean === 'mkt-share-movel') return 'market-share-movel';
   if (clean === 'aprovacao-credito' || clean === 'aprovacao_credito' || clean === 'credito') return 'aprovacao-credito';
+  if (clean === 'evolucao-carteira' || clean === 'evolucao_carteira' || clean === 'evolucao') return 'evolucao-carteira';
   return clean;
 }
 
