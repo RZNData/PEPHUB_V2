@@ -1,0 +1,98 @@
+[
+  {
+    "speaker": "Carol",
+    "text": "Olá a todos! Sejam muito bem-vindos a esta edição especial do PEP HUB Podcast! Hoje nós temos um episódio imperdível, dedicado às grandes novidades, melhorias arquiteturais e inovações de governança que acabaram de entrar em produção no PEP HUB da Regional Norte da Claro, em pephub ponto cloud."
+  },
+  {
+    "speaker": "Lucas",
+    "text": "Fala, Carol! E que pacote incrível de entregas! Para quem acompanha o dia a dia da Regional Norte, o PEP HUB deu um salto gigantesco de maturidade corporativa, segurança e experiência do usuário. Hoje vamos dissecar todas as novidades: desde o novo botão de perfil até a central de notificações, passando pelo novo painel de Evolução de Carteira e o saneamento das rotas na borda da Cloudflare."
+  },
+  {
+    "speaker": "Carol",
+    "text": "Lucas, vamos começar pelo que o usuário nota logo de cara ao entrar na plataforma: o canto superior direito do cabeçalho. O antigo botão vermelho de sair foi totalmente substituído por um componente corporativo moderno de perfil. Como funciona essa novidade?"
+  },
+  {
+    "speaker": "Lucas",
+    "text": "Carol, essa foi uma evolução de usabilidade muito pedida! Em vez daquele botão solto de sair que parecia improvisado, agora temos o Profile Button oficial. Ele exibe a foto do colaborador ou suas iniciais em um círculo elegante, seu primeiro nome e uma seta discreta. Ao clicar, abre-se um dropdown corporativo com o cartão completo do usuário: nome, e-mail institucional e o selo de perfil, seja Administrador ou Colaborador."
+  },
+  {
+    "speaker": "Carol",
+    "text": "E dentro desse menu, nós temos três opções bem objetivas e diretas: Perfil, Configurações e Sair. Nada de numerações ou títulos confusos, certo?"
+  },
+  {
+    "speaker": "Lucas",
+    "text": "Exatamente! Removemos qualquer resquício de numeração de rascunho. Agora é puramente Perfil, Configurações e Sair. E quando o colaborador clica em Perfil, abre-se uma tela modal com a ficha cadastral completa: nome, login corporativo de rede, e-mail da Claro, setor, função e telefone."
+  },
+  {
+    "speaker": "Carol",
+    "text": "E aqui entra um ponto crucial de governança que a liderança da Regional Norte exigiu: como funciona a alteração desses dados cadastrais?"
+  },
+  {
+    "speaker": "Lucas",
+    "text": "Essa regra de negócio ficou impecável, Carol! Por padrão, os campos são apenas de leitura. Se o usuário quiser alterar Nome, Setor, Função ou Telefone, ele clica em Solicitar Alteração. Mas esses dados não mudam de imediato: o sistema dispara um e-mail formal ao administrador com a tabela comparativa mostrando o valor anterior e o novo valor solicitado. O administrador pode aprovar ou rejeitar com um único clique direto no e-mail!"
+  },
+  {
+    "speaker": "Carol",
+    "text": "E para garantir que ninguém saia digitando cargos inexistentes ou setores abreviados de forma errada, agora nós temos os dropdowns oficiais de cadastro, né?"
+  },
+  {
+    "speaker": "Lucas",
+    "text": "Com certeza! Nada de campo de texto livre para setor ou cargo. As opções foram padronizadas com a lista oficial da Regional Norte: Marketing, Agente Autorizado, Lojas Próprias, PME, Varejo, Porta a Porta, Engenharia, Técnica, Distribuição, Diretoria e Outros. E para funções, temos Diretor, Gerente, Especialista, Coordenador, Consultor, Supervisor e Executivo de Contas. Isso zera inconsistências na base de dados!"
+  },
+  {
+    "speaker": "Carol",
+    "text": "Sensacional! E tem mais duas regras de ouro: o usuário não pode abrir um segundo pedido de alteração enquanto houver uma solicitação em análise pelo administrador. E a foto de perfil? Ela também precisa de aprovação?"
+  },
+  {
+    "speaker": "Lucas",
+    "text": "Não, e essa foi uma decisão de design excelente! A foto é de livre escolha do colaborador. Ele pode trocar, adicionar ou remover sua foto a qualquer momento, e a atualização acontece instantaneamente em tempo real. Para não sobrecarregar o banco Cloudflare D1, criamos um algoritmo no navegador que redimensiona e comprime a foto em um elemento Canvas 2D antes do envio, garantindo que o arquivo fique minúsculo, com menos de trinta kilobytes!"
+  },
+  {
+    "speaker": "Carol",
+    "text": "Que elegância de engenharia, Lucas! E sobre a tela de Configurações? O que mudou nos alertas de relatórios?"
+  },
+  {
+    "speaker": "Lucas",
+    "text": "Na tela de Configurações, atendemos ao pedido de simplificação total. Primeiro: por padrão, ninguém recebe alertas sem solicitar, tudo vem desmarcado. Segundo: implementamos uma regra de exclusão mútua inteligente. Se o colaborador marcar que deseja receber alertas de todos os relatórios que possui acesso, o sistema desmarca automaticamente todos os relatórios individuais. E se ele marcar qualquer relatório específico da lista, desmarca imediatamente a opção de todos. Ficou super intuitivo e livre de ambiguidades!"
+  },
+  {
+    "speaker": "Carol",
+    "text": "E agora o formulário de Informar Erro ou Fazer Comentário envia mensagens curtas ou longas sem qualquer falha, além de termos corrigido os botões de fechar e a tecla Escape, que agora fecham os modais com total suavidade."
+  },
+  {
+    "speaker": "Lucas",
+    "text": "Exatamente! Corrigimos o conflito de CSS que prendia a exibição dos modais e adicionamos a coluna de atualização cadastral no banco de dados SQLite do D1. Isso eliminou de vez aquele erro de tela que ocorria ao aprovar solicitações antigas ou salvar preferências."
+  },
+  {
+    "speaker": "Carol",
+    "text": "Lucas, e sobre a nova Central de Notificações no topo da página? Como ela funciona para o usuário comum e para o administrador?"
+  },
+  {
+    "speaker": "Lucas",
+    "text": "A Central de Notificações é outro destaque brilhante! No cabeçalho, ao lado do profile, temos um ícone de sino corporativo com badge numérico em vermelho escuro indicando comunicados não lidos. Ao clicar, abre-se uma gaveta com abas para Todas as notificações e Não Lidas. O administrador possui um painel exclusivo onde pode publicar novos avisos, direcionar para setores específicos ou disparar alertas comemorativos e de manutenção."
+  },
+  {
+    "speaker": "Carol",
+    "text": "E não podemos deixar de destacar o novo painel analítico que acaba de ser integrado ao ecossistema: o Painel de Evolução de Carteira! O que esse novo relatório traz para a gestão estratégica da Claro na Regional Norte?"
+  },
+  {
+    "speaker": "Lucas",
+    "text": "O painel de Evolução de Carteira é fundamental, Carol! Ele monitora a movimentação líquida da base de clientes mês a mês, segregando adições brutas, desconexões voluntárias, churn involuntário e migrações entre planos em todos os cinco estados. Ele se junta aos nossos painéis consagrados de Churn Safra D cento e vinte, FPD, Banda Larga Total, PME, Market Share Anatel e Taxa de Aprovação de Crédito, formando a suíte analítica mais completa e rápida do setor de telecomunicações!"
+  },
+  {
+    "speaker": "Carol",
+    "text": "Que trabalho espetacular de toda a equipe de engenharia e inteligência da Regional Norte! Todos os oito gates do Release Gate foram aprovados com nota máxima A+, garantindo zero dependências externas, segurança bancária e altíssima velocidade de resposta."
+  },
+  {
+    "speaker": "Lucas",
+    "text": "Com certeza, Carol! O PEP HUB continua provando que simplicidade de código, foco no usuário de campo e disciplina de engenharia constroem produtos digitais extraordinários. Parabéns a todos os envolvidos!"
+  },
+  {
+    "speaker": "Carol",
+    "text": "É isso aí! Continuem aproveitando todas as ferramentas em pephub ponto cloud. Um grande abraço a todos e até a próxima edição!"
+  },
+  {
+    "speaker": "Lucas",
+    "text": "Até mais, pessoal! Forte abraço!"
+  }
+]

@@ -431,6 +431,7 @@ export async function handleProfileRoutes(request, env, url, pathname, ctx) {
           const pArea = proposed.area ? String(proposed.area).trim() : null;
           const pFuncao = proposed.funcao ? String(proposed.funcao).trim() : null;
           const pTel = proposed.telefone ? String(proposed.telefone).trim() : null;
+          const pFoto = (proposed.foto && String(proposed.foto).startsWith('data:image/')) ? String(proposed.foto).trim() : null;
 
           await env.DB.prepare(`
             UPDATE users SET
@@ -438,9 +439,10 @@ export async function handleProfileRoutes(request, env, url, pathname, ctx) {
               area = COALESCE(?, area),
               funcao = COALESCE(?, funcao),
               telefone = COALESCE(?, telefone),
+              foto = COALESCE(?, foto),
               updated_at = datetime('now')
             WHERE id = ?
-          `).bind(pNome, pArea, pFuncao, pTel, row.user_id).run();
+          `).bind(pNome, pArea, pFuncao, pTel, pFoto, row.user_id).run();
 
           await env.DB.prepare(`
             UPDATE profile_change_requests SET
@@ -551,6 +553,7 @@ export async function handleProfileRoutes(request, env, url, pathname, ctx) {
         const pArea = proposed.area ? String(proposed.area).trim() : null;
         const pFuncao = proposed.funcao ? String(proposed.funcao).trim() : null;
         const pTel = proposed.telefone ? String(proposed.telefone).trim() : null;
+        const pFoto = (proposed.foto && String(proposed.foto).startsWith('data:image/')) ? String(proposed.foto).trim() : null;
 
         await env.DB.prepare(`
           UPDATE users SET
@@ -558,9 +561,10 @@ export async function handleProfileRoutes(request, env, url, pathname, ctx) {
             area = COALESCE(?, area),
             funcao = COALESCE(?, funcao),
             telefone = COALESCE(?, telefone),
+            foto = COALESCE(?, foto),
             updated_at = datetime('now')
           WHERE id = ?
-        `).bind(pNome, pArea, pFuncao, pTel, row.user_id).run();
+        `).bind(pNome, pArea, pFuncao, pTel, pFoto, row.user_id).run();
 
         await env.DB.prepare(`
           UPDATE profile_change_requests SET
@@ -680,15 +684,17 @@ export async function handleProfileRoutes(request, env, url, pathname, ctx) {
       if (!user) return json({ error: 'Não autenticado.' }, 401);
 
       const token = randomHex(32);
+      const expiresAt = new Date(Date.now() + 3600 * 1000).toISOString();
       await env.DB.prepare(`
         UPDATE users SET
-          senha_salt = ?,
+          reset_token = ?,
+          reset_expires_at = ?,
           must_change_password = 1,
           updated_at = datetime('now')
         WHERE id = ?
-      `).bind(token, user.id).run();
+      `).bind(token, expiresAt, user.id).run();
 
-      const resetLink = `${baseUrl}/login/?reset_token=${token}&login=${encodeURIComponent(user.login_claro)}`;
+      const resetLink = `${baseUrl}/reset-password/?token=${token}`;
 
       if (user.email_claro) {
         try {

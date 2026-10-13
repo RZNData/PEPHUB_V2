@@ -652,6 +652,8 @@ export async function ensureAppSchema(env, force = false) {
     await env.DB.prepare("ALTER TABLE users ADD COLUMN must_change_password INTEGER NOT NULL DEFAULT 0").run().catch(() => {});
     await env.DB.prepare("ALTER TABLE users ADD COLUMN modules_allowed TEXT DEFAULT 'churn_safra,churn_bl_total,churn_bl_pme,fpd,pep_tools_divulgacao'").run().catch(() => {});
     await env.DB.prepare("ALTER TABLE users ADD COLUMN profile_metadata TEXT").run().catch(() => {});
+    await env.DB.prepare("ALTER TABLE users ADD COLUMN foto TEXT").run().catch(() => {});
+    await env.DB.prepare("ALTER TABLE users ADD COLUMN updated_at DATETIME").run().catch(() => {});
 
     // 2. Garante tabela de travas e controles do sistema
     await env.DB.prepare(`

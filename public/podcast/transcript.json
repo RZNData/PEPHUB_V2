@@ -1,167 +1,130 @@
 [
   {
     "speaker": "Carol",
-    "voice": "pt-BR-FranciscaNeural",
     "text": "Olá a todos! Sejam muito bem-vindos a esta edição especial e definitiva do Deep Dive do PEP HUB! Sabe aquela experiência fantástica do Google NotebookLM, onde relatórios densos, manuais de engenharia e decisões executivas viram uma conversa dinâmica e super agradável? Pois é! Hoje nós vamos fazer um mergulho completo na plataforma de inteligência e performance da Regional Norte da Claro, explicando de ponta a ponta o porquê de cada decisão técnica e operacional."
   },
   {
     "speaker": "Lucas",
-    "voice": "pt-BR-AntonioNeural",
     "text": "Que alegria estar com você, Carol! O PEP HUB da Regional Norte, que roda oficialmente em pephub ponto cloud, não é apenas mais um portal de dashboards corporativos. Ele representa uma quebra de paradigma na forma como uma grande operadora de telecomunicações gerencia seus dados de churn, qualidade, crédito e inteligência de mercado em cento e trinta e três cidades de cinco estados: Amazonas, Pará, Maranhão, Amapá e Roraima."
   },
   {
     "speaker": "Carol",
-    "voice": "pt-BR-FranciscaNeural",
     "text": "Lucas, para começarmos pelo começo: por que a equipe decidiu construir uma plataforma proprietária em vez de usar soluções de mercado tradicionais, como o Power B I ou o Tableau? O que essas ferramentas não conseguiam entregar no dia a dia da Regional Norte?"
   },
   {
     "speaker": "Lucas",
-    "voice": "pt-BR-AntonioNeural",
     "text": "Carol, essa é a pergunta de um milhão de dólares! O Power B I e o Tableau são ferramentas conceituadas, mas no cenário operacional real da Regional Norte elas sofriam de três problemas crônicos. Primeiro: lentidão e peso excessivo. Um relatório pesado de Power B I leva de quinze a trinta segundos para carregar no navegador, baixando megabytes de código desnecessário. Quando um consultor comercial ou supervisor de campo está no interior do Pará ou do Maranhão, em uma rede três G ou quatro G intermitente, o painel simplesmente não abria ou travava o celular!"
   },
   {
     "speaker": "Carol",
-    "voice": "pt-BR-FranciscaNeural",
     "text": "E para quem está na rua negociando com parceiros credenciados, esperar meio minuto por um número é impensável!"
   },
   {
     "speaker": "Lucas",
-    "voice": "pt-BR-AntonioNeural",
     "text": "Exatamente! Segundo: o funcionamento offline. Se o diretor ou analista viaja de avião ou vai a uma área remota sem sinal de internet, o Power B I para de funcionar. Já o PEP HUB foi projetado com arquitetura offline-first. Cada relatório analítico pode ser baixado em um único arquivo H T M L autocontido, que abre instantaneamente em qualquer computador ou tablet, sem precisar de internet nenhuma. E terceiro: os custos exorbitantes de licenciamento por usuário, que no PEP HUB foram reduzidos a zero, aproveitando a rede de borda da Cloudflare."
   },
   {
     "speaker": "Carol",
-    "voice": "pt-BR-FranciscaNeural",
     "text": "Nossa Lucas, que diferença brutal! E como é que a equipe conseguiu fazer um sistema tão rápido e leve, que carrega em menos de trezentos milissegundos? Qual é o segredo de engenharia por trás do código?"
   },
   {
     "speaker": "Lucas",
-    "voice": "pt-BR-AntonioNeural",
     "text": "O grande pilar é o princípio de Zero Dependências Externas. Nós banimos frameworks pesados como React, Angular, Vue, Tailwind e bibliotecas de gráficos prontas como Chart ponto js ou D três. O frontend do PEP HUB foi escrito cem por cento em JavaScript moderno nativo, H T M L cinco semântico e C S S puro. Todos os gráficos são desenhados diretamente em S V G vetorial paramétrico, que se adapta com nitidez cristalina a qualquer tamanho de tela, de um smartphone a uma televisão gigante de sessenta e cinco polegadas na sala da Diretoria."
   },
   {
     "speaker": "Carol",
-    "voice": "pt-BR-FranciscaNeural",
     "text": "E os mapas geoespaciais com milhares de clientes e pontos de rede? Como eles rodam tão lisos sem bibliotecas de mapas pesadas como Mapbox ou Google Maps?"
   },
   {
     "speaker": "Lucas",
-    "voice": "pt-BR-AntonioNeural",
     "text": "Eles foram programados em H T M L cinco Canvas dois D com projeção matemática pura de Web Mercator! O usuário pode dar zoom, mover o mapa com fluidez e desenhar um laço livre com o mouse para filtrar clientes de um quarteirão específico. Além disso, os dados brutos são comprimidos com o algoritmo Deflate e descompactados em tempo real pela A P I nativa do navegador, sendo guardados em vetores tipados na memória, como Uint trinta e dois Array. Isso reduz o consumo de memória R A M em mais de oitenta por cento!"
   },
   {
     "speaker": "Carol",
-    "voice": "pt-BR-FranciscaNeural",
-    "text": "É engenharia de software de altíssimo nível, Lucas! Agora vamos falar dos seis relatórios analíticos fundamentais da plataforma. O primeiro deles é o famoso Painel Churn Safra D cento e vinte. O que ele monitora e por que a janela oficial é de cento e vinte dias?"
+    "text": "É engenharia de software de altíssimo nível, Lucas! Agora vamos falar dos relatórios analíticos fundamentais da plataforma. O primeiro deles é o famoso Painel Churn Safra D cento e vinte. O que ele monitora e por que a janela oficial é de cento e vinte dias?"
   },
   {
     "speaker": "Lucas",
-    "voice": "pt-BR-AntonioNeural",
     "text": "Carol, o Churn Safra acompanha a desconexão definitiva dos contratos ao longo do tempo. Uma venda recém-instalada passa por um período crítico de maturação. Na Claro, o marco oficial é o D cento e vinte, que são os primeiros quatro meses do contrato. É nessa janela que é apurada a responsabilidade direta do canal de vendas e do parceiro credenciado. O painel rastreia o cancelamento voluntário, o involuntário por corte de inadimplência e o indicador de Nunca Pagou, que revela instalações que não pagaram sequer a primeira mensalidade."
   },
   {
     "speaker": "Carol",
-    "voice": "pt-BR-FranciscaNeural",
     "text": "E isso nos leva direto ao segundo relatório: o Painel de F P D, o First Payment Default. Eu lembro que no passado houve uma tentativa de misturar os dados de F P D com as bases de Churn Safra, e isso causou uma confusão tremenda de colunas e métricas. Como isso foi consertado de vez?"
   },
   {
     "speaker": "Lucas",
-    "voice": "pt-BR-AntonioNeural",
     "text": "Carol, essa foi uma regra de ouro estabelecida pela Diretoria: segregação total e absoluta! O F P D mede inadimplência na primeira fatura, que é um sintoma de qualidade de onboarding e esteira de crédito, enquanto o Churn Safra mede desconexão física do modem. Misturar os dois distorcia a responsabilidade dos vendedores. Nós isolamos o painel de F P D em uma base exclusiva, a Base F P D de treze safras da Regional Norte. O painel apresenta com clareza o F P D trinta dias pró-rata e o F P D sessenta dias de ciclo cheio oficial, além da análise de risco por faixas de score de crédito."
   },
   {
     "speaker": "Carol",
-    "voice": "pt-BR-FranciscaNeural",
     "text": "Que clareza necessária! E o terceiro e quarto relatórios, que cobrem a Banda Larga Total e o segmento corporativo P M E? O que eles trazem de inteligência preditiva?"
   },
   {
     "speaker": "Lucas",
-    "voice": "pt-BR-AntonioNeural",
     "text": "Eles trazem o monitoramento das quatro Tendências semanais, de T um a T quatro, confrontando o realizado com a meta orçada da companhia. Mas o grande destaque no segmento P M E foi uma descoberta empírica fantástica da nossa equipe: setenta e oito vírgula dois por cento dos cancelamentos de empresas ocorrem após o décimo segundo mês, exatamente quando termina a carência contratual da fidelidade! Por isso, o painel instituiu a Janela Crítica de Renegociação Proativa no Mês onze, orientando os consultores a procurarem o cliente trinta dias antes do contrato vencer para proteger a receita."
   },
   {
     "speaker": "Carol",
-    "voice": "pt-BR-FranciscaNeural",
-    "text": "Isso é pura geração de valor financeiro! E no relatório de Panorama Market Share da Anatel e no de Taxa de Aprovação de Crédito, que passaram por melhorias recentes, o que mudou na usabilidade?"
+    "text": "Isso é pura geração de valor financeiro! E no relatório de Panorama Market Share da Anatel e no de Taxa de Aprovação de Crédito, o que temos de inteligência comercial?"
   },
   {
     "speaker": "Lucas",
-    "voice": "pt-BR-AntonioNeural",
-    "text": "No Market Share, nós reconstruímos o painel inteiro dentro do padrão visual elegante da Claro, com navegação rápida no topo para todos os outros módulos e acompanhamento preciso de saldo do líder, adições líquidas e provedores locais em cada município. E na Taxa de Aprovação de Crédito, nós jogamos fora aquela capa decorativa inútil para o diretor entrar direto nos dados executivos, ordenamos a tabela de lojas pelo maior volume de consultas e travamos nomes corporativos gigantes em até trinta caracteres com balõezinhos explicativos para não estourar a largura da tela."
+    "text": "No Market Share, acompanhamos município a município o saldo do líder, adições líquidas e a pressão competitiva dos provedores regionais em toda a Regional Norte. E na Taxa de Aprovação de Crédito, analisamos a eficiência da esteira comercial por ponto de venda, lojas próprias e agentes autorizados, com ordenação nativa por volume e visões sem atrito."
   },
   {
     "speaker": "Carol",
-    "voice": "pt-BR-FranciscaNeural",
+    "text": "E agora temos o novíssimo Painel de Evolução de Carteira! Como ele complementa a visão da liderança?"
+  },
+  {
+    "speaker": "Lucas",
+    "text": "O painel de Evolução de Carteira fecha o ciclo com chave de ouro! Ele monitora a movimentação líquida da base de clientes mês a mês, segregando adições brutas, desconexões voluntárias, churn involuntário e migrações entre planos em todos os cinco estados. Ele permite aos diretores e gerentes enxergar exatamente onde a carteira está crescendo e onde precisamos reforçar a retenção."
+  },
+  {
+    "speaker": "Carol",
+    "text": "E na usabilidade do dia a dia, todos os relatórios contam agora com o novo botão corporativo de perfil no cabeçalho e a central de notificações em tempo real!"
+  },
+  {
+    "speaker": "Lucas",
+    "text": "Exatamente! Substituímos os antigos botões soltos pelo Profile Widget. O colaborador acessa seus dados, adiciona foto de perfil instantânea comprimida em canvas e pode solicitar alteração de Nome, Setor, Função ou Telefone, que vai direto para aprovação do administrador por e-mail com seletores oficiais padronizados. E a central de notificações avisa a equipe sobre novas safras e manutenções com contador dinâmico de avisos não lidos."
+  },
+  {
+    "speaker": "Carol",
     "text": "Espetacular! E temos também o ecossistema PeP Tools, com o Auxiliar de P P T e o Gerador de Cards de Aniversário para as televisões dos prédios da Regional Norte. Me conta sobre eles!"
   },
   {
     "speaker": "Lucas",
-    "voice": "pt-BR-AntonioNeural",
     "text": "O Auxiliar de P P T, que antes era chamado de Market Share Studio, agora é uma central completa de produtividade executiva! O analista pode colar dados de uma planilha Excel e gerar gráficos de rosca, pizza, barras e organogramas prontos para apresentações da Diretoria, podendo copiar em S V G vetorial ou P N G em alta resolução com um clique só. E o Gerador de Cards de Aniversário foi ajustado com enquadramento matemático perfeito em formato dezesseis por nove, sem cortar a imagem em nenhum monitor ou televisor dos prédios operacionais."
   },
   {
     "speaker": "Carol",
-    "voice": "pt-BR-FranciscaNeural",
-    "text": "Agora Lucas, vamos para o tema que mais encanta todo mundo que conhece o PEP HUB: o robô de inteligência artificial no WhatsApp! Por que vocês criaram a tal da Arquitetura R A G Híbrida e não deixaram a inteligência artificial responder as perguntas matemáticas sozinha?"
+    "text": "Agora Lucas, vamos para o robô de inteligência artificial no WhatsApp! Como a Arquitetura R A G Híbrida garante respostas com precisão matemática absoluta?"
   },
   {
     "speaker": "Lucas",
-    "voice": "pt-BR-AntonioNeural",
-    "text": "Carol, esse é o maior aprendizado que qualquer empresa moderna precisa entender sobre I A generativa! Modelos de linguagem como o Chat G P T ou o Gemini são excelentes para redigir textos e resumir conversas, mas são péssimos em matemática pura. Eles trabalham prevendo palavras estatisticamente. Se um gerente perguntar no WhatsApp: 'Qual foi o churn de Manaus em agosto?', e você deixar a I A calcular na memória, ela alucina: erra a soma, inventa casas decimais e passa um dado falso para a reunião de diretoria!"
+    "text": "Criamos uma rodovia de duas pistas estritamente separadas! Quando a pergunta chega no WhatsApp, um roteador identifica a intenção. Se for uma pergunta analítica com números, a I A não faz a conta: ela gera uma consulta S Q L segura e consulta diretamente o banco relacional Cloudflare D um! O banco devolve o número exato, por exemplo, dois vírgula trinta e quatro por cento. A I A apenas formata a mensagem com educação corporativa. Precisão de cem por cento, zero alucinações matemáticas! E se a dúvida for conceitual, a segunda pista resgata as regras de negócio homologadas."
   },
   {
     "speaker": "Carol",
-    "voice": "pt-BR-FranciscaNeural",
-    "text": "E em uma reunião de resultados, um número incorreto destrói a credibilidade da operação! Como o robô do PEP HUB resolveu isso?"
+    "text": "E com carteirização por telefone para proteger a privacidade dos dados das cidades! E me fala sobre a Central de Cargas: como ela empodera os analistas?"
   },
   {
     "speaker": "Lucas",
-    "voice": "pt-BR-AntonioNeural",
-    "text": "Criamos uma rodovia de duas pistas estritamente separadas! Quando a pergunta chega no WhatsApp, um roteador identifica a intenção. Se for uma pergunta analítica com números, a I A não faz a conta: ela gera uma consulta S Q L segura e consulta diretamente o banco relacional Cloudflare D um! O banco devolve o número exato, por exemplo, dois vírgula trinta e quatro por cento. A I A apenas formata a mensagem com educação corporativa. Precisão de cem por cento, zero alucinações matemáticas! E se a dúvida for conceitual, como 'O que é F P D?', aí sim a segunda pista resgata as regras de negócio homologadas no banco."
+    "text": "A Central de Cargas permite subir qualquer base arrastando o arquivo no navegador, que fatia em chunks de quinhentos kilobytes e grava direto no Cloudflare D um com barra de progresso. E o gestor pode delegar uma carga específica para um analista via R B A C, sem dar acesso administrativo ao resto do sistema."
   },
   {
     "speaker": "Carol",
-    "voice": "pt-BR-FranciscaNeural",
-    "text": "E ainda tem a checagem de carteirização pelo número de telefone do colaborador para garantir que ele só veja as cidades autorizadas! É uma segurança impecável. E me fala sobre a nova Central de Carga de Insumos no painel administrativo: como funciona a atualização das bases agora?"
+    "text": "Lucas, que aula de engenharia e governança corporativa! O PEP HUB foi submetido a todos os testes do Release Gate corporativo e obteve nota máxima A mais em todos os oito pilares de qualidade, segurança e arquitetura. Tudo rodando com perfeição em pephub ponto cloud!"
   },
   {
     "speaker": "Lucas",
-    "voice": "pt-BR-AntonioNeural",
-    "text": "Essa foi a grande emancipação da equipe! Antes, qualquer nova safra exigia que um desenvolvedor rodasse scripts locais no computador. Agora, nós criamos uma aba central de Cargas com os sete insumos oficiais da Regional Norte. O administrador pode arrastar o arquivo na tela e o próprio navegador fatia o arquivo em pequenos blocos de quinhentos kilobytes, gravando direto no Cloudflare D um com barra de progresso em tempo real, sem gastar nem um centavo com armazenamentos caros como o Amazon S três."
+    "text": "É o orgulho da Regional Norte da Claro! Uma plataforma veloz, segura, offline-first e que entrega a melhor inteligência analítica na palma da mão da nossa equipe."
   },
   {
     "speaker": "Carol",
-    "voice": "pt-BR-FranciscaNeural",
-    "text": "E com controle granular de delegação, certo? O gestor pode delegar a carga de um relatório para um analista sem dar acesso administrativo ao resto do sistema!"
+    "text": "Sensacional! Esse foi o nosso episódio definitivo do PEP HUB. Parabéns a todos e até a próxima!"
   },
   {
     "speaker": "Lucas",
-    "voice": "pt-BR-AntonioNeural",
-    "text": "Exatamente! Se o administrador autorizar um estagiário ou analista a subir apenas a base de Market Share, quando esse colaborador faz login, as abas de usuários, travas do sistema e auditoria somem automaticamente. Ele vê apenas o card que foi delegado. Segurança por design com controle de acesso baseado em funções, o famoso R B A C."
-  },
-  {
-    "speaker": "Carol",
-    "voice": "pt-BR-FranciscaNeural",
-    "text": "Lucas, que aula de arquitetura, segurança e governança corporativa! O PEP HUB foi submetido a todos os testes do Release Gate corporativo e obteve nota máxima A mais em Layout, A mais em Segurança de Aplicação e A mais em Arquitetura de Código. Tudo rodando com perfeição e pronto para o uso diário em produção no domínio pephub ponto cloud."
-  },
-  {
-    "speaker": "Lucas",
-    "voice": "pt-BR-AntonioNeural",
-    "text": "É o orgulho da engenharia da Regional Norte da Claro! Uma plataforma veloz, à prova de falhas, offline-first e que coloca a melhor inteligência analítica na palma da mão dos nossos líderes e colaboradores."
-  },
-  {
-    "speaker": "Carol",
-    "voice": "pt-BR-FranciscaNeural",
-    "text": "Sensacional! Esse foi o nosso episódio especial do Deep Dive do PEP HUB. Agradecemos a todos que nos ouviram e até a próxima edição!"
-  },
-  {
-    "speaker": "Lucas",
-    "voice": "pt-BR-AntonioNeural",
     "text": "Um grande abraço e até lá, pessoal!"
-  },
-  {
-    "speaker": "Carol",
-    "voice": "pt-BR-FranciscaNeural",
-    "text": "Tchau tchau!"
   }
 ]
