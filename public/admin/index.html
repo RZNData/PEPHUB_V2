@@ -49,10 +49,12 @@ header{background:#fff;border-bottom:1px solid var(--line)}
 .top-bar h2{margin:0;font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
 .top-bar p{margin:2px 0 0;color:var(--ink2);font-size:12px}
 
-.main-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px}
-.main-tab{border:1px solid transparent;border-bottom:none;background:none;padding:9px 18px;font:600 12.5px "Segoe UI",Arial;color:var(--ink2);cursor:pointer;border-radius:3px 3px 0 0;display:inline-flex;align-items:center;gap:7px;transition:all .15s}
+.main-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px;overflow-x:auto}
+.main-tab{border:1px solid transparent;border-bottom:none;background:none;padding:9px 15px;font:600 12.5px "Segoe UI",Arial;color:var(--ink2);cursor:pointer;border-radius:3px 3px 0 0;display:inline-flex;align-items:center;gap:7px;transition:all .15s;white-space:nowrap}
 .main-tab:hover{color:var(--ink);background:#eef1f4}
 .main-tab.active{background:#fff;color:var(--red);border-color:var(--line);border-bottom:1px solid #fff;margin-bottom:-1px}
+.tab-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#eceef1;color:var(--ink2);font-size:10.5px;font-weight:700}
+.main-tab.active .tab-badge{background:#fdece9;color:var(--red)}
 
 .panel{background:#fff;border:1px solid var(--line);border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.02);overflow:hidden;margin-bottom:16px}
 
@@ -280,6 +282,7 @@ tbody tr:hover{background:#f7f9fb}
     <h1><b>Pephub</b> <span>Portal de Churn & Qualidade · Gestão Administrativa</span></h1>
     <div class="hd-actions">
       <a href="/" class="hd-btn">‹ Ver Portal</a>
+      <span data-pephub-notifications></span>
       <span data-pephub-online></span>
       <a href="/pep-tools/divulgacao/?tab=curadoria" class="hd-btn" style="background:#f9b233;color:#1b2430;font-weight:700">Curadoria TVs</a>
       <a href="/churn/" class="hd-btn">Safra</a>
@@ -310,11 +313,11 @@ tbody tr:hover{background:#f7f9fb}
   <div class="main-tabs">
     <button class="main-tab active" id="tabUsersBtn">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Panorama de Colaboradores (<span id="totalUsersCount">0</span>)
+      Panorama de Colaboradores <span class="tab-badge" id="totalUsersCount">0</span>
     </button>
     <button class="main-tab" id="tabRequestsBtn">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H5.17L4 17.17V4z"/><path d="M8 9h8"/><path d="M8 12h5"/></svg>
-      Solicitações de Acesso (<span id="pendingRequestsCount">0</span>)
+      Solicitações de Acesso <span class="tab-badge" id="pendingRequestsCount">0</span>
     </button>
     <button class="main-tab" id="tabStatsBtn">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
@@ -326,19 +329,19 @@ tbody tr:hover{background:#f7f9fb}
     </button>
     <button class="main-tab" id="tabControlsBtn">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      Travas & Controles (<span id="activeControlsCount">0</span>)
+      Travas & Controles <span class="tab-badge" id="activeControlsCount">0</span>
     </button>
     <button class="main-tab" id="tabModulesBtn">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-      Gestão de Ferramentas (<span id="totalModulesCount">0</span>)
+      Gestão de Ferramentas <span class="tab-badge" id="totalModulesCount">0</span>
     </button>
     <button class="main-tab" id="tabUploadsBtn">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      Carga de Insumos & Uploads (<span id="totalUploadsCount">7</span>)
+      Carga de Insumos & Uploads <span class="tab-badge" id="totalUploadsCount">7</span>
     </button>
     <button class="main-tab" id="tabNotificationsBtn">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      Central de Notificações (<span id="totalNotificationsCount">0</span>)
+      Central de Notificações <span class="tab-badge" id="totalNotificationsCount">0</span>
     </button>
   </div>
 

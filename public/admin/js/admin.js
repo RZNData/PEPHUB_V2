@@ -2489,6 +2489,9 @@ function renderAdminNotifications() {
   if (kpiReads) kpiReads.textContent = totalReads.toLocaleString('pt-BR');
   if (kpiDism) kpiDism.textContent = totalDismisses.toLocaleString('pt-BR');
 
+  const tabNotifCount = document.getElementById('totalNotificationsCount');
+  if (tabNotifCount) tabNotifCount.textContent = activeCount;
+
   if (total === 0) {
     tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--ink3);padding:32px">Nenhuma notificação corporativa cadastrada no momento.<br><span style="font-size:11px">Utilize os botões acima para criar uma nova notificação ou carregar um preset em 1 clique.</span></td></tr>`;
     return;

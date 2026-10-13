@@ -52,52 +52,66 @@
       text-decoration: none !important;
     }
 
-    /* Botão informativo de usuários ativos (ícone + contagem) */
+    /* Botão informativo de usuários ativos (ícone corporativo + badge numérico fixo) */
     .hd-btn.btn-active-users {
-      padding: 5px 9px !important;
-      gap: 6px !important;
+      position: relative !important;
+      padding: 5px 8px !important;
+      min-width: 34px !important;
+      height: 28px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
       background: rgba(255, 255, 255, 0.22) !important;
-      border-color: rgba(255, 255, 255, 0.55) !important;
+      border: 1px solid rgba(255, 255, 255, 0.55) !important;
+      border-radius: 4px !important;
+      cursor: pointer !important;
+      overflow: visible !important;
     }
-    .hd-btn.btn-active-users .ou-count {
-      background: #ffffff;
-      color: #8a0f18;
-      min-width: 18px;
-      height: 18px;
-      padding: 0 5px;
-      border-radius: 9px;
-      font-size: 11px;
-      font-weight: 800;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-sizing: border-box;
+    .hd-btn.btn-active-users:hover {
+      background: rgba(255, 255, 255, 0.38) !important;
+      border-color: #ffffff !important;
     }
+    .ou-icon {
+      width: 16px;
+      height: 16px;
+      display: block;
+      color: #ffffff;
+      stroke: #ffffff;
+      flex: none;
+    }
+    .ou-badge {
+      position: absolute !important;
+      top: -5px !important;
+      right: -6px !important;
+      background: #16a34a !important; /* Verde corporativo vivo de status online */
+      color: #ffffff !important;
+      min-width: 18px !important;
+      height: 18px !important;
+      padding: 0 4px !important;
+      border-radius: 9px !important;
+      border: 2px solid #ffffff !important;
+      font-size: 10px !important;
+      font-weight: 800 !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      box-sizing: border-box !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.28) !important;
+      line-height: 1 !important;
+      z-index: 3 !important;
+      pointer-events: none !important;
+    }
+    .ou-badge.empty { display: none !important; }
     .ou-dot {
-      position: relative;
       width: 8px;
       height: 8px;
       border-radius: 50%;
       background: #3ddc84;
-      box-shadow: 0 0 0 1.5px rgba(255,255,255,.85);
       flex: none;
       display: inline-block;
     }
-    .ou-dot::after {
-      content: '';
-      position: absolute;
-      inset: -4px;
-      border-radius: 50%;
-      border: 2px solid rgba(61, 220, 132, .65);
-      animation: ouPulse 1.9s ease-out infinite;
-    }
-    .ou-dot.idle { background: #9aa5b1; box-shadow: none; }
-    .ou-dot.idle::after { display: none; }
-    @keyframes ouPulse {
-      0%   { transform: scale(.55); opacity: 1; }
-      100% { transform: scale(1.5); opacity: 0; }
-    }
-    @media (prefers-reduced-motion: reduce) { .ou-dot::after { animation: none; } }
+    .ou-dot.idle { background: #9aa5b1; }
 
     /* Wrapper + Hover Card (a "ponte" de 8px evita fechar ao mover o mouse até o card) */
     .active-users-wrapper { position: relative; display: inline-flex; }
@@ -239,39 +253,50 @@
     .notif-wrapper { position: relative; display: inline-flex; }
     .hd-btn.btn-notifications {
       position: relative !important;
-      padding: 6px 10px !important;
+      padding: 5px 8px !important;
+      min-width: 34px !important;
+      height: 28px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
       background: rgba(255, 255, 255, 0.22) !important;
-      border-color: rgba(255, 255, 255, 0.55) !important;
-      gap: 5px !important;
+      border: 1px solid rgba(255, 255, 255, 0.55) !important;
+      border-radius: 4px !important;
+      cursor: pointer !important;
+      overflow: visible !important;
     }
     .hd-btn.btn-notifications:hover {
       background: rgba(255, 255, 255, 0.38) !important;
+      border-color: #ffffff !important;
     }
     .notif-bell-icon {
-      width: 15px; height: 15px; display: inline-block; flex: none;
+      width: 17px;
+      height: 17px;
+      display: block;
+      flex: none;
     }
     .notif-badge {
-      background: #c0191f;
-      color: #ffffff;
-      min-width: 17px;
-      height: 17px;
-      padding: 0 4px;
-      border-radius: 9px;
-      font-size: 10px;
-      font-weight: 800;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-sizing: border-box;
-      box-shadow: 0 0 0 1.5px rgba(255,255,255,.9);
-      line-height: 1;
-    }
-    .notif-badge.pulse {
-      animation: notifPulse 2s infinite ease-in-out;
-    }
-    @keyframes notifPulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.15); box-shadow: 0 0 0 3px rgba(192, 25, 31, .35); }
+      position: absolute !important;
+      top: -5px !important;
+      right: -6px !important;
+      background: #e53935 !important; /* Vermelho vivo fiel ao modelo executivo */
+      color: #ffffff !important;
+      min-width: 18px !important;
+      height: 18px !important;
+      padding: 0 4px !important;
+      border-radius: 9px !important;
+      border: 2px solid #ffffff !important;
+      font-size: 10px !important;
+      font-weight: 800 !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      box-sizing: border-box !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.28) !important;
+      line-height: 1 !important;
+      z-index: 3 !important;
+      pointer-events: none !important;
     }
     .notif-badge.empty { display: none !important; }
 
@@ -736,9 +761,14 @@
 
     host.innerHTML = `
       <div class="active-users-wrapper">
-        <button type="button" id="btnHeaderActiveUsers" class="hd-btn btn-active-users" aria-haspopup="true" title="Usuários ativos agora">
-          <span class="ou-dot"></span>
-          <span class="ou-count ou-count-live">…</span>
+        <button type="button" id="btnHeaderActiveUsers" class="hd-btn btn-active-users" aria-haspopup="true" title="Colaboradores online agora">
+          <svg class="ou-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <span class="ou-badge ou-count-live">0</span>
         </button>
         <div id="pephubActiveUsersHoverCard" class="active-users-hover-card" role="tooltip">
           <div class="ou-card">
@@ -861,10 +891,8 @@
       badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
       if (unreadCount > 0) {
         badge.classList.remove('empty');
-        badge.classList.add('pulse');
       } else {
         badge.classList.add('empty');
-        badge.classList.remove('pulse');
       }
     });
 
@@ -976,9 +1004,9 @@
     host.innerHTML = `
       <div class="notif-wrapper">
         <button type="button" class="hd-btn btn-notifications" id="btnHeaderNotifications" aria-haspopup="true" title="Notificações & Comunicados">
-          <svg class="notif-bell-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          <svg class="notif-bell-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C8.68629 2 6 4.68629 6 8V11.2C6 12.3 5.4 13.5 4.5 14.3L3.6 15.1C2.8 15.8 3.3 17.2 4.4 17.2H19.6C20.7 17.2 21.2 15.8 20.4 15.1L19.5 14.3C18.6 13.5 18 12.3 18 11.2V8C18 4.68629 15.3137 2 12 2Z" fill="#ffb800" stroke="#d97706" stroke-width="1.2"/>
+            <ellipse cx="12" cy="19.5" rx="3.2" ry="2.2" fill="#d97706"/>
           </svg>
           <span class="notif-badge empty">0</span>
         </button>
@@ -1123,7 +1151,11 @@
     const notifHosts = document.querySelectorAll('[data-pephub-notifications]');
     if (notifHosts.length) {
       getMe().then(me => {
-        if (me && me.authenticated) {
+        if ((me && me.authenticated) || window.location.pathname.startsWith('/admin')) {
+          notifHosts.forEach(h => window.pephubMountNotificationsWidget(h));
+        }
+      }).catch(() => {
+        if (window.location.pathname.startsWith('/admin')) {
           notifHosts.forEach(h => window.pephubMountNotificationsWidget(h));
         }
       });
@@ -1133,7 +1165,11 @@
     const onlineHosts = document.querySelectorAll('[data-pephub-online]');
     if (onlineHosts.length) {
       getMe().then(me => {
-        if (me && me.authenticated && me.is_admin) {
+        if ((me && me.authenticated && me.is_admin) || window.location.pathname.startsWith('/admin')) {
+          onlineHosts.forEach(h => window.pephubMountOnlineWidget(h));
+        }
+      }).catch(() => {
+        if (window.location.pathname.startsWith('/admin')) {
           onlineHosts.forEach(h => window.pephubMountOnlineWidget(h));
         }
       });
