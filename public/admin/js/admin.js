@@ -208,17 +208,41 @@ const sectionModules = document.getElementById('sectionModules');
 const sectionUploads = document.getElementById('sectionUploads');
 const sectionRequests = document.getElementById('sectionRequests');
 
+const PILLAR_MAPPING = {
+  users: { pillarId: 'pillarTabUsers', groupId: 'subGroupUsers' },
+  requests: { pillarId: 'pillarTabUsers', groupId: 'subGroupUsers' },
+  stats: { pillarId: 'pillarTabTelemetry', groupId: 'subGroupTelemetry' },
+  logs: { pillarId: 'pillarTabTelemetry', groupId: 'subGroupTelemetry' },
+  modules: { pillarId: 'pillarTabGovernance', groupId: 'subGroupGovernance' },
+  controls: { pillarId: 'pillarTabGovernance', groupId: 'subGroupGovernance' },
+  notifications: { pillarId: 'pillarTabOperations', groupId: 'subGroupOperations' },
+  uploads: { pillarId: 'pillarTabOperations', groupId: 'subGroupOperations' }
+};
+
 function showTab(tab) {
   closeActionMenu();
+
+  // Desativa todas as sub-abas e oculta todas as seções
   [tabUsersBtn, tabRequestsBtn, tabNotificationsBtn, tabStatsBtn, tabLogsBtn, tabControlsBtn, tabModulesBtn, tabUploadsBtn].filter(Boolean).forEach(b => b.classList.remove('active'));
   [sectionUsers, sectionRequests, sectionNotifications, sectionStats, sectionLogs, sectionControls, sectionModules, sectionUploads].filter(Boolean).forEach(s => s.style.display = 'none');
 
+  // Sincroniza Pilar Estratégico e Sub-Grupo Contextual
+  const mapping = PILLAR_MAPPING[tab] || PILLAR_MAPPING.users;
+  document.querySelectorAll('.pillar-tab').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sub-nav-group').forEach(g => g.classList.remove('active'));
+
+  const activePillar = document.getElementById(mapping.pillarId);
+  const activeGroup = document.getElementById(mapping.groupId);
+  if (activePillar) activePillar.classList.add('active');
+  if (activeGroup) activeGroup.classList.add('active');
+
+  // Ativa a sub-aba e dispara o carregamento da seção correspondente
   if (tab === 'users') {
-    tabUsersBtn.classList.add('active');
+    if (tabUsersBtn) tabUsersBtn.classList.add('active');
     sectionUsers.style.display = 'block';
     loadUsers();
   } else if (tab === 'requests') {
-    tabRequestsBtn.classList.add('active');
+    if (tabRequestsBtn) tabRequestsBtn.classList.add('active');
     sectionRequests.style.display = 'block';
     loadAccessRequests();
   } else if (tab === 'notifications') {
@@ -226,24 +250,24 @@ function showTab(tab) {
     if (sectionNotifications) sectionNotifications.style.display = 'block';
     loadAdminNotifications();
   } else if (tab === 'stats') {
-    tabStatsBtn.classList.add('active');
+    if (tabStatsBtn) tabStatsBtn.classList.add('active');
     sectionStats.style.display = 'block';
     loadAccessStats();
   } else if (tab === 'logs') {
-    tabLogsBtn.classList.add('active');
+    if (tabLogsBtn) tabLogsBtn.classList.add('active');
     sectionLogs.style.display = 'block';
     loadAccessLogs();
   } else if (tab === 'controls') {
-    tabControlsBtn.classList.add('active');
+    if (tabControlsBtn) tabControlsBtn.classList.add('active');
     sectionControls.style.display = 'block';
     loadSystemControls();
     loadProfileFields();
   } else if (tab === 'modules') {
-    tabModulesBtn.classList.add('active');
+    if (tabModulesBtn) tabModulesBtn.classList.add('active');
     sectionModules.style.display = 'block';
     loadModules();
   } else if (tab === 'uploads') {
-    tabUploadsBtn.classList.add('active');
+    if (tabUploadsBtn) tabUploadsBtn.classList.add('active');
     sectionUploads.style.display = 'block';
     loadUploadsConfig();
   }
@@ -257,6 +281,23 @@ tabLogsBtn.addEventListener('click', () => showTab('logs'));
 tabControlsBtn.addEventListener('click', () => showTab('controls'));
 tabModulesBtn.addEventListener('click', () => showTab('modules'));
 tabUploadsBtn.addEventListener('click', () => showTab('uploads'));
+
+// Dropdown de Painéis no Header do Admin
+const btnAdminReportsMenu = document.getElementById('btnAdminReportsMenu');
+const adminReportsDropdown = document.getElementById('adminReportsDropdown');
+if (btnAdminReportsMenu && adminReportsDropdown) {
+  btnAdminReportsMenu.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const wrap = btnAdminReportsMenu.closest('.hd-dropdown-wrap');
+    if (wrap) wrap.classList.toggle('open');
+  });
+  document.addEventListener('click', (e) => {
+    const wrap = btnAdminReportsMenu.closest('.hd-dropdown-wrap');
+    if (wrap && !wrap.contains(e.target)) {
+      wrap.classList.remove('open');
+    }
+  });
+}
 
 // Logout Seguro e Direto
 document.getElementById('btnLogout').addEventListener('click', async () => {
