@@ -772,11 +772,14 @@
       background: rgba(18, 24, 32, 0.65) !important;
       backdrop-filter: blur(2px) !important;
       z-index: 100000 !important;
-      display: flex !important;
+      display: none !important;
       align-items: center !important;
       justify-content: center !important;
       padding: 16px !important;
       box-sizing: border-box !important;
+    }
+    .ph-modal-backdrop.ph-modal-open {
+      display: flex !important;
     }
     .ph-modal-dialog {
       background: #ffffff !important;
@@ -1679,6 +1682,69 @@
   }
 
   // ------------------------------------------------------------------
+  // CONTROLE GLOBAL DE FECHAMENTO DE MODAIS
+  // ------------------------------------------------------------------
+  function closeProfileModal() {
+    const m = document.getElementById('pephubProfileModal');
+    if (m) m.classList.remove('ph-modal-open');
+  }
+
+  function closeSettingsModal() {
+    const m = document.getElementById('pephubSettingsModal');
+    if (m) m.classList.remove('ph-modal-open');
+  }
+
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('[data-modal-close]')) {
+      closeProfileModal();
+      closeSettingsModal();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeAllProfileDropdowns();
+      closeProfileModal();
+      closeSettingsModal();
+    }
+  });
+
+  // Lista padronizada oficial de Áreas e Funções da Regional Norte
+  const OFFICIAL_AREAS = [
+    'MARKETING',
+    'AGENTE AUTORIZADO',
+    'LOJAS PRÓPRIAS',
+    'PME',
+    'VAREJO',
+    'PORTA A PORTA',
+    'P&P',
+    'ENGENHARIA',
+    'TÉCNICA',
+    'DISTRIBUIÇÃO',
+    'DIRETORIA',
+    'OUTROS'
+  ];
+
+  const OFFICIAL_FUNCTIONS = [
+    { value: 'DIRETOR', label: 'DIRETOR' },
+    { value: 'GERENTE', label: 'GERENTE' },
+    { value: 'ESPECIALISTA/COORDENADOR', label: 'ESPECIALISTA / COORDENADOR' },
+    { value: 'CONSULTOR', label: 'CONSULTOR' },
+    { value: 'SUPERVISOR', label: 'SUPERVISOR' },
+    { value: 'EXECUTIVO/GN', label: 'EXECUTIVO / GN' },
+    { value: 'OUTROS', label: 'OUTROS' }
+  ];
+
+  function formatPhoneInput(val) {
+    const d = String(val || '').replace(/\D/g, '').slice(0, 11);
+    if (!d) return '';
+    if (d.length <= 2) return `(${d}`;
+    if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+    if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+    return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+  }
+
+  // ------------------------------------------------------------------
   // Modal 1: Perfil Cadastral & Foto
   // ------------------------------------------------------------------
   async function openProfileModal() {
@@ -1689,8 +1755,12 @@
       modalEl.id = 'pephubProfileModal';
       modalEl.className = 'ph-modal-backdrop';
       document.body.appendChild(modalEl);
+      modalEl.addEventListener('click', (e) => {
+        if (e.target === modalEl) closeProfileModal();
+      });
     }
-    modalEl.style.display = 'flex';
+
+    modalEl.classList.add('ph-modal-open');
     modalEl.innerHTML = `
       <div class="ph-modal-dialog">
         <div class="ph-modal-header">
@@ -1698,21 +1768,16 @@
             <small>Identidade Corporativa · Regional Norte</small>
             <b>Meu Perfil</b>
           </div>
-          <button type="button" class="ph-modal-close-btn" id="btnCloseProfileModal" aria-label="Fechar">&times;</button>
+          <button type="button" class="ph-modal-close-btn" data-modal-close="true" aria-label="Fechar">&times;</button>
         </div>
         <div class="ph-modal-content" id="profileModalContent">
           <div style="text-align:center;padding:36px 0;color:#64748b">Carregando dados cadastrais…</div>
         </div>
         <div class="ph-modal-actions" id="profileModalActions">
-          <button type="button" class="ph-btn-secondary" id="btnProfileModalCancel">Fechar</button>
+          <button type="button" class="ph-btn-secondary" data-modal-close="true">Fechar</button>
         </div>
       </div>
     `;
-
-    const close = () => { modalEl.style.display = 'none'; };
-    modalEl.querySelector('#btnCloseProfileModal').onclick = close;
-    modalEl.querySelector('#btnProfileModalCancel').onclick = close;
-    modalEl.onclick = (e) => { if (e.target === modalEl) close(); };
 
     try {
       const res = await fetch('/api/user/profile');
@@ -1724,7 +1789,7 @@
       if (cnt) {
         cnt.innerHTML = `
           <div class="ph-notice-box" style="background:#fef2f2;border-color:#fecaca;color:#991b1b">
-            Erro ao carregar dados do usuário. Por favor, tente novamente.
+            Erro ao carregar dados do usuário. Por favor, feche e tente novamente.
           </div>
         `;
       }
@@ -1734,25 +1799,24 @@
   function renderProfileForm(modalEl, data) {
     const user = data.user || {};
     const pending = data.pending_request;
-    const isAdmin = !!user.is_admin;
+    const isAdmin = Boolean(user.is_admin);
     let isEditing = false;
-    let currentFotoBase64 = user.foto || '';
+    let currentFoto = user.foto || '';
 
     const contentEl = modalEl.querySelector('#profileModalContent');
     const actionsEl = modalEl.querySelector('#profileModalActions');
 
     function refreshView() {
       const initials = getInitials(user.nome_completo);
-      const avatarPreview = currentFotoBase64
-        ? `<img id="profileAvatarImgPreview" src="${escapeHtml(currentFotoBase64)}" alt="Foto de perfil">`
+      const avatarPreview = currentFoto
+        ? `<img id="profileAvatarImgPreview" src="${escapeHtml(currentFoto)}" alt="Foto de perfil">`
         : `<span id="profileAvatarInitialsPreview">${escapeHtml(initials)}</span>`;
 
       let pendingHtml = '';
       if (pending && !isAdmin) {
-        const reqDate = pending.requested_at ? formatTimeBr(pending.requested_at) : 'recentemente';
         pendingHtml = `
           <div class="ph-notice-box warning">
-            <b>Solicitação em Análise:</b> Você possui uma solicitação de alteração cadastral enviada em ${escapeHtml(pending.requested_at || '')} que está aguardando validação do Administrador. Enquanto não for validada, seus dados oficiais permanecem inalterados.
+            <b>Solicitação em Análise:</b> Você possui uma solicitação de alteração cadastral enviada em ${escapeHtml(pending.created_at || '')} aguardando validação do Administrador. Enquanto estiver em análise, não é possível abrir um novo pedido.
           </div>
         `;
       }
@@ -1761,37 +1825,51 @@
       if (isEditing && !isAdmin) {
         editNoticeHtml = `
           <div class="ph-notice-box">
-            <b>Atenção:</b> Por governança corporativa, qualquer alteração em seus dados cadastrais (nome, telefone, setor, função e foto) será encaminhada por e-mail para aprovação do Administrador. A alteração só terá efeito após validação formal.
+            <b>Atenção:</b> Por governança corporativa, qualquer alteração em seus dados cadastrais oficiais (Nome, Setor, Função e Telefone) será encaminhada por e-mail para aprovação do Administrador. A alteração só terá efeito após validação formal.
           </div>
         `;
       }
+
+      // Constrói dropdown de áreas
+      const areaOptionsHtml = OFFICIAL_AREAS.map(a => {
+        const sel = String(user.area || '').toUpperCase() === a ? 'selected' : '';
+        return `<option value="${escapeHtml(a)}" ${sel}>${escapeHtml(a)}</option>`;
+      }).join('');
+
+      // Constrói dropdown de funções
+      const funcaoOptionsHtml = OFFICIAL_FUNCTIONS.map(f => {
+        const userFunc = String(user.funcao || '').toUpperCase();
+        const sel = (userFunc === f.value || userFunc === f.label) ? 'selected' : '';
+        return `<option value="${escapeHtml(f.value)}" ${sel}>${escapeHtml(f.label)}</option>`;
+      }).join('');
 
       contentEl.innerHTML = `
         ${pendingHtml}
         ${editNoticeHtml}
         <div id="profileFormFeedback"></div>
 
+        <!-- Seção de Foto (Independente e Imediata) -->
         <div class="ph-avatar-edit-box">
           <div class="ph-avatar-preview-circle" id="profileAvatarCircle">
             ${avatarPreview}
           </div>
-          <div>
+          <div style="flex:1">
             <b style="font-size:13px;display:block;margin-bottom:2px">Foto do Perfil</b>
             <span style="font-size:11.5px;color:#64748b;display:block;margin-bottom:8px">
-              ${user.foto ? 'Foto corporativa definida.' : 'Nenhuma foto definida. O sistema exibe suas iniciais.'}
+              ${currentFoto ? 'Foto corporativa definida.' : 'Nenhuma foto definida. O sistema exibe suas iniciais.'}
             </span>
-            ${isEditing ? `
-              <div style="display:flex;gap:8px;align-items:center">
-                <label class="ph-btn-secondary" style="font-size:11px;padding:5px 10px;cursor:pointer">
-                  <input type="file" id="profileFileInput" accept="image/png,image/jpeg,image/webp" style="display:none">
-                  Escolher foto
-                </label>
-                ${currentFotoBase64 ? `<button type="button" id="btnRemoveAvatar" class="ph-btn-danger-outline" style="font-size:11px;padding:4px 8px">Remover</button>` : ''}
-              </div>
-            ` : ''}
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <label class="ph-btn-secondary" style="font-size:11px;padding:5px 11px;cursor:pointer">
+                <input type="file" id="profileFileInput" accept="image/png,image/jpeg,image/webp" style="display:none">
+                ${currentFoto ? 'Trocar Foto' : 'Adicionar Foto'}
+              </label>
+              ${currentFoto ? `<button type="button" id="btnRemoveAvatar" class="ph-btn-danger-outline" style="font-size:11px;padding:5px 10px">Remover Foto</button>` : ''}
+              <span id="profilePhotoFeedback" style="font-size:11.5px;color:#2f7d5d;font-weight:600"></span>
+            </div>
           </div>
         </div>
 
+        <!-- Formulário Cadastral -->
         <div class="ph-form-grid">
           <div class="ph-form-group-full">
             <label class="ph-label" for="pfNome">Nome Completo</label>
@@ -1810,24 +1888,39 @@
 
           <div>
             <label class="ph-label" for="pfArea">Setor / Área</label>
-            <input class="ph-input" type="text" id="pfArea" value="${escapeHtml(user.area || '')}" ${isEditing ? '' : 'readonly'}>
+            ${isEditing ? `
+              <select class="ph-select" id="pfArea">
+                <option value="" disabled>Selecione seu setor…</option>
+                ${areaOptionsHtml}
+              </select>
+            ` : `
+              <input class="ph-input" type="text" id="pfArea" value="${escapeHtml(user.area || '')}" readonly>
+            `}
           </div>
 
           <div>
             <label class="ph-label" for="pfFuncao">Função / Cargo</label>
-            <input class="ph-input" type="text" id="pfFuncao" value="${escapeHtml(user.funcao || '')}" ${isEditing ? '' : 'readonly'}>
+            ${isEditing ? `
+              <select class="ph-select" id="pfFuncao">
+                <option value="" disabled>Selecione sua função…</option>
+                ${funcaoOptionsHtml}
+              </select>
+            ` : `
+              <input class="ph-input" type="text" id="pfFuncao" value="${escapeHtml(user.funcao || '')}" readonly>
+            `}
           </div>
 
           <div class="ph-form-group-full">
             <label class="ph-label" for="pfTelefone">Telefone / Ramal</label>
-            <input class="ph-input" type="text" id="pfTelefone" value="${escapeHtml(user.telefone || '')}" ${isEditing ? '' : 'readonly'}>
+            <input class="ph-input" type="text" id="pfTelefone" value="${escapeHtml(user.telefone || '')}" placeholder="(00) 00000-0000" ${isEditing ? '' : 'readonly'}>
           </div>
         </div>
 
+        <!-- Segurança & Redefinição de Senha -->
         <div style="margin-top:20px;padding-top:16px;border-top:1px solid #eef2f6;display:flex;align-items:center;justify-content:space-between">
           <div>
             <b style="font-size:12.5px;color:#1c2430;display:block">Segurança & Senha</b>
-            <span style="font-size:11.5px;color:#64748b">Deseja alterar ou redefinir sua senha de acesso?</span>
+            <span style="font-size:11.5px;color:#64748b">Deseja cadastrar uma nova senha de acesso?</span>
           </div>
           <button type="button" class="ph-btn-secondary" id="btnProfileResetPassword" style="font-size:11.5px">
             Redefinir Senha
@@ -1835,36 +1928,82 @@
         </div>
       `;
 
-      // Eventos de foto
-      if (isEditing) {
-        const fileInput = contentEl.querySelector('#profileFileInput');
-        if (fileInput) {
-          fileInput.onchange = async (e) => {
-            const f = e.target.files && e.target.files[0];
-            if (!f) return;
-            try {
-              const b64 = await compressAvatarFile(f);
-              currentFotoBase64 = b64;
-              refreshView();
-            } catch (err) {
-              alert(err.message || 'Erro ao carregar imagem');
-            }
-          };
-        }
-        const btnRemove = contentEl.querySelector('#btnRemoveAvatar');
-        if (btnRemove) {
-          btnRemove.onclick = () => {
-            currentFotoBase64 = '';
+      // Evento de upload de foto direta
+      const fileInput = contentEl.querySelector('#profileFileInput');
+      if (fileInput) {
+        fileInput.onchange = async (e) => {
+          const f = e.target.files && e.target.files[0];
+          if (!f) return;
+          try {
+            const fbEl = contentEl.querySelector('#profilePhotoFeedback');
+            if (fbEl) fbEl.textContent = 'Enviando foto…';
+            const b64 = await compressAvatarFile(f);
+
+            const res = await fetch('/api/user/profile/photo', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ foto: b64 })
+            });
+            const resData = await res.json();
+            if (!res.ok) throw new Error(resData.error || 'Erro ao salvar foto.');
+
+            currentFoto = b64;
+            user.foto = b64;
+            _mePromise = null;
+            updateProfileWidgetsUI(user);
             refreshView();
-          };
-        }
+          } catch (err) {
+            alert(err.message || 'Erro ao carregar imagem');
+          }
+        };
+      }
+
+      // Evento de remoção de foto
+      const btnRemove = contentEl.querySelector('#btnRemoveAvatar');
+      if (btnRemove) {
+        btnRemove.onclick = async () => {
+          if (!confirm('Deseja remover sua foto de perfil? Suas iniciais serão exibidas.')) return;
+          try {
+            const res = await fetch('/api/user/profile/photo', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ foto: null })
+            });
+            const resData = await res.json();
+            if (!res.ok) throw new Error(resData.error || 'Erro ao remover foto.');
+
+            currentFoto = '';
+            user.foto = '';
+            _mePromise = null;
+            updateProfileWidgetsUI(user);
+            refreshView();
+          } catch (err) {
+            alert(err.message || 'Erro ao remover foto.');
+          }
+        };
+      }
+
+      // Formatação de telefone em tempo real
+      const telInput = contentEl.querySelector('#pfTelefone');
+      if (telInput && isEditing) {
+        telInput.oninput = (e) => {
+          e.target.value = formatPhoneInput(e.target.value);
+        };
+      }
+
+      // Caixa alta em nome
+      const nomeInput = contentEl.querySelector('#pfNome');
+      if (nomeInput && isEditing) {
+        nomeInput.oninput = (e) => {
+          e.target.value = e.target.value.toUpperCase();
+        };
       }
 
       // Evento de redefinir senha
       const btnResetPwd = contentEl.querySelector('#btnProfileResetPassword');
       if (btnResetPwd) {
         btnResetPwd.onclick = async () => {
-          if (!confirm('Deseja enviar um link de redefinição de senha para o seu e-mail institucional?')) return;
+          if (!confirm('Deseja enviar um link seguro para redefinição de sua senha ao seu e-mail institucional?')) return;
           btnResetPwd.disabled = true;
           btnResetPwd.textContent = 'Enviando link…';
           try {
@@ -1885,18 +2024,25 @@
 
       // Rodapé de Ações
       if (!isEditing) {
+        const canEdit = isAdmin || !pending;
         actionsEl.innerHTML = `
-          <button type="button" class="ph-btn-secondary" id="btnProfileCloseBottom">Fechar</button>
-          <button type="button" class="ph-btn-primary" id="btnProfileStartEdit">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            ${isAdmin ? 'Editar Dados' : 'Solicitar Alteração'}
-          </button>
+          <button type="button" class="ph-btn-secondary" data-modal-close="true">Fechar</button>
+          ${canEdit ? `
+            <button type="button" class="ph-btn-primary" id="btnProfileStartEdit">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              ${isAdmin ? 'Editar Dados' : 'Solicitar Alteração'}
+            </button>
+          ` : `
+            <span style="font-size:11.5px;color:#854d0e;font-weight:600">Alteração em análise pelo Administrador</span>
+          `}
         `;
-        actionsEl.querySelector('#btnProfileCloseBottom').onclick = () => { modalEl.style.display = 'none'; };
-        actionsEl.querySelector('#btnProfileStartEdit').onclick = () => {
-          isEditing = true;
-          refreshView();
-        };
+        const btnEdit = actionsEl.querySelector('#btnProfileStartEdit');
+        if (btnEdit) {
+          btnEdit.onclick = () => {
+            isEditing = true;
+            refreshView();
+          };
+        }
       } else {
         actionsEl.innerHTML = `
           <button type="button" class="ph-btn-secondary" id="btnProfileCancelEdit">Cancelar</button>
@@ -1907,7 +2053,6 @@
         `;
         actionsEl.querySelector('#btnProfileCancelEdit').onclick = () => {
           isEditing = false;
-          currentFotoBase64 = user.foto || '';
           refreshView();
         };
         actionsEl.querySelector('#btnProfileSubmitEdit').onclick = async () => {
@@ -1916,8 +2061,16 @@
           const funcao = (contentEl.querySelector('#pfFuncao')?.value || '').trim();
           const telefone = (contentEl.querySelector('#pfTelefone')?.value || '').trim();
 
-          if (!nome) {
-            alert('Por favor, informe seu nome completo.');
+          if (!nome || nome.length < 3) {
+            alert('Por favor, informe seu nome completo (mínimo 3 letras).');
+            return;
+          }
+          if (!area) {
+            alert('Por favor, selecione seu setor / área.');
+            return;
+          }
+          if (!funcao) {
+            alert('Por favor, selecione sua função / cargo.');
             return;
           }
 
@@ -1933,8 +2086,7 @@
                 nome_completo: nome,
                 area,
                 funcao,
-                telefone,
-                foto: currentFotoBase64
+                telefone
               })
             });
             const resData = await res.json();
@@ -1945,18 +2097,24 @@
             user.area = area;
             user.funcao = funcao;
             user.telefone = telefone;
-            if (isAdmin) user.foto = currentFotoBase64;
 
-            // Atualiza cache e botões
-            _mePromise = null;
-            updateProfileWidgetsUI(user);
-
-            isEditing = false;
-            refreshView();
-
-            const fb = contentEl.querySelector('#profileFormFeedback');
-            if (fb) {
-              fb.innerHTML = `<div class="ph-notice-box success">${escapeHtml(resData.message || 'Sucesso!')}</div>`;
+            if (isAdmin) {
+              _mePromise = null;
+              updateProfileWidgetsUI(user);
+              isEditing = false;
+              refreshView();
+              const fb = contentEl.querySelector('#profileFormFeedback');
+              if (fb) fb.innerHTML = `<div class="ph-notice-box success">Dados cadastrais atualizados com sucesso!</div>`;
+            } else {
+              // Marca pendência
+              data.pending_request = {
+                created_at: 'agora',
+                status: 'pendente'
+              };
+              isEditing = false;
+              refreshView();
+              const fb = contentEl.querySelector('#profileFormFeedback');
+              if (fb) fb.innerHTML = `<div class="ph-notice-box success">${escapeHtml(resData.message || 'Solicitação enviada com sucesso!')}</div>`;
             }
           } catch (err) {
             alert(err.message || 'Erro ao enviar alteração.');
@@ -1984,8 +2142,12 @@
       modalEl.id = 'pephubSettingsModal';
       modalEl.className = 'ph-modal-backdrop';
       document.body.appendChild(modalEl);
+      modalEl.addEventListener('click', (e) => {
+        if (e.target === modalEl) closeSettingsModal();
+      });
     }
-    modalEl.style.display = 'flex';
+
+    modalEl.classList.add('ph-modal-open');
     modalEl.innerHTML = `
       <div class="ph-modal-dialog">
         <div class="ph-modal-header">
@@ -1993,21 +2155,16 @@
             <small>Preferências & Notificações</small>
             <b>Configurações</b>
           </div>
-          <button type="button" class="ph-modal-close-btn" id="btnCloseSettingsModal" aria-label="Fechar">&times;</button>
+          <button type="button" class="ph-modal-close-btn" data-modal-close="true" aria-label="Fechar">&times;</button>
         </div>
         <div class="ph-modal-content" id="settingsModalContent">
           <div style="text-align:center;padding:36px 0;color:#64748b">Carregando configurações…</div>
         </div>
         <div class="ph-modal-actions" id="settingsModalActions">
-          <button type="button" class="ph-btn-secondary" id="btnSettingsModalCancel">Fechar</button>
+          <button type="button" class="ph-btn-secondary" data-modal-close="true">Fechar</button>
         </div>
       </div>
     `;
-
-    const close = () => { modalEl.style.display = 'none'; };
-    modalEl.querySelector('#btnCloseSettingsModal').onclick = close;
-    modalEl.querySelector('#btnSettingsModalCancel').onclick = close;
-    modalEl.onclick = (e) => { if (e.target === modalEl) close(); };
 
     try {
       const res = await fetch('/api/user/profile');
@@ -2019,7 +2176,7 @@
       if (cnt) {
         cnt.innerHTML = `
           <div class="ph-notice-box" style="background:#fef2f2;border-color:#fecaca;color:#991b1b">
-            Erro ao carregar configurações. Por favor, tente novamente.
+            Erro ao carregar configurações. Por favor, feche e tente novamente.
           </div>
         `;
       }
@@ -2031,9 +2188,10 @@
     const prefs = user.preferences || {};
     const accessible = data.accessible_modules || [];
 
-    const updateFreq = prefs.update_frequency === 'specific' ? 'specific' : 'all';
+    // Por padrão: tudo desmarcado
+    const alertAll = Boolean(prefs.alert_all);
     const monitoredList = Array.isArray(prefs.monitored_modules) ? prefs.monitored_modules : [];
-    const notifyNew = prefs.notify_new_reports !== false; // Padrão: true
+    const notifyNew = Boolean(prefs.notify_new_reports);
 
     const contentEl = modalEl.querySelector('#settingsModalContent');
     const actionsEl = modalEl.querySelector('#settingsModalActions');
@@ -2042,10 +2200,10 @@
     const checkboxesHtml = accessible.length === 0
       ? '<div style="color:#64748b;font-size:11.5px;padding:4px 0">Nenhum relatório atribuído no momento.</div>'
       : accessible.map(m => {
-          const checked = monitoredList.includes(m.code) ? 'checked' : '';
+          const checked = (!alertAll && monitoredList.includes(m.id)) ? 'checked' : '';
           return `
             <label class="ph-check-label">
-              <input type="checkbox" class="ph-module-check" value="${escapeHtml(m.code)}" ${checked}>
+              <input type="checkbox" class="ph-module-check" value="${escapeHtml(m.id)}" ${checked}>
               <span>${escapeHtml(m.name)}</span>
             </label>
           `;
@@ -2054,41 +2212,34 @@
     // Monta options de relatórios para o formulário de feedback
     const feedbackOptionsHtml = [
       '<option value="geral">Geral / Plataforma PEPHUB</option>',
-      ...accessible.map(m => `<option value="${escapeHtml(m.code)}">${escapeHtml(m.name)}</option>`)
+      ...accessible.map(m => `<option value="${escapeHtml(m.id)}">${escapeHtml(m.name)}</option>`)
     ].join('');
 
     contentEl.innerHTML = `
       <div id="settingsFeedbackAlert"></div>
 
-      <!-- Seção 1: Alertas de Atualização de Relatórios -->
+      <!-- Seção: Alertas de Atualização de Relatórios -->
       <div class="ph-settings-section">
         <div class="ph-settings-title">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           Alertas de Atualização de Relatórios
         </div>
-        
-        <label class="ph-radio-label">
-          <input type="radio" name="opt_update_freq" value="all" id="radFreqAll" ${updateFreq === 'all' ? 'checked' : ''}>
-          <div>
-            <b>1 — Desejo receber alertas de atualização de todos os relatórios que possuo acesso</b>
-            <div style="font-size:11.5px;color:#64748b;margin-top:2px">Notificar sempre que qualquer painel com meu acesso for atualizado pela equipe.</div>
-          </div>
+
+        <label class="ph-check-label" style="font-size:12.5px;color:#1c2430;margin-bottom:12px;font-weight:600">
+          <input type="checkbox" id="chkAlertAll" ${alertAll ? 'checked' : ''}>
+          <span>Desejo receber alertas de atualização de todos os relatórios que possuo acesso</span>
         </label>
 
-        <label class="ph-radio-label" style="margin-top:12px">
-          <input type="radio" name="opt_update_freq" value="specific" id="radFreqSpecific" ${updateFreq === 'specific' ? 'checked' : ''}>
-          <div>
-            <b>2 — Desejo receber alertas de atualização somente de:</b>
-            <div style="font-size:11.5px;color:#64748b;margin-top:2px">Selecione abaixo individualmente os relatórios prioritários para monitorar:</div>
-          </div>
-        </label>
+        <div style="font-size:11px;font-weight:700;color:#5b6675;text-transform:uppercase;letter-spacing:.3px;margin:10px 0 6px">
+          Ou selecione individualmente os relatórios prioritários para monitorar:
+        </div>
 
-        <div class="ph-checkbox-grid" id="settingsModulesGrid" style="display:${updateFreq === 'specific' ? 'grid' : 'none'}">
+        <div class="ph-checkbox-grid" id="settingsModulesGrid">
           ${checkboxesHtml}
         </div>
       </div>
 
-      <!-- Seção 2: Alertas de Novos Relatórios -->
+      <!-- Seção: Lançamentos & Publicações -->
       <div class="ph-settings-section">
         <div class="ph-settings-title">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -2096,15 +2247,15 @@
         </div>
         <label class="ph-check-label" style="font-size:12.5px;color:#1c2430">
           <input type="checkbox" id="chkNotifyNewReports" ${notifyNew ? 'checked' : ''}>
-          <b>3 — Desejo receber alertas sobre novos relatórios publicados no PEPHUB</b>
+          <span>Desejo receber alertas sobre novos relatórios publicados no PEPHUB</span>
         </label>
       </div>
 
-      <!-- Seção 3: Informar Erro ou Fazer Comentário -->
+      <!-- Seção: Informar Erro ou Fazer Comentário -->
       <div class="ph-settings-section">
         <div class="ph-settings-title">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          4 — Desejo informar um erro ou fazer um comentário
+          Informar um Erro ou Fazer um Comentário
         </div>
         <div style="font-size:11.5px;color:#64748b;margin-bottom:12px">
           Sua mensagem será enviada por e-mail diretamente aos administradores da ferramenta e registrada para melhoria contínua da Regional Norte.
@@ -2129,7 +2280,8 @@
             <label class="ph-label" for="fbMessage">Mensagem / Descrição do Ocorrido</label>
             <textarea class="ph-textarea" id="fbMessage" rows="3" placeholder="Descreva os detalhes, cenário observado ou sugestão..."></textarea>
           </div>
-          <div class="ph-form-group-full" style="text-align:right">
+          <div class="ph-form-group-full" style="display:flex;justify-content:space-between;align-items:center">
+            <span id="fbResultNotice" style="font-size:11.5px;color:#166534;font-weight:600"></span>
             <button type="button" class="ph-btn-secondary" id="btnSendFeedback">
               Enviar Mensagem ao Administrador
             </button>
@@ -2138,16 +2290,27 @@
       </div>
     `;
 
-    // Interatividade do radio
-    const radAll = contentEl.querySelector('#radFreqAll');
-    const radSpecific = contentEl.querySelector('#radFreqSpecific');
-    const gridEl = contentEl.querySelector('#settingsModulesGrid');
+    // LÓGICA DE EXCLUSÃO MÚTUA EXIGIDA:
+    // Se o usuário marcar "todos", desmarca automaticamente os individuais.
+    // Se o usuário marcar qualquer individual, desmarca "todos".
+    const chkAll = contentEl.querySelector('#chkAlertAll');
+    const moduleChecks = contentEl.querySelectorAll('.ph-module-check');
 
-    const updateGridVisibility = () => {
-      if (gridEl) gridEl.style.display = radSpecific.checked ? 'grid' : 'none';
-    };
-    radAll.onchange = updateGridVisibility;
-    radSpecific.onchange = updateGridVisibility;
+    if (chkAll) {
+      chkAll.addEventListener('change', () => {
+        if (chkAll.checked) {
+          moduleChecks.forEach(c => { c.checked = false; });
+        }
+      });
+    }
+
+    moduleChecks.forEach(c => {
+      c.addEventListener('change', () => {
+        if (c.checked && chkAll) {
+          chkAll.checked = false;
+        }
+      });
+    });
 
     // Ação de Enviar Feedback
     const btnFeedback = contentEl.querySelector('#btnSendFeedback');
@@ -2169,15 +2332,16 @@
           const res = await fetch('/api/user/feedback', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type, module, message: msg })
+            body: JSON.stringify({ category: type, module_id: module, message: msg })
           });
           const resData = await res.json();
           if (!res.ok) throw new Error(resData.error || 'Erro ao enviar mensagem');
 
           contentEl.querySelector('#fbMessage').value = '';
-          const alertEl = contentEl.querySelector('#settingsFeedbackAlert');
-          if (alertEl) {
-            alertEl.innerHTML = `<div class="ph-notice-box success">${escapeHtml(resData.message || 'Mensagem enviada com sucesso ao administrador!')}</div>`;
+          const notice = contentEl.querySelector('#fbResultNotice');
+          if (notice) {
+            notice.textContent = '✓ Mensagem enviada com sucesso ao administrador!';
+            setTimeout(() => { notice.textContent = ''; }, 6000);
           }
         } catch (err) {
           alert(err.message || 'Erro ao enviar feedback.');
@@ -2190,21 +2354,20 @@
 
     // Botões de Ação do Rodapé (Salvar Preferências)
     actionsEl.innerHTML = `
-      <button type="button" class="ph-btn-secondary" id="btnSettingsCloseBottom">Fechar</button>
+      <button type="button" class="ph-btn-secondary" data-modal-close="true">Fechar</button>
       <button type="button" class="ph-btn-primary" id="btnSavePreferences">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
         Salvar Preferências
       </button>
     `;
 
-    actionsEl.querySelector('#btnSettingsCloseBottom').onclick = () => { modalEl.style.display = 'none'; };
     actionsEl.querySelector('#btnSavePreferences').onclick = async () => {
-      const isSpecific = radSpecific.checked;
+      const isAll = Boolean(chkAll && chkAll.checked);
       const checkedModules = [];
-      if (isSpecific) {
+      if (!isAll) {
         contentEl.querySelectorAll('.ph-module-check:checked').forEach(c => checkedModules.push(c.value));
       }
-      const notifyNewReports = !!contentEl.querySelector('#chkNotifyNewReports')?.checked;
+      const notifyNewReports = Boolean(contentEl.querySelector('#chkNotifyNewReports')?.checked);
 
       const btnSave = actionsEl.querySelector('#btnSavePreferences');
       btnSave.disabled = true;
@@ -2215,7 +2378,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            update_frequency: isSpecific ? 'specific' : 'all',
+            alert_all: isAll,
             monitored_modules: checkedModules,
             notify_new_reports: notifyNewReports
           })
@@ -2225,9 +2388,9 @@
 
         const alertEl = contentEl.querySelector('#settingsFeedbackAlert');
         if (alertEl) {
-          alertEl.innerHTML = `<div class="ph-notice-box success">Preferências de notificação salvas com sucesso!</div>`;
+          alertEl.innerHTML = `<div class="ph-notice-box success">✓ Preferências de notificação salvas com sucesso!</div>`;
         }
-        setTimeout(() => { modalEl.style.display = 'none'; }, 900);
+        setTimeout(() => { closeSettingsModal(); }, 900);
       } catch (err) {
         alert(err.message || 'Erro ao salvar preferências.');
       } finally {
@@ -2274,6 +2437,7 @@
 
   // ------------------------------------------------------------------
   // Montagem do Profile Widget no Header
+  // Opções no Dropdown: Perfil, Configurações, Sair (sem números)
   // ------------------------------------------------------------------
   window.pephubMountProfileWidget = async function(host) {
     if (!host || host.dataset.pephubProfileMounted === '1') return;
@@ -2310,14 +2474,14 @@
             <button type="button" class="ph-dropdown-item" id="phMenuItemProfile">
               <svg class="ph-dropdown-item-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               <div class="ph-dropdown-item-texts">
-                <div class="ph-dropdown-item-title">1 — Perfil</div>
+                <div class="ph-dropdown-item-title">Perfil</div>
                 <div class="ph-dropdown-item-subtitle">Dados cadastrais e foto</div>
               </div>
             </button>
             <button type="button" class="ph-dropdown-item" id="phMenuItemSettings">
               <svg class="ph-dropdown-item-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
               <div class="ph-dropdown-item-texts">
-                <div class="ph-dropdown-item-title">2 — Configurações</div>
+                <div class="ph-dropdown-item-title">Configurações</div>
                 <div class="ph-dropdown-item-subtitle">Alertas e reporte de erro</div>
               </div>
             </button>
@@ -2325,7 +2489,7 @@
             <button type="button" class="ph-dropdown-item logout" id="phMenuItemLogout">
               <svg class="ph-dropdown-item-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
               <div class="ph-dropdown-item-texts">
-                <div class="ph-dropdown-item-title">3 — Sair</div>
+                <div class="ph-dropdown-item-title">Sair</div>
                 <div class="ph-dropdown-item-subtitle">Encerrar sessão de forma segura</div>
               </div>
             </button>
