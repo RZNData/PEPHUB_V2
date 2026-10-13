@@ -32,6 +32,7 @@ SKILL_EXECUTOR_MAP = {
     "release-gate": "release_gate.py",
     "scripts-auditor": "scripts_auditor.py",
     "db-optimizer": "db_optimizer.py",
+    "scalability-auditor": "scalability_auditor.py",
     "sync-bot-reports": "sync_bot_data.py",
     "skills-meta-orchestrator": "skills_meta_orchestrator.py"
 }

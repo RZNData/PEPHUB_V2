@@ -54,6 +54,7 @@ def run_release_gate():
         ("fpd_quality_agent.py",        "FPD Qualidade & Dados",            MIN_FPD_SCORE),
         ("reports_quality_agent.py",    "Qualidade Universal de Relatorios", 85),
         ("system_integrity_agent.py",   "Integridade do Sistema & Auth",    90),
+        ("scalability_auditor.py",      "Escalabilidade & Concorrencia",    85),
         ("skills_meta_orchestrator.py", "Meta-Orquestrador de Skills",      90),
     ]
 

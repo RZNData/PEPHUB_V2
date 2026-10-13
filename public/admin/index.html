@@ -1119,16 +1119,16 @@ tbody tr:hover{background:#f7f9fb}
       <div style="background:#f7f8fa;border-bottom:1px solid var(--line2);padding:10px 18px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
         <span style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px">Criar a partir de Preset:</span>
         <button type="button" class="sub-filter-btn" onclick="openNotificationModal('first_login')" title="Configurar mensagem de boas-vindas para primeiro acesso">
-          🌟 Boas-vindas (1º Acesso)
+          ✦ Boas-vindas (1º Acesso)
         </button>
         <button type="button" class="sub-filter-btn" onclick="openNotificationModal('password_change')" title="Configurar lembrete de atualização de senha periódica">
-          🛡️ Lembrete de Alteração de Senha
+          ⛨ Lembrete de Alteração de Senha
         </button>
         <button type="button" class="sub-filter-btn" onclick="openNotificationModal('new_report')" title="Avisar lançamento de novo relatório oficial">
-          🚀 Lançamento: Novo Relatório
+          ▲ Lançamento: Novo Relatório
         </button>
         <button type="button" class="sub-filter-btn" onclick="openNotificationModal('maintenance')" title="Comunicar manutenção ou consolidação programada">
-          ⚠️ Janela de Manutenção
+          ! Janela de Manutenção
         </button>
       </div>
 
@@ -1604,10 +1604,10 @@ tbody tr:hover{background:#f7f9fb}
         <label class="form-label" for="notifPreset" style="margin-bottom:4px">Carregar Modelo Predefinido (Preset)</label>
         <select id="notifPreset" class="form-select" onchange="applyNotificationPreset(this.value)" style="margin-bottom:0">
           <option value="custom">Mensagem Personalizada (Em Branco)</option>
-          <option value="first_login">🌟 Boas-vindas (Primeiro Acesso ao PEP HUB)</option>
-          <option value="password_change">🛡️ Lembrete de Alteração de Senha Corporativa</option>
-          <option value="new_report">🚀 Lançamento: Novo Painel Evolução da Carteira</option>
-          <option value="maintenance">⚠️ Janela de Manutenção ou Consolidação de Safra</option>
+          <option value="first_login">[Boas-vindas] Primeiro Acesso ao PEP HUB</option>
+          <option value="password_change">[Segurança] Lembrete de Alteração de Senha Corporativa</option>
+          <option value="new_report">[Lançamento] Novo Painel Evolução da Carteira</option>
+          <option value="maintenance">[Manutenção] Janela de Manutenção ou Consolidação de Safra</option>
         </select>
       </div>
 
@@ -1615,11 +1615,11 @@ tbody tr:hover{background:#f7f9fb}
         <div class="form-group" style="flex:1">
           <label class="form-label" for="notifType">Categoria / Estilo Visual</label>
           <select id="notifType" class="form-select" onchange="updateNotifModalPreview()">
-            <option value="info">🔵 Informativo (Azul Institucional)</option>
-            <option value="update">🟣 Lançamento / Novo Painel (Roxo)</option>
-            <option value="security">🔴 Segurança & Senha (Vermelho Claro)</option>
-            <option value="warning">🟡 Alerta / Manutenção (Âmbar)</option>
-            <option value="success">🟢 Sucesso / Concluído (Verde)</option>
+            <option value="info">Informativo (Azul Institucional)</option>
+            <option value="update">Lançamento / Novo Painel (Roxo)</option>
+            <option value="security">Segurança & Senha (Vermelho Claro)</option>
+            <option value="warning">Alerta / Manutenção (Âmbar)</option>
+            <option value="success">Sucesso / Concluído (Verde)</option>
           </select>
         </div>
         <div class="form-group" style="flex:1">

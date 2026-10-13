@@ -591,7 +591,11 @@
   // ------------------------------------------------------------------
   const HEARTBEAT_MS = 60000;
   let _hbTimer = null;
+  let _lastHbSent = 0;
   async function sendHeartbeat() {
+    const now = Date.now();
+    if (now - _lastHbSent < 25000) return; // Debounce de 25s: previne flood de abas/visibilidade
+    _lastHbSent = now;
     try {
       const res = await fetch('/api/auth/heartbeat', { method: 'POST', keepalive: true });
       if (res.status === 401 && _hbTimer) {

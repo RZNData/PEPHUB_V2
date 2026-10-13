@@ -258,8 +258,18 @@ export async function ensureSessionPresenceColumns(env) {
   _presenceReady = true;
 }
 
+// In-memory cache de presenças recentes para descarregar o D1 sob concorrência massiva (TTL 45s)
+const _presenceTouchCache = new Map();
+
 export async function touchSessionPresence(env, token) {
   if (!env.DB || !token) return false;
+  const now = Date.now();
+  const lastTouch = _presenceTouchCache.get(token);
+  if (lastTouch && (now - lastTouch) < 45000) {
+    return true; // Throttle de 45s: poupa até 75% das queries de escrita concorrentes ao D1
+  }
+  _presenceTouchCache.set(token, now);
+
   // Em SQLite todas as expressões do SET usam os valores ANTERIORES da linha:
   // se o último sinal tem mais de 3 min, recomeça a contagem de "online há".
   const sql = `
@@ -324,10 +334,19 @@ export async function deleteSession(token, env) {
   return 'pephub_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
 }
 
+// In-memory throttle para evitar bursts de escritas duplicadas na telemetria (TTL 15s por usuário e recurso)
+const _accessLogThrottle = new Map();
+
 // Registro de Acesso e Auditoria
 export async function logAccess(env, request, user, recurso) {
   try {
     if (!env.DB || !user) return;
+    const throttleKey = `${user.id}:${recurso}`;
+    const now = Date.now();
+    const last = _accessLogThrottle.get(throttleKey);
+    if (last && (now - last) < 15000) return; // Suprime gravação redundante em <15s
+    _accessLogThrottle.set(throttleKey, now);
+
     const ip = request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for') || '127.0.0.1';
     const city = request.cf?.city || 'Localidade não identificada';
     const region = request.cf?.regionCode || request.cf?.region || '';
