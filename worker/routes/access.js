@@ -24,6 +24,7 @@ import {
   randomHex,
   logAccess,
   DEFAULT_SYSTEM_MODULES,
+  getResponsibleEmails,
 } from '../utils/security.js';
 
 const MAX_REQUESTS_PER_DAY = 10;
@@ -89,16 +90,6 @@ async function findModuleName(env, canonicalId) {
   } catch (_) { /* tabela ainda não existe: usa catálogo padrão */ }
   const def = DEFAULT_SYSTEM_MODULES.find((m) => normalizeModuleId(m[0]) === canonicalId);
   return def ? def[1] : null;
-}
-
-async function getResponsibleEmails(env) {
-  const list = [];
-  if (env.ADMIN_EMAIL) list.push(String(env.ADMIN_EMAIL).trim().toLowerCase());
-  if (list.length === 0) {
-    const admins = await env.DB.prepare("SELECT email_claro FROM users WHERE is_admin = 1 AND status = 'aprovado'").all().catch(() => ({ results: [] }));
-    for (const a of admins.results || []) if (a.email_claro) list.push(String(a.email_claro).toLowerCase());
-  }
-  return [...new Set(list)];
 }
 
 function isReviewLinkExpired(createdAt) {

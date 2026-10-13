@@ -418,6 +418,7 @@ export async function handleAuthRoutes(request, env, url, pathname, ip) {
         login_claro: user.login_claro,
         email_claro: user.email_claro,
         telefone: user.telefone || '',
+        foto: user.foto || parsedMeta.avatar || '',
         area: user.area,
         funcao: user.funcao,
         is_admin: Boolean(user.is_admin),

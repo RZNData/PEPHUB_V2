@@ -299,13 +299,16 @@ if (btnAdminReportsMenu && adminReportsDropdown) {
   });
 }
 
-// Logout Seguro e Direto
-document.getElementById('btnLogout').addEventListener('click', async () => {
-  try {
-    await fetch('/api/auth/logout', { method: 'POST' });
-  } catch (_) {}
-  window.location.href = '/login/';
-});
+// Logout Seguro e Direto (se existir botão legado)
+const _legacyAdminLogout = document.getElementById('btnLogout');
+if (_legacyAdminLogout) {
+  _legacyAdminLogout.addEventListener('click', async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (_) {}
+    window.location.href = '/login/';
+  });
+}
 
 // Fechar modais
 document.querySelectorAll('.modal-close').forEach(btn => {

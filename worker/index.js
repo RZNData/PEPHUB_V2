@@ -24,6 +24,7 @@ import { handleTvRoutes, ensureTvSchema } from './routes/tv.js';
 import { handleBotRoutes } from './routes/bot.js';
 import { handleUploadRoutes } from './routes/uploads.js';
 import { handleNotificationRoutes } from './routes/notifications.js';
+import { handleProfileRoutes } from './routes/profile.js';
 
 function isStaticAssetPath(path) {
   return /\.(css|js|png|jpg|jpeg|webp|svg|ico|woff|woff2|ttf|mp3|webmanifest|json|map)$/i.test(path);
@@ -142,6 +143,9 @@ export default {
 
     const notifRes = await handleNotificationRoutes(request, env, url, pathname);
     if (notifRes) return notifRes;
+
+    const profileRes = await handleProfileRoutes(request, env, url, pathname, ctx);
+    if (profileRes) return profileRes;
 
     // 6. Log e proteção do Portal Home (Redirecionamento para Login se não autenticado)
     if (pathname === '/' || pathname === '/index.html') {

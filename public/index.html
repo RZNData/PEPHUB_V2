@@ -778,11 +778,10 @@ async function checkUser() {
       const widget = document.getElementById('userWidget');
       const firstName = user.nome_completo ? user.nome_completo.split(' ')[0] : 'Colaborador';
       widget.innerHTML = `
-        <span style="color:#fff;font-size:12px;font-weight:600">Olá, ${escapeHtml(firstName)} (${escapeHtml(user.area || 'Regional')})</span>
         <span id="portalNotificationsHost" data-pephub-notifications></span>
         ${user.is_admin ? '<span id="portalOnlineHost" data-pephub-online></span>' : ''}
         ${user.is_admin ? '<a href="/admin/" style="background:rgba(255,255,255,.25);color:#fff;border:1px solid rgba(255,255,255,.4);padding:5px 10px;border-radius:3px;font-size:11px;font-weight:700;text-decoration:none">Admin</a>' : ''}
-        <button id="btnLogoutPortal" style="background:none;border:1px solid rgba(255,255,255,.3);color:#fff;padding:4px 10px;border-radius:3px;font-size:11px;cursor:pointer">Sair</button>
+        <span id="portalProfileHost" data-pephub-profile></span>
       `;
 
       if (window.pephubMountNotificationsWidget) {
@@ -791,27 +790,8 @@ async function checkUser() {
       if (user.is_admin && window.pephubMountOnlineWidget) {
         window.pephubMountOnlineWidget(document.getElementById('portalOnlineHost'));
       }
-
-      const btnLogout = document.getElementById('btnLogoutPortal');
-      if (btnLogout) {
-        btnLogout.addEventListener('click', async (e) => {
-          e.preventDefault();
-          btnLogout.disabled = true;
-          btnLogout.textContent = 'Saindo...';
-          try {
-            if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-              navigator.serviceWorker.controller.postMessage({ type: 'LOGOUT' });
-            }
-            if ('caches' in window) {
-              const keys = await caches.keys();
-              await Promise.all(keys.map(k => caches.delete(k)));
-            }
-            sessionStorage.clear();
-            localStorage.clear();
-            await fetch('/api/auth/logout', { method: 'POST' });
-          } catch (err) {}
-          window.location.replace('/login/?logout=1');
-        });
+      if (window.pephubMountProfileWidget) {
+        window.pephubMountProfileWidget(document.getElementById('portalProfileHost'));
       }
 
       // Se há requisitos pendentes de cadastro, aciona o modal obrigatório

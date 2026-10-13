@@ -463,6 +463,16 @@ export async function getSystemControl(env, key) {
   }
 }
 
+export async function getResponsibleEmails(env) {
+  const list = [];
+  if (env.ADMIN_EMAIL) list.push(String(env.ADMIN_EMAIL).trim().toLowerCase());
+  if (list.length === 0 && env.DB) {
+    const admins = await env.DB.prepare("SELECT email_claro FROM users WHERE is_admin = 1 AND status = 'aprovado'").all().catch(() => ({ results: [] }));
+    for (const a of admins.results || []) if (a.email_claro) list.push(String(a.email_claro).toLowerCase());
+  }
+  return [...new Set(list)];
+}
+
 // Disparo de E-mails (Resend API com suporte a suspensão administrativa)
 export async function sendEmail(env, { to, subject, html, text }) {
   const from = env.MAIL_FROM || 'Pephub Regional <notificacoes@pephub.cloud>';
