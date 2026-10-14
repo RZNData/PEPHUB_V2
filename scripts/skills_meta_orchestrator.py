@@ -34,6 +34,8 @@ SKILL_EXECUTOR_MAP = {
     "db-optimizer": "db_optimizer.py",
     "scalability-auditor": "scalability_auditor.py",
     "sync-bot-reports": "sync_bot_data.py",
+    "rag-auditor": "rag_auditor.py",
+    "bot-data-integrity-auditor": "bot_data_integrity_auditor.py",
     "skills-meta-orchestrator": "skills_meta_orchestrator.py"
 }
 

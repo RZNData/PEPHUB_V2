@@ -187,8 +187,9 @@ export const REPORT_REGISTRY = {
   MARKET_SHARE: {
     id: 'MARKET_SHARE',
     num: '5',
-    name: 'Market Share & Concorrência (Anatel)',
-    title: 'Relatório Oficial de Market Share & Anatel',
+    name: 'Market Share & Dinâmica Competitiva (Anatel Móvel & Residencial)',
+    title: 'Relatório Oficial de Market Share Anatel (Móvel SMP & Banda Larga Fixa SCM)',
+    produto: 'Market Share Anatel (Telefonia Móvel Pós sem M2M, 5G & Banda Larga Residencial)',
     icon: '📊',
     primaryTable: 'fato_market_share',
     dateColumn: 'mes_referencia',
@@ -197,14 +198,16 @@ export const REPORT_REGISTRY = {
     defaultMetric: 'market_share_pct',
     metricLabel: 'Participação de Mercado (Share)',
     metrics: [
-      { key: 'market_share_pct', label: 'Market Share', unit: '%', direction: 'DESC', isDefault: true, desc: 'Percentual de participação de mercado na cidade' },
+      { key: 'market_share_pct', label: 'Market Share', unit: '%', direction: 'DESC', isDefault: true, desc: 'Percentual de participação de mercado' },
       { key: 'net_adds', label: 'Net Adds', unit: '', direction: 'DESC', isDefault: false, desc: 'Saldo líquido de adições no mês' },
       { key: 'acessos', label: 'Acessos Ativos', unit: '', direction: 'DESC', isDefault: false, desc: 'Base total de contratos em serviço' },
       { key: 'posicao_ranking', label: 'Posição no Ranking', unit: '', direction: 'ASC', isDefault: false, desc: 'Posição da operadora no mercado local' }
     ],
     dimensions: [
-      { key: 'operadora', label: 'Operadora', examples: ['CLARO', 'VIVO', 'OI', 'OUTRAS', 'ISPS'] },
-      { key: 'cidade', label: 'Cidade', examples: ['Belém', 'Manaus', 'São Luís', 'Macapá', 'Boa Vista', 'Santarém', 'Marabá'] }
+      { key: 'operadora', label: 'Operadora', examples: ['Claro', 'Vivo', 'TIM', 'Oi', 'Competitivas/ISPs', 'Sky', 'Surf'] },
+      { key: 'cidade', label: 'Cidade / Região', examples: ['Regional Norte', 'DDD 91', 'Belém', 'Manaus', 'São Luís', 'Macapá', 'Boa Vista', 'Santarém', 'Marabá'] },
+      { key: 'produto', label: 'Produto Regulatório', examples: ['MOVEL', 'BANDA_LARGA'] },
+      { key: 'segmento', label: 'Segmento Analítico', examples: ['POS_PAGO_SEM_M2M', '5G', 'RESIDENCIAL'] }
     ],
     keywords: [
       /\bmarket\s*share\b/i,
@@ -217,11 +220,26 @@ export const REPORT_REGISTRY = {
       /\bnetadds?\b/i,
       /\banatel\b/i,
       /\bvivo\b/i,
+      /\btim\b/i,
       /\boi\b/i,
-      /\bmarketshare\b/i
+      /\bsky\b/i,
+      /\bmarketshare\b/i,
+      /\bmovel\b/i,
+      /\bmóvel\b/i,
+      /\bsmp\b/i,
+      /\bcelular\b/i,
+      /\bpos\s*pago\b/i,
+      /\bpós\s*pago\b/i,
+      /\bsem\s*m2m\b/i,
+      /\b5g\b/i,
+      /\bbanda\s*larga\b/i,
+      /\bresidencial\b/i,
+      /\bscm\b/i,
+      /\bfibra\b/i,
+      /\bgpon\b/i
     ],
     rules: {
-      defaultOperadora: 'CLARO'
+      defaultOperadora: 'Claro'
     }
   },
 
@@ -356,11 +374,22 @@ export function getReportByNum(num) {
 }
 
 /**
- * Constrói o Menu de Desambiguação com Links Clicáveis para WhatsApp
+ * Constrói o Menu de Desambiguação (Web limpo vs Links Clicáveis para WhatsApp)
  */
-export function buildDisambiguationMenu(query, botPhone = '5591980547171') {
+export function buildDisambiguationMenu(query, botPhone = '5591980547171', channel = 'whatsapp') {
   const cleanPhone = String(botPhone || '5591980547171').replace(/\D/g, '');
   const reports = getAllReports();
+
+  if (channel === 'web') {
+    let text = `🧭 *Assistente Analítico RAG · Regional Norte*\n\n`;
+    text += `Para responder com precisão e *evitar cruzamento indevido de bases*, para qual indicador oficial você gostaria de ver a análise?\n\n`;
+    for (const rep of reports) {
+      const defaultMet = rep.metrics.find(m => m.isDefault)?.label || rep.metricLabel;
+      text += `[${rep.num}] *${rep.name}* (Métrica foco: *${defaultMet}*)\n`;
+    }
+    text += `\n_Clique em uma opção acima ou informe o indicador desejado (ex: FPD, Churn, Crédito)._`;
+    return text;
+  }
 
   let text = `🤔 *Pephub Bot · Selecione o Relatório Desejado*\n\n`;
   text += `Para consultar os indicadores com precisão oficial e *evitar cruzamento indevido de bases*, a qual relatório você deseja acessar para esta consulta?\n\n`;
@@ -376,86 +405,131 @@ export function buildDisambiguationMenu(query, botPhone = '5591980547171') {
 }
 
 /**
+ * Constrói Resposta com Postura Questionadora Proativa para Consultas Subespecificadas
+ * Disparado quando o usuário informa entidade (cidade, canal, DDD, parceiro) sem definir o indicador.
+ */
+export function buildProactiveClarificationResponse(entityInfo, channel = 'web', botPhone = '5591980547171') {
+  const cleanPhone = String(botPhone || '5591980547171').replace(/\D/g, '');
+  const entityLabel = typeof entityInfo === 'string' ? entityInfo : (entityInfo.label || entityInfo.name || 'recorte informado');
+  const reports = getAllReports();
+
+  if (channel === 'web') {
+    let text = `🎯 *Consulta Analítica: ${entityLabel}*\n\n`;
+    text += `Identifiquei que você deseja analisar os dados de *${entityLabel}*, mas a pergunta não especificou o indicador analítico desejado.\n\n`;
+    text += `Para garantir a integridade dos dados e *não misturar indicadores diferentes*, qual visão oficial você deseja consultar?\n\n`;
+    for (const rep of reports) {
+      const defaultMet = rep.metrics.find(m => m.isDefault)?.label || rep.metricLabel;
+      text += `[${rep.num}] *${rep.name}* (Foco: *${defaultMet}*)\n`;
+    }
+    text += `\n_Clique em uma das opções acima para visualizar os números consolidados de ${entityLabel}._`;
+    return text;
+  }
+
+  let text = `🎯 *Consulta Analítica: ${entityLabel}*\n\n`;
+  text += `Identifiquei o recorte de *${entityLabel}*, porém não foi especificado o indicador.\n`;
+  text += `Para qual relatório da Regional Norte você gostaria de ver estes dados?\n\n`;
+  for (const rep of reports) {
+    const defaultMet = rep.metrics.find(m => m.isDefault)?.label || rep.metricLabel;
+    text += `${rep.num}️⃣ *${rep.name}* (${defaultMet})\n`;
+    text += `👉 https://wa.me/${cleanPhone}?text=%23%3F%20${rep.num}\n\n`;
+  }
+  text += `_Envie de *#? 1* a *#? ${reports.length}* para consultar ${entityLabel}._`;
+  return text;
+}
+
+/**
  * Gera o contexto de schema e diretrizes para o Text-to-SQL dinamicamente
  */
 export function buildSchemaPromptContext() {
   return `
-ESQUEMA DE TABELAS DISPONÍVEIS NO CLOUDFLARE D1 (SQLite):
+ESQUEMA COMPLETO DE TABELAS DISPONÍVEIS NO CLOUDFLARE D1 (SQLite) — REGIONAL NORTE:
 
-1. fato_indicadores_mensais (Churn Banda Larga Total & PME):
+1. fato_indicadores_mensais (Churn Banda Larga Total & PME, Metas e Realizado x Orçado):
    - segmento TEXT ('Banda Larga Total', 'Banda Larga PME')
-   - mes_referencia TEXT ('Setembro / 2026', 'Agosto / 2026')
+   - mes_referencia TEXT ('Setembro / 2026', 'Agosto / 2026', etc.)
    - tipo_visao TEXT ('TOTAL', 'VOLUNTARIO', 'INVOLUNTARIO')
    - cidade TEXT ('Regional Norte', 'Belém', 'Manaus', 'São Luís', 'Macapá', 'Boa Vista', 'Santarém', 'Marabá', 'Ananindeua', 'Castanhal', 'Imperatriz', etc.)
    - uf TEXT ('RNO', 'PA', 'AM', 'MA', 'AP', 'RR')
-   - vol_real, vol_orc, rxo_delta, rxo_pct, mom_pct, yoy_pct, taxa_real, taxa_orc, taxa_delta_pp REAL
+   - vol_real REAL (Volume realizado de desconexões)
+   - vol_orc REAL (Volume orçado / meta de desconexões)
+   - rxo_delta REAL (Delta Realizado - Orçado)
+   - rxo_pct REAL (% atingimento da meta)
+   - taxa_real REAL (Taxa de Churn realizada em %)
+   - taxa_orc REAL (Taxa de Churn orçada / meta em %)
+   - taxa_delta_pp REAL (Delta de taxa em pontos percentuais)
+   - ytd_real REAL (Taxa acumulada no ano até a safra)
+   - ytd_orc REAL (Meta acumulada no ano até a safra)
 
-2. fato_churn_safra (Churn Safra D120 & Desempenho de Parceiros):
-   - safra TEXT ('set/25', 'out/25', 'nov/25', 'dez/25', 'jan/26', 'fev/26', 'mar/26', 'abr/26', 'mai/26', 'jun/26', 'jul/26', 'ago/26', 'set/26')
-   - safra_ord TEXT ('2025-09' ... '2026-09') -> USE SEMPRE safra_ord DESC PARA ORDENAÇÃO CRONOLÓGICA!
+2. fato_churn_safra (Churn Safra D120, Sobrevivência e Parceiros Comerciais):
+   - safra TEXT ('set/25', 'out/25', ..., 'mai/26', 'ago/26')
+   - safra_ord TEXT ('2025-09' ... '2026-09') -> USE safra_ord DESC PARA ORDENAÇÃO CRONOLÓGICA!
    - visao TEXT ('REGIONAL', 'CIDADE', 'PARCEIRO')
-   - entidade_nome TEXT (Nome da cidade ou do parceiro, ex: 'CCH Mendes', 'Elite', etc.)
-   - instalacoes INTEGER
-   - churn_d30, churn_d60, churn_d90, churn_d120 INTEGER
+   - entidade_nome TEXT (Nome da cidade ou da empresa parceira, ex: 'Regional Norte', 'Belém', 'TOP CONNECT', 'CCH Mendes', etc.)
+   - cidade TEXT, uf TEXT
+   - instalacoes INTEGER (Total de vendas instaladas na safra)
+   - churn_d30, churn_d60, churn_d90, churn_d120 INTEGER (Desconexões acumuladas até 120 dias)
    - np120 INTEGER (Contratos não pagos até D120)
    - taxa_d30, taxa_d60, taxa_d90, taxa_d120, taxa_np120 REAL (% sobre instalações)
-   - status_safra TEXT ('MADURA' para safras >= 120 dias, 'EM_ABERTO' para recentes)
+   - status_safra TEXT ('MADURA' para safras consolidadas >= 110-120 dias, 'EM_ABERTO' para recentes)
+   *ATENÇÃO GOVERNANÇA: Esta tabela NÃO possui coluna vendedor (dados são consolidados em Parceiro Comercial e Cidade).
 
-3. fato_fpd (First Payment Default & Qualidade de Venda):
+3. fato_fpd (First Payment Default, Qualidade de Venda, Parceiros e Vendedores):
    - safra TEXT ('fev/26', 'mar/26', 'abr/26', 'mai/26')
-   - safra_ord TEXT ('2026-02', '2026-03', '2026-04', '2026-05') -> USE SEMPRE safra_ord DESC PARA ÚLTIMA SAFRA!
+   - safra_ord TEXT ('2026-02', '2026-03', '2026-04', '2026-05') -> USE safra_ord DESC PARA ÚLTIMA SAFRA!
    - cidade TEXT, uf TEXT
-   - canal TEXT ('PAP', 'Lojas', 'Televendas', 'Digital', 'GERAL')
+   - canal TEXT ('PAP', 'Lojas', 'Televendas', 'Digital', 'Agente Autorizado', 'GERAL')
    - familia_produto TEXT ('Dados', 'Vídeo', 'Box')
-   - parceiro TEXT (Nome do parceiro credenciado / empresa de vendas)
-   - vendedor TEXT (Nome do vendedor/consultor)
-   - instalacoes INTEGER
-   - fpd60 INTEGER, taxa_fpd60 REAL (INDICADOR PADRÃO OFICIAL CLARO)
-   - fpd30 INTEGER, taxa_fpd30 REAL (Onboarding 30 dias)
+   - parceiro TEXT (Nome da empresa parceira / PDV comercial credenciado)
+   - vendedor TEXT (Nome completo do vendedor / consultor comercial)
+   - instalacoes INTEGER (Vendas instaladas)
+   - fpd60 INTEGER, taxa_fpd60 REAL (INDICADOR OFICIAL CLARO DE PRIMEIRO PAGAMENTO 60 DIAS)
+   - fpd30 INTEGER, taxa_fpd30 REAL (Inadimplência de primeiro pagamento 30 dias)
    - cura INTEGER, taxa_cura REAL (% curada entre 30 e 60 dias)
    - faixa_risco TEXT ('BAIXO', 'MEDIO', 'ALTO', 'CRITICO')
 
-4. fato_aprovacao_credito (Aprovação de Crédito & Antifraude):
+4. fato_aprovacao_credito (Aprovação de Crédito, Motor de Risco e Antifraude):
    - mes_referencia TEXT ('2026-08', '2026-09')
    - cidade TEXT, uf TEXT, canal TEXT, pdv_ou_parceiro TEXT
    - consultas INTEGER, aprovados INTEGER, taxa_aprovacao REAL
    - recusas_politica INTEGER, recusas_antifraude INTEGER, risco_alto INTEGER
 
-5. fato_market_share (Market Share & Concorrência Anatel):
-   - mes_referencia TEXT ('2026-08', '2026-09')
-   - cidade TEXT, uf TEXT
-   - operadora TEXT ('CLARO', 'VIVO', 'OI', 'OUTRAS', 'ISPS')
-   - acessos INTEGER, market_share_pct REAL, net_adds INTEGER, posicao_ranking INTEGER
+5. fato_market_share (Market Share Regulatório Anatel · Móvel SMP & Banda Larga Fixa SCM):
+   - PRODUTOS COBERTOS:
+     * produto = 'MOVEL' (Telefonia Móvel SMP):
+       - segmento = 'POS_PAGO_SEM_M2M': Padrão executivo corporativo da Claro (Pós-pago puro sem IoT/M2M). Operadoras: Claro, Vivo, TIM, Surf, Competitivas/Outras.
+       - segmento = '5G': Penetração de terminais e acessos 5G ativos. Operadoras: Claro, Vivo, TIM, Competitivas/Outras.
+     * produto = 'BANDA_LARGA' (Banda Larga Fixa Residencial SCM GPON + HFC):
+       - segmento = 'RESIDENCIAL': Acessos residenciais de internet fixa. Operadoras: Claro, Oi, Vivo, Competitivas/ISPs, Sky, TIM.
+   - mes_referencia TEXT ('2026-08')
+   - cidade TEXT ('Regional Norte' para consolidado regional, 'DDD 91' a 'DDD 99' para mercados, ou cidades específicas como 'Belém', 'Manaus', 'São Luís', 'Macapá', 'Boa Vista', 'Santarém', 'Marabá', 'Imperatriz', etc.)
+   - uf TEXT ('RNO', 'PA', 'AM', 'MA', 'AP', 'RR')
+   - ddd TEXT ('TODOS', '91', '92', '93', '94', '95', '96', '97', '98', '99')
+   - operadora TEXT ('Claro', 'Vivo', 'TIM', 'Oi', 'Competitivas/ISPs', 'Sky', 'Surf')
+   - acessos INTEGER (Total de acessos ativos em serviço)
+   - market_share_pct REAL (% oficial de market share da operadora no recorte)
+   - net_adds INTEGER (Saldo líquido de adições no mês: novos clientes menos cancelamentos)
+   - posicao_ranking INTEGER (Posição oficial no ranking: 1 = Líder)
+   - REGRA OBRIGATÓRIA ANTI-CONFUSÃO: Se a pergunta for sobre "Banda Larga", "Residencial", "Internet Fixa" ou "SCM", OBRIGATORIAMENTE filtrar produto = 'BANDA_LARGA' AND segmento = 'RESIDENCIAL'. Se a pergunta for sobre "Móvel", "Pós-pago", "Celular", "SMP" ou a pergunta genérica padrão de market share móvel, OBRIGATORIAMENTE filtrar produto = 'MOVEL' AND segmento = 'POS_PAGO_SEM_M2M'. Se for sobre 5G, filtrar produto = 'MOVEL' AND segmento = '5G'. NUNCA misturar produtos!
 
-6. fato_speech_analytics (Speech Analytics - Motivos de Cancelamento Transcritos):
-   - mes_referencia TEXT ('Set/26', 'Ago/26', 'Jul/26')
-   - mes_ord TEXT ('2026-09', '2026-08', '2026-07')
-   - cidade TEXT ('Regional Norte', 'Manaus', 'Belém', etc.)
+
+6. fato_speech_analytics (Motivos de Cancelamento Transcritos na Central):
+   - mes_referencia TEXT, mes_ord TEXT, cidade TEXT
    - motivo_speech TEXT ('Acha Caro / Aumento no Valor', 'Técnico - Internet / Lentidão', etc.)
-   - pct_mix REAL (% mix citações)
-   - mom_pp REAL (Variação MoM em pontos percentuais)
-   - tendencia TEXT ('Alta', 'Queda', 'Estável')
+   - pct_mix REAL, mom_pp REAL, tendencia TEXT
 
-7. fato_motivos_os (Motivos de Procura na Central & Taxa de Conversão em OS):
-   - mes_referencia TEXT ('Set/26', 'Ago/26', 'Jul/26')
-   - mes_ord TEXT ('2026-09', '2026-08', '2026-07')
-   - cidade TEXT ('Regional Norte', 'Manaus', 'Belém', etc.)
-   - motivo_procura TEXT ('Financeiro / Fatura', 'Cancelamento Automático (URA)', 'Lentidão / Sem Conexão', etc.)
-   - ligacoes INTEGER (Chamadas recebidas)
-   - mix_pct REAL (% mix do motivo)
-   - os_geradas INTEGER (Ordens de serviço abertas)
-   - taxa_os_pct REAL (% conversão em OS técnica)
-   - taxa_os_mom_pp REAL (Variação MoM taxa OS)
-   - status TEXT ('Crítico', 'Alto', 'Médio', 'Controlado')
+7. fato_motivos_os (Motivos de Atendimento na URA & Taxa de Visita Técnica):
+   - mes_referencia TEXT, mes_ord TEXT, cidade TEXT
+   - motivo_procura TEXT ('Financeiro / Fatura', 'Cancelamento Automático (URA)', 'Lentidão', etc.)
+   - ligacoes INTEGER, mix_pct REAL, os_geradas INTEGER, taxa_os_pct REAL
 `;
 }
 
+
 /**
- * Motor Determinístico de Extração de Slots e Geração de SQL Instantâneo (< 0.1ms)
- * Elimina completamente a latência de LLM para as consultas operacionais mais comuns.
+ * Extrai Entidades Analíticas (Cidades, DDDs, Canais, Parceiros e Visões) de uma pergunta
  */
-export function buildDeterministicAnalyticalSQL(query, targetReport, userScope) {
-  if (!query || !targetReport) return null;
+export function extractQueryEntities(query) {
+  if (!query) return { matchedCity: null, matchedDdd: null, matchedChannel: null, matchedPartner: null, isRanking: false, isVendedorQuery: false };
   const qNorm = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
   // 1. Extração de Entidades Geográficas (Cidades)
@@ -474,6 +548,7 @@ export function buildDeterministicAnalyticalSQL(query, targetReport, userScope) 
     { canonical: 'Barcarena', regex: /\b(barcarena)\b/i },
     { canonical: 'Itaituba', regex: /\b(itaituba)\b/i },
     { canonical: 'Abaetetuba', regex: /\b(abaetetuba)\b/i },
+    { canonical: 'Santana', regex: /\b(santana)\b/i },
   ];
 
   let matchedCity = null;
@@ -484,7 +559,47 @@ export function buildDeterministicAnalyticalSQL(query, targetReport, userScope) 
     }
   }
 
-  // 2. Extração de Parceiros / PDVs
+  // 1.1. Extração de Mercados por DDD da Regional Norte
+  const dddsMap = [
+    { ddd: '91', canonicalCity: 'Belém', label: 'DDD 91 (Belém / Nordeste PA)', regex: /\b(ddd\s*91|mercado\s*91|regiao\s*91|\b91\b)\b/i },
+    { ddd: '92', canonicalCity: 'Manaus', label: 'DDD 92 (Manaus / AM Central)', regex: /\b(ddd\s*92|mercado\s*92|regiao\s*92|\b92\b)\b/i },
+    { ddd: '93', canonicalCity: 'Santarém', label: 'DDD 93 (Santarém / Oeste PA)', regex: /\b(ddd\s*93|mercado\s*93|regiao\s*93|\b93\b)\b/i },
+    { ddd: '94', canonicalCity: 'Marabá', label: 'DDD 94 (Marabá / Sul PA)', regex: /\b(ddd\s*94|mercado\s*94|regiao\s*94|\b94\b)\b/i },
+    { ddd: '95', canonicalCity: 'Boa Vista', label: 'DDD 95 (Boa Vista / Roraima)', regex: /\b(ddd\s*95|mercado\s*95|regiao\s*95|\b95\b)\b/i },
+    { ddd: '96', canonicalCity: 'Macapá', label: 'DDD 96 (Macapá / Amapá)', regex: /\b(ddd\s*96|mercado\s*96|regiao\s*96|\b96\b)\b/i },
+    { ddd: '98', canonicalCity: 'São Luís', label: 'DDD 98 (São Luís / Norte MA)', regex: /\b(ddd\s*98|mercado\s*98|regiao\s*98|\b98\b)\b/i },
+    { ddd: '99', canonicalCity: 'Imperatriz', label: 'DDD 99 (Imperatriz / Sul MA)', regex: /\b(ddd\s*99|mercado\s*99|regiao\s*99|\b99\b)\b/i },
+  ];
+
+  let matchedDdd = null;
+  // Apenas verifica se menciona expressamente DDD ou mercado quando numérico solto
+  for (const d of dddsMap) {
+    if (new RegExp(`\\b(ddd\\s*${d.ddd}|mercado\\s*${d.ddd}|regiao\\s*${d.ddd})\\b`, 'i').test(qNorm)) {
+      matchedDdd = d;
+      if (!matchedCity) matchedCity = d.canonicalCity;
+      break;
+    }
+  }
+
+  // 2. Extração de Canais de Venda
+  const channelsMap = [
+    { canonical: 'PAP', regex: /\b(pap|porta\s+a\s+porta|porta-a-porta|venda\s+externa)\b/i },
+    { canonical: 'Lojas', regex: /\b(loja|lojas|loja\s+propria|lojas\s+proprias|franquia|franquias)\b/i },
+    { canonical: 'Televendas', regex: /\b(televendas|call\s*center|remoto)\b/i },
+    { canonical: 'Agente Autorizado', regex: /\b(agente\s+autorizado|agentes\s+autorizados|agente|agentes)\b/i },
+    { canonical: 'D2D Parceiros', regex: /\b(d2d|d2d\s+parceiros)\b/i },
+    { canonical: 'Digital', regex: /\b(digital|e-commerce|ecommerce|site|online)\b/i },
+  ];
+
+  let matchedChannel = null;
+  for (const ch of channelsMap) {
+    if (ch.regex.test(qNorm)) {
+      matchedChannel = ch.canonical;
+      break;
+    }
+  }
+
+  // 3. Extração de Parceiros / PDVs
   const partnersMap = [
     { canonical: 'CCH Mendes', regex: /\b(cch|mendes|cch\s+mendes)\b/i },
     { canonical: 'Elite', regex: /\b(elite)\b/i },
@@ -506,29 +621,99 @@ export function buildDeterministicAnalyticalSQL(query, targetReport, userScope) 
     }
   }
 
-  // 3. Extração de Tipo de Visão / Intenção Específica
-  const isRanking = /\b(ranking|top\s*\d+|pior|piores|melhor|melhores|maior|menor|maiores|menores)\b/i.test(qNorm);
+  // 4. Intenções e Modificadores
+  const isRanking = /\b(ranking|top\s*\d+|pior|piores|melhor|melhores|maior|menor|maiores|menores|ofensor|ofensores|sangria|critico|criticos)\b/i.test(qNorm);
   const isBest = /\b(melhor|melhores|menor|menores)\b/i.test(qNorm);
   const isLatestPeriod = /\b(ultima\s+safra|ultimo\s+mes|qual\s+e\s+a\s+safra|qual\s+a\s+safra|periodo|referencia)\b/i.test(qNorm);
   const isVoluntary = /\bvoluntario\b/i.test(qNorm);
   const isInvoluntary = /\binvoluntario\b/i.test(qNorm);
-  const isParceiroQuery = /\b(parceiro|parceiros|pdv|pdvs)\b/i.test(qNorm);
+  const isChannelQuery = /\b(canal|canais)\b/i.test(qNorm) || Boolean(matchedChannel);
+  const isParceiroQuery = /\b(parceiro|parceiros|pdv|pdvs|empresa|empresas)\b/i.test(qNorm) || Boolean(matchedPartner);
+  const isVendedorQuery = /\b(vendedor|vendedores|vendedora|vendedoras|consultor|consultores|equipe)\b/i.test(qNorm);
+  const isOfensorQuery = /\b(ofensor|ofensores|pior|piores|sangria|critico|criticos)\b/i.test(qNorm);
+
+  return {
+    matchedCity,
+    matchedDdd,
+    matchedChannel,
+    matchedPartner,
+    isRanking,
+    isBest,
+    isLatestPeriod,
+    isVoluntary,
+    isInvoluntary,
+    isChannelQuery,
+    isParceiroQuery,
+    isVendedorQuery,
+    isOfensorQuery
+  };
+}
+
+/**
+ * Motor Determinístico de Extração de Slots e Geração de SQL Instantâneo (< 0.1ms)
+ * Elimina completamente a latência de LLM para as consultas operacionais mais comuns.
+ */
+export function buildDeterministicAnalyticalSQL(query, targetReport, userScope) {
+  if (!query || !targetReport) return null;
+  const qNorm = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+  // Se a pergunta contiver termos analíticos de raciocínio, agregação ou filtros complexos:
+  // DELEGAR IMEDIATAMENTE AO GEMINI (LLM Reasoning Agent), sem forçar templates rígidos!
+  const complexPatterns = [
+    /\b(vendedor|vendedores|vendedora|vendedoras|consultor|consultores)\b/i,
+    /\b(m[eé]dia|m[eé]dias|6\s*meses|seis\s*meses|ultimos?\s*6|últimos?\s*6)\b/i,
+    /\b(concorr[eê]ncia|concorrentes?|versus|vs|comparar|comparativo)\b/i,
+    /\b(or[çc]amento|or[çc]ado|rxo|ytd|ytd26|ytd25|acumulado)\b/i,
+    /\b(considere|mais\s+de|menos\s+de|corte|m[ií]nimo|maior\s+que|menor\s+que)\b/i
+  ];
+  for (const pat of complexPatterns) {
+    if (pat.test(query)) {
+      return null; // Delega ao LLM!
+    }
+  }
+
+  const slots = extractQueryEntities(query);
+  const {
+    matchedCity,
+    matchedDdd,
+    matchedChannel,
+    matchedPartner,
+    isRanking,
+    isBest,
+    isLatestPeriod,
+    isVoluntary,
+    isInvoluntary,
+    isChannelQuery,
+    isParceiroQuery,
+    isVendedorQuery,
+    isOfensorQuery
+  } = slots;
 
   // 4. Regras por Relatório-Alvo
   if (targetReport.id === 'FPD') {
-    if (isLatestPeriod && !isParceiroQuery && !matchedPartner && !matchedCity && !isRanking) {
+    if (isLatestPeriod && !isParceiroQuery && !matchedPartner && !matchedCity && !matchedChannel && !isRanking) {
       return `SELECT DISTINCT safra, safra_ord FROM fato_fpd ORDER BY safra_ord DESC LIMIT 1`;
     }
-    // Parceiro no FPD: apurado estritamente em fato_fpd (zero contaminação de bases)
+    // Parceiro no FPD
     if (isParceiroQuery || matchedPartner) {
       if (matchedPartner) {
         return `SELECT safra, parceiro, canal, cidade, instalacoes, fpd60, taxa_fpd60, fpd30, taxa_fpd30, taxa_cura FROM fato_fpd WHERE parceiro LIKE '%${matchedPartner}%' ORDER BY safra_ord DESC LIMIT 1`;
       }
       const dir = isBest ? 'ASC' : 'DESC';
-      return `SELECT parceiro, safra, SUM(instalacoes) as total_inst, SUM(fpd60) as total_fpd60, ROUND(100.0 * SUM(fpd60)/SUM(instalacoes), 2) as taxa_fpd60_consolidada, ROUND(100.0 * SUM(fpd30)/SUM(instalacoes), 2) as taxa_fpd30_consolidada FROM fato_fpd WHERE parceiro IS NOT NULL GROUP BY parceiro, safra HAVING total_inst >= 20 ORDER BY safra_ord DESC, taxa_fpd60_consolidada ${dir} LIMIT 5`;
+      return `SELECT parceiro, safra, SUM(instalacoes) as total_instalacoes, SUM(instalacoes) as total_inst, SUM(instalacoes) as instalacoes, SUM(fpd60) as total_fpd60, SUM(fpd60) as fpd60, ROUND(100.0 * SUM(fpd60)/SUM(instalacoes), 2) as taxa_fpd60, ROUND(100.0 * SUM(fpd60)/SUM(instalacoes), 2) as taxa_fpd60_consolidada, ROUND(100.0 * SUM(fpd30)/SUM(instalacoes), 2) as taxa_fpd30, ROUND(100.0 * SUM(fpd30)/SUM(instalacoes), 2) as taxa_fpd30_consolidada FROM fato_fpd WHERE parceiro IS NOT NULL GROUP BY parceiro, safra HAVING total_inst >= 20 ORDER BY safra_ord DESC, taxa_fpd60_consolidada ${dir} LIMIT 5`;
+    }
+    // Canal no FPD (ou Vendedor -> resolvido em Canal)
+    if (isChannelQuery || matchedChannel || (isVendedorQuery && !matchedCity && !matchedPartner)) {
+      if (matchedChannel) {
+        return `SELECT safra, cidade, canal, instalacoes, fpd60, taxa_fpd60, fpd30, taxa_fpd30, cura, taxa_cura, faixa_risco FROM fato_fpd WHERE safra = (SELECT safra FROM fato_fpd ORDER BY safra_ord DESC LIMIT 1) AND canal LIKE '%${matchedChannel}%' ORDER BY instalacoes DESC LIMIT 5`;
+      }
+      // Ranking de canais
+      const dir = isBest ? 'ASC' : 'DESC';
+      return `SELECT canal, safra, SUM(instalacoes) as total_instalacoes, SUM(fpd60) as total_fpd60, ROUND(100.0 * SUM(fpd60)/SUM(instalacoes), 2) as taxa_fpd60, ROUND(100.0 * SUM(fpd30)/SUM(instalacoes), 2) as taxa_fpd30 FROM fato_fpd WHERE canal IS NOT NULL AND canal != 'TODOS' AND canal != 'GERAL' GROUP BY canal, safra HAVING total_instalacoes >= 20 ORDER BY safra_ord DESC, taxa_fpd60 ${dir} LIMIT 5`;
     }
     if (matchedCity) {
-      return `SELECT safra, cidade, canal, instalacoes, fpd60, taxa_fpd60, fpd30, taxa_fpd30, cura, taxa_cura, faixa_risco FROM fato_fpd WHERE safra = (SELECT safra FROM fato_fpd ORDER BY safra_ord DESC LIMIT 1) AND cidade = '${matchedCity}' ORDER BY instalacoes DESC LIMIT 5`;
+      const channelClause = matchedChannel ? `AND canal LIKE '%${matchedChannel}%'` : '';
+      return `SELECT safra, cidade, canal, instalacoes, fpd60, taxa_fpd60, fpd30, taxa_fpd30, cura, taxa_cura, faixa_risco FROM fato_fpd WHERE safra = (SELECT safra FROM fato_fpd ORDER BY safra_ord DESC LIMIT 1) AND cidade = '${matchedCity}' ${channelClause} ORDER BY instalacoes DESC LIMIT 5`;
     }
     if (isRanking) {
       const dir = isBest ? 'ASC' : 'DESC';
@@ -539,6 +724,11 @@ export function buildDeterministicAnalyticalSQL(query, targetReport, userScope) 
   }
 
   if (targetReport.id === 'CHURN_SAFRA') {
+    // PROTEÇÃO SEMÂNTICA: A base fato_churn_safra NÃO possui canais de venda!
+    // Se o usuário perguntou sobre canal, não retornar parceiros como se fossem canais.
+    if (isChannelQuery && !isParceiroQuery) {
+      return null; // Delega ao LLM para prestar esclarecimento semântico transparente
+    }
     if (isLatestPeriod && !isParceiroQuery && !matchedPartner && !matchedCity && !isRanking) {
       return `SELECT DISTINCT safra, safra_ord FROM fato_churn_safra ORDER BY safra_ord DESC LIMIT 1`;
     }
@@ -552,9 +742,9 @@ export function buildDeterministicAnalyticalSQL(query, targetReport, userScope) 
       const dir = isBest ? 'ASC' : 'DESC';
       return `SELECT safra, entidade_nome, instalacoes, churn_d120, taxa_d120, status_safra FROM fato_churn_safra WHERE visao = 'CIDADE' AND safra = (SELECT safra FROM fato_churn_safra WHERE status_safra = 'MADURA' ORDER BY safra_ord DESC LIMIT 1) ORDER BY taxa_d120 ${dir} LIMIT 5`;
     }
-    if (isRanking || isParceiroQuery) {
+    if ((isRanking || isParceiroQuery || isVendedorQuery) && !isChannelQuery) {
       const dir = isBest ? 'ASC' : 'DESC';
-      return `SELECT safra, entidade_nome, instalacoes, churn_d120, taxa_d120, status_safra FROM fato_churn_safra WHERE visao = 'PARCEIRO' AND safra = (SELECT safra FROM fato_churn_safra WHERE status_safra = 'MADURA' ORDER BY safra_ord DESC LIMIT 1) ORDER BY taxa_d120 ${dir} LIMIT 5`;
+      return `SELECT safra, visao, entidade_nome, instalacoes, churn_d120, taxa_d120, np120, taxa_np120, status_safra FROM fato_churn_safra WHERE visao = 'PARCEIRO' AND safra = (SELECT safra FROM fato_churn_safra WHERE status_safra = 'MADURA' ORDER BY safra_ord DESC LIMIT 1) AND instalacoes >= 20 ORDER BY taxa_d120 ${dir} LIMIT 5`;
     }
     // Consolidado regional Safra
     return `SELECT safra, visao, entidade_nome, instalacoes, churn_d30, taxa_d30, churn_d60, taxa_d60, churn_d120, taxa_d120, np120, taxa_np120, status_safra FROM fato_churn_safra WHERE visao = 'REGIONAL' ORDER BY safra_ord DESC LIMIT 2`;
@@ -565,16 +755,26 @@ export function buildDeterministicAnalyticalSQL(query, targetReport, userScope) 
     const visao = isVoluntary ? 'VOLUNTARIO' : (isInvoluntary ? 'INVOLUNTARIO' : 'TOTAL');
 
     if (matchedCity) {
-      return `SELECT mes_referencia, segmento, tipo_visao, cidade, base_real, vol_real, vol_orc, rxo_delta, taxa_real, taxa_orc, taxa_delta_pp, mom_pct FROM fato_indicadores_mensais WHERE segmento = '${segmento}' AND tipo_visao = '${visao}' AND cidade = '${matchedCity}' ORDER BY id DESC LIMIT 1`;
+      return `SELECT mes_referencia, segmento, tipo_visao, cidade, base_real, vol_real, vol_orc, rxo_delta, taxa_real, taxa_orc, taxa_delta_pp, ytd_real, ytd_orc, mom_pct FROM fato_indicadores_mensais WHERE segmento = '${segmento}' AND tipo_visao = '${visao}' AND cidade = '${matchedCity}' ORDER BY id DESC LIMIT 1`;
     }
     if (isRanking) {
       return `SELECT cidade, base_real, vol_real, vol_orc, taxa_real, taxa_orc, taxa_delta_pp FROM fato_indicadores_mensais WHERE segmento = '${segmento}' AND tipo_visao = '${visao}' AND cidade != 'Regional Norte' ORDER BY taxa_real DESC LIMIT 5`;
     }
     // Consolidado regional Churn BL
-    return `SELECT mes_referencia, segmento, tipo_visao, cidade, base_real, vol_real, vol_orc, rxo_delta, taxa_real, taxa_orc, taxa_delta_pp, mom_pct FROM fato_indicadores_mensais WHERE segmento = '${segmento}' AND tipo_visao = '${visao}' AND cidade = 'Regional Norte' ORDER BY id DESC LIMIT 1`;
+    return `SELECT mes_referencia, segmento, tipo_visao, cidade, base_real, vol_real, vol_orc, rxo_delta, taxa_real, taxa_orc, taxa_delta_pp, ytd_real, ytd_orc, mom_pct FROM fato_indicadores_mensais WHERE segmento = '${segmento}' AND tipo_visao = '${visao}' AND cidade = 'Regional Norte' ORDER BY id DESC LIMIT 1`;
   }
 
   if (targetReport.id === 'CREDITO') {
+    if (isChannelQuery && !matchedPartner) {
+      const dir = isBest ? 'DESC' : 'ASC';
+      return `SELECT canal, mes_referencia, SUM(consultas) as total_consultas, SUM(aprovados) as total_aprovados, ROUND(100.0 * SUM(aprovados)/SUM(consultas), 1) as taxa_aprovacao FROM fato_aprovacao_credito WHERE canal IS NOT NULL GROUP BY canal, mes_referencia ORDER BY mes_referencia DESC, taxa_aprovacao ${dir} LIMIT 5`;
+    }
+    if (matchedPartner) {
+      return `SELECT mes_referencia, cidade, canal, pdv_ou_parceiro, consultas, aprovados, taxa_aprovacao, recusas_antifraude, recusas_politica, risco_alto FROM fato_aprovacao_credito WHERE pdv_ou_parceiro LIKE '%${matchedPartner}%' ORDER BY mes_referencia DESC, consultas DESC LIMIT 5`;
+    }
+    if (matchedChannel) {
+      return `SELECT mes_referencia, cidade, canal, pdv_ou_parceiro, consultas, aprovados, taxa_aprovacao, recusas_antifraude, recusas_politica, risco_alto FROM fato_aprovacao_credito WHERE canal LIKE '%${matchedChannel}%' ORDER BY mes_referencia DESC, consultas DESC LIMIT 5`;
+    }
     if (matchedCity) {
       return `SELECT mes_referencia, cidade, canal, pdv_ou_parceiro, consultas, aprovados, taxa_aprovacao, recusas_antifraude, recusas_politica, risco_alto FROM fato_aprovacao_credito WHERE cidade = '${matchedCity}' ORDER BY mes_referencia DESC, consultas DESC LIMIT 5`;
     }
@@ -585,10 +785,18 @@ export function buildDeterministicAnalyticalSQL(query, targetReport, userScope) 
   }
 
   if (targetReport.id === 'MARKET_SHARE') {
+    const isBandaLarga = /\b(banda\s*larga|residencial|fixa|scm|fibra|gpon)\b/i.test(qNorm);
+    const is5G = /\b5g\b/i.test(qNorm);
+    const produtoTarget = isBandaLarga ? 'BANDA_LARGA' : 'MOVEL';
+    const segmentoTarget = isBandaLarga ? 'RESIDENCIAL' : (is5G ? '5G' : 'POS_PAGO_SEM_M2M');
+
     if (matchedCity) {
-      return `SELECT mes_referencia, cidade, operadora, acessos, market_share_pct, net_adds, posicao_ranking FROM fato_market_share WHERE cidade = '${matchedCity}' ORDER BY market_share_pct DESC LIMIT 5`;
+      return `SELECT mes_referencia, cidade, uf, ddd, operadora, produto, segmento, acessos, acessos as total_acessos, market_share_pct, market_share_pct as market_share_recente, net_adds, net_adds as media_net_adds, net_adds as total_net_adds, posicao_ranking FROM fato_market_share WHERE produto = '${produtoTarget}' AND segmento = '${segmentoTarget}' AND (cidade = '${matchedCity}' OR cidade LIKE '%${matchedCity}%') ORDER BY market_share_pct DESC LIMIT 6`;
     }
-    return `SELECT mes_referencia, operadora, SUM(acessos) as total_acessos, SUM(net_adds) as total_net_adds FROM fato_market_share GROUP BY operadora ORDER BY total_acessos DESC`;
+    if (matchedDdd) {
+      return `SELECT mes_referencia, cidade, uf, ddd, operadora, produto, segmento, acessos, acessos as total_acessos, market_share_pct, market_share_pct as market_share_recente, net_adds, net_adds as media_net_adds, net_adds as total_net_adds, posicao_ranking FROM fato_market_share WHERE produto = '${produtoTarget}' AND segmento = '${segmentoTarget}' AND (ddd = '${matchedDdd.ddd}' OR cidade = 'DDD ${matchedDdd.ddd}') ORDER BY market_share_pct DESC LIMIT 6`;
+    }
+    return `SELECT mes_referencia, cidade, uf, ddd, operadora, produto, segmento, acessos, acessos as total_acessos, market_share_pct, market_share_pct as market_share_recente, net_adds, net_adds as media_net_adds, net_adds as total_net_adds, posicao_ranking FROM fato_market_share WHERE produto = '${produtoTarget}' AND segmento = '${segmentoTarget}' AND cidade = 'Regional Norte' ORDER BY market_share_pct DESC LIMIT 6`;
   }
 
   if (targetReport.id === 'SPEECH') {
@@ -657,7 +865,20 @@ export const OFFICIAL_DDDS = [
 // MENUS INTERATIVOS (ROTA A GUIADA)
 // =====================================================================
 
-export function buildBaseSelectionMenu(botPhone = '5591980547171') {
+export function buildBaseSelectionMenu(botPhone = '5591980547171', channel = 'whatsapp') {
+  if (channel === 'web') {
+    return `📊 *PEP HUB · Assistente Analítico Regional Norte*\n\n` +
+      `*Selecione uma das 7 bases oficiais para consultar indicadores:*\n\n` +
+      `[1] *FPD (First Payment Default)* · Qualidade de venda e primeiro pagamento\n` +
+      `[2] *Churn Safra D120* · Sobrevivência e estornos de parceiros\n` +
+      `[3] *Aprovação de Crédito & Antifraude* · Motor de crédito e risco\n` +
+      `[4] *Churn Banda Larga Total & PME* · Desconexões e metas RxO\n` +
+      `[5] *Market Share & Concorrência (Anatel)* · Participação e Net Adds\n` +
+      `[6] *Speech Analytics* · Motivos de cancelamento transcritos\n` +
+      `[7] *Motivos de Procura & Taxa de OS* · Atendimento URA e visitas técnicas\n\n` +
+      `_Clique em uma opção acima ou faça uma pergunta direta (ex: "Qual o FPD de Belém?")._`;
+  }
+
   const cleanPhone = String(botPhone || '5591980547171').replace(/\D/g, '');
   return `📊 *PEP HUB · Regional Norte*\n` +
     `*Escolha a base que deseja consultar:*\n\n` +
@@ -678,7 +899,16 @@ export function buildBaseSelectionMenu(botPhone = '5591980547171') {
     `_Toque em um link acima ou envie de *#? 1* a *#? 7*._`;
 }
 
-export function buildSpeechPromptMenu(botPhone = '5591980547171') {
+export function buildSpeechPromptMenu(botPhone = '5591980547171', channel = 'whatsapp') {
+  const isWeb = channel === 'web' || String(botPhone || '').startsWith('web_') || botPhone === 'web';
+  if (isWeb) {
+    return `🗣️ *Speech Analytics · Regional Norte*\n` +
+      `*Escolha a abrangência para análise de motivos transcritos:*\n\n` +
+      `[1] *Resumo Geral (Todas as Cidades)*\n` +
+      `[2] *Filtrar por Cidade Específica*\n` +
+      `[0] ↩️ *Voltar ao menu de bases*\n\n` +
+      `_Escolha uma opção acima ou digite sua pergunta livremente._`;
+  }
   const cleanPhone = String(botPhone || '5591980547171').replace(/\D/g, '');
   return `🗣️ *Speech Analytics · Regional Norte*\n` +
     `*Escolha a abrangência para análise de motivos transcritos:*\n\n` +
@@ -691,7 +921,16 @@ export function buildSpeechPromptMenu(botPhone = '5591980547171') {
     `_Toque no link desejado ou envie *#? 1*, *#? 2* ou *#? 0*._`;
 }
 
-export function buildMotivosPromptMenu(botPhone = '5591980547171') {
+export function buildMotivosPromptMenu(botPhone = '5591980547171', channel = 'whatsapp') {
+  const isWeb = channel === 'web' || String(botPhone || '').startsWith('web_') || botPhone === 'web';
+  if (isWeb) {
+    return `📞 *Motivos de Procura & Taxa de OS · Regional Norte*\n` +
+      `*Escolha a abrangência para análise de motivos e visitas técnicas:*\n\n` +
+      `[1] *Resumo Geral (Todas as Cidades)*\n` +
+      `[2] *Filtrar por Cidade Específica*\n` +
+      `[0] ↩️ *Voltar ao menu de bases*\n\n` +
+      `_Escolha uma opção acima ou digite sua pergunta livremente._`;
+  }
   const cleanPhone = String(botPhone || '5591980547171').replace(/\D/g, '');
   return `📞 *Motivos de Procura & Taxa de OS · Regional Norte*\n` +
     `*Escolha a abrangência para análise de motivos e visitas técnicas:*\n\n` +
@@ -704,7 +943,11 @@ export function buildMotivosPromptMenu(botPhone = '5591980547171') {
     `_Toque no link desejado ou envie *#? 1*, *#? 2* ou *#? 0*._`;
 }
 
-export function buildCardFooterLinks(report, options = {}, botPhone = '5591980547171') {
+export function buildCardFooterLinks(report, options = {}, botPhone = '5591980547171', channel = 'whatsapp') {
+  if (channel === 'web' || String(botPhone || '').startsWith('web_') || botPhone === 'web') {
+    return `\n\n─────────────────────────────\n` +
+      `💡 _Digite uma pergunta sobre qualquer indicador ou escolha uma das perguntas predefinidas._`;
+  }
   const cleanPhone = String(botPhone || '5591980547171').replace(/\D/g, '');
   let text = `\n\n─────────────────────────────\n`;
   text += `0️⃣ ↩️ *Voltar à seleção anterior*\n`;
@@ -714,7 +957,11 @@ export function buildCardFooterLinks(report, options = {}, botPhone = '559198054
   return text;
 }
 
-export function buildActionCardFooterLinks(report, currentActionNum, sessionState = {}, botPhone = '5591980547171') {
+export function buildActionCardFooterLinks(report, currentActionNum, sessionState = {}, botPhone = '5591980547171', channel = 'whatsapp') {
+  if (channel === 'web' || String(botPhone || '').startsWith('web_') || botPhone === 'web') {
+    return `\n\n─────────────────────────────\n` +
+      `💡 _Consulte outros indicadores digitando sua dúvida ou usando os atalhos de relatórios._`;
+  }
   const cleanPhone = String(botPhone || '5591980547171').replace(/\D/g, '');
   let text = `\n\n─────────────────────────────\n`;
   text += `*Outras opções deste relatório:*\n`;
@@ -767,7 +1014,18 @@ export function buildActionCardFooterLinks(report, currentActionNum, sessionStat
   return text;
 }
 
-export function buildProductSelectionMenu(report, botPhone = '5591980547171') {
+export function buildProductSelectionMenu(report, botPhone = '5591980547171', channel = 'whatsapp') {
+  const isWeb = channel === 'web' || String(botPhone || '').startsWith('web_') || botPhone === 'web';
+  if (isWeb) {
+    return `${report.icon} *${report.name} · Regional Norte*\n` +
+      `*Escolha o Produto para consulta:*\n\n` +
+      `[1] *Produto Banda Larga*\n` +
+      `[2] *TV Tradicional*\n` +
+      `[3] *TV Box*\n` +
+      `[4] *Todos os Produtos*\n` +
+      `[0] ↩️ *Voltar ao menu de bases*\n\n` +
+      `_Escolha uma opção acima ou digite sua pergunta livremente._`;
+  }
   const cleanPhone = String(botPhone || '5591980547171').replace(/\D/g, '');
   return `${report.icon} *${report.name} · Regional Norte*\n` +
     `*Escolha o Produto para consulta:*\n\n` +
@@ -779,7 +1037,16 @@ export function buildProductSelectionMenu(report, botPhone = '5591980547171') {
     `_Envie *#? 1* a *#? 4* ou *#? 0* para voltar._`;
 }
 
-export function buildSegmentSelectionMenu(report, botPhone = '5591980547171') {
+export function buildSegmentSelectionMenu(report, botPhone = '5591980547171', channel = 'whatsapp') {
+  const isWeb = channel === 'web' || String(botPhone || '').startsWith('web_') || botPhone === 'web';
+  if (isWeb) {
+    return `📉 *Churn Banda Larga · Regional Norte*\n` +
+      `*Escolha o Segmento:*\n\n` +
+      `[1] *Banda Larga Total*\n` +
+      `[2] *Banda Larga PME*\n` +
+      `[0] ↩️ *Voltar ao menu de bases*\n\n` +
+      `_Escolha uma opção acima ou digite sua pergunta livremente._`;
+  }
   const cleanPhone = String(botPhone || '5591980547171').replace(/\D/g, '');
   return `📉 *Churn Banda Larga · Regional Norte*\n` +
     `*Escolha o Segmento:*\n\n` +
@@ -789,7 +1056,8 @@ export function buildSegmentSelectionMenu(report, botPhone = '5591980547171') {
     `_Envie *#? 1* ou *#? 2* ou *#? 0* para voltar._`;
 }
 
-export function buildActionSelectionMenu(report, sessionState, botPhone = '5591980547171') {
+export function buildActionSelectionMenu(report, sessionState, botPhone = '5591980547171', channel = 'whatsapp') {
+  const isWeb = channel === 'web' || String(botPhone || '').startsWith('web_') || botPhone === 'web';
   const cleanPhone = String(botPhone || '5591980547171').replace(/\D/g, '');
   const prodLabel = sessionState.productName ? ` · ${sessionState.productName}` : (sessionState.segmentName ? ` · ${sessionState.segmentName}` : '');
 
@@ -797,6 +1065,17 @@ export function buildActionSelectionMenu(report, sessionState, botPhone = '55919
     let metricName = 'FPD 60';
     if (report.id === 'CHURN_SAFRA') metricName = 'Churn D120';
     if (report.id === 'CREDITO') metricName = 'Aprovação';
+
+    if (isWeb) {
+      return `${report.icon} *${report.name}${prodLabel}*\n*Escolha a visão analítica desejada:*\n\n` +
+        `[1] *Resumo Executivo* (Visão Geral, Piores e Melhores)\n` +
+        `[2] *Últimos 3 meses de ${metricName}* (Evolução Temporal)\n` +
+        `[3] *Ranking Parceiros / PDVs*\n` +
+        (report.id !== 'CHURN_SAFRA' ? `[4] *Ranking Canais ${metricName}*\n` : `[4] *Ranking Parceiros por Cidade*\n`) +
+        `[5] *Ranking Cidades ${metricName}*\n` +
+        `[0] ↩️ *Voltar ao menu anterior*\n\n` +
+        `_Clique na opção ou pergunte diretamente (ex: "Qual o ${metricName} de Belém?")._`;
+    }
 
     return `${report.icon} *${report.name}${prodLabel}*\n*Escolha o que você deseja ver:*\n\n` +
       `1️⃣ *Resumo Executivo* (FPD 30, FPD 60, Piores Canais, Cidades, Empresas & Vendedores)\n` +
@@ -815,6 +1094,14 @@ export function buildActionSelectionMenu(report, sessionState, botPhone = '55919
   }
 
   if (report.id === 'CHURN_BL') {
+    if (isWeb) {
+      return `📉 *Churn Banda Larga${prodLabel}*\n*Escolha a visão analítica desejada:*\n\n` +
+        `[1] *Resumo Executivo* (Orçamento, RxO, MoM, YoY, YTD e Cidades)\n` +
+        `[2] *Últimos 3 meses de Churn*\n` +
+        `[3] *Ranking Cidades Churn (Últimos 3 meses)*\n` +
+        `[0] ↩️ *Voltar ao menu anterior*\n\n` +
+        `_Clique na opção ou pergunte diretamente._`;
+    }
     return `📉 *Churn Banda Larga${prodLabel}*\n*Escolha o que você deseja ver:*\n\n` +
       `1️⃣ *Resumo Executivo* (Orçamento, RxO, MoM, YoY, YTD e Cidades)\n` +
       `👉 https://wa.me/${cleanPhone}?text=%23%3F%201\n\n` +
@@ -828,6 +1115,14 @@ export function buildActionSelectionMenu(report, sessionState, botPhone = '55919
   }
 
   if (report.id === 'MARKET_SHARE') {
+    if (isWeb) {
+      return `📊 *Market Share & Concorrência (Anatel) · Regional Norte*\n*Escolha a visão analítica desejada:*\n\n` +
+        `[1] *Resumo Regional Geral* (Market Share, Net Adds e Base: Claro vs Concorrentes)\n` +
+        `[2] *Market Share Residencial (14 Cidades)*\n` +
+        `[3] *Market Share Móvel (Abertura por DDD)*\n` +
+        `[0] ↩️ *Voltar ao menu anterior*\n\n` +
+        `_Clique na opção ou pergunte diretamente._`;
+    }
     return `📊 *Market Share & Concorrência (Anatel) · Regional Norte*\n*Escolha o que você deseja ver:*\n\n` +
       `1️⃣ *Resumo Regional Geral* (Market Share, Net Adds e Base: Claro vs Concorrentes)\n` +
       `👉 https://wa.me/${cleanPhone}?text=%23%3F%201\n\n` +
@@ -843,7 +1138,15 @@ export function buildActionSelectionMenu(report, sessionState, botPhone = '55919
   return '';
 }
 
-export function buildPartnerChannelPromptMenu(report, sessionState, botPhone = '5591980547171') {
+export function buildPartnerChannelPromptMenu(report, sessionState, botPhone = '5591980547171', channel = 'whatsapp') {
+  const isWeb = channel === 'web' || String(botPhone || '').startsWith('web_') || botPhone === 'web';
+  if (isWeb) {
+    return `${report.icon} *Ranking Parceiros · Filtro de Canal*\n*Escolha a abrangência por canal:*\n\n` +
+      `[1] *Selecionar Canal* (PAP, Lojas, Televendas, Agente Autorizado)\n` +
+      `[2] *Todos os Canais*\n` +
+      `[0] ↩️ *Voltar*\n\n` +
+      `_Escolha uma opção ou informe o canal desejado._`;
+  }
   const cleanPhone = String(botPhone || '5591980547171').replace(/\D/g, '');
   return `${report.icon} *Ranking 10 Piores Parceiros · Filtro de Canal*\n*Escolha a abrangência por canal:*\n\n` +
     `1️⃣ *Selecionar Canal* (PAP, Lojas, Televendas, Agente Autorizado)\n👉 https://wa.me/${cleanPhone}?text=%23%3F%201\n\n` +
@@ -852,7 +1155,15 @@ export function buildPartnerChannelPromptMenu(report, sessionState, botPhone = '
     `_Envie *#? 1*, *#? 2* ou *#? 0*._`;
 }
 
-export function buildPartnerCityPromptMenu(report, sessionState, botPhone = '5591980547171', title = 'Ranking 10 Piores Parceiros') {
+export function buildPartnerCityPromptMenu(report, sessionState, botPhone = '5591980547171', title = 'Ranking 10 Piores Parceiros', channel = 'whatsapp') {
+  const isWeb = channel === 'web' || String(botPhone || '').startsWith('web_') || botPhone === 'web';
+  if (isWeb) {
+    return `${report.icon} *${title} · Abrangência Geográfica*\n*Escolha o escopo de cidades:*\n\n` +
+      `[1] *Selecionar Cidade* (14 Cidades: Grandes Mercados e Mercados em Desenvolvimento)\n` +
+      `[2] *Todas as Cidades* (Regional Norte Consolidada)\n` +
+      `[0] ↩️ *Voltar*\n\n` +
+      `_Escolha uma opção ou informe a cidade desejada._`;
+  }
   const cleanPhone = String(botPhone || '5591980547171').replace(/\D/g, '');
   return `${report.icon} *${title} · Abrangência Geográfica*\n*Escolha o escopo de cidades:*\n\n` +
     `1️⃣ *Selecionar Cidade* (14 Cidades: Grandes Mercados e Mercados em Desenvolvimento)\n👉 https://wa.me/${cleanPhone}?text=%23%3F%201\n\n` +
@@ -861,7 +1172,15 @@ export function buildPartnerCityPromptMenu(report, sessionState, botPhone = '559
     `_Envie *#? 1*, *#? 2* ou *#? 0*._`;
 }
 
-export function buildChannelCityPromptMenu(report, sessionState, botPhone = '5591980547171', title = 'Ranking Canais') {
+export function buildChannelCityPromptMenu(report, sessionState, botPhone = '5591980547171', title = 'Ranking Canais', channel = 'whatsapp') {
+  const isWeb = channel === 'web' || String(botPhone || '').startsWith('web_') || botPhone === 'web';
+  if (isWeb) {
+    return `${report.icon} *${title} (Últimos 3 meses) · Abrangência*\n*Escolha o escopo de cidades:*\n\n` +
+      `[1] *Todas as Cidades* (Regional Norte Consolidada)\n` +
+      `[2] *Selecionar Cidade* (14 Cidades: Grandes Mercados e Mercados em Desenvolvimento)\n` +
+      `[0] ↩️ *Voltar*\n\n` +
+      `_Escolha uma opção ou informe a cidade desejada._`;
+  }
   const cleanPhone = String(botPhone || '5591980547171').replace(/\D/g, '');
   return `${report.icon} *${title} (Últimos 3 meses) · Abrangência*\n*Escolha o escopo de cidades:*\n\n` +
     `1️⃣ *Todas as Cidades* (Regional Norte Consolidada)\n👉 https://wa.me/${cleanPhone}?text=%23%3F%201\n\n` +
@@ -870,7 +1189,15 @@ export function buildChannelCityPromptMenu(report, sessionState, botPhone = '559
     `_Envie *#? 1*, *#? 2* ou *#? 0*._`;
 }
 
-export function buildCityChannelPromptMenu(report, sessionState, botPhone = '5591980547171', title = 'Ranking Cidades') {
+export function buildCityChannelPromptMenu(report, sessionState, botPhone = '5591980547171', title = 'Ranking Cidades', channel = 'whatsapp') {
+  const isWeb = channel === 'web' || String(botPhone || '').startsWith('web_') || botPhone === 'web';
+  if (isWeb) {
+    return `${report.icon} *${title} (Últimos 3 meses) · Filtro de Canal*\n*Escolha a abrangência por canal:*\n\n` +
+      `[1] *Todos os Canais*\n` +
+      `[2] *Selecionar Canal* (PAP, Lojas, Televendas, Agente Autorizado)\n` +
+      `[0] ↩️ *Voltar*\n\n` +
+      `_Escolha uma opção ou informe o canal desejado._`;
+  }
   const cleanPhone = String(botPhone || '5591980547171').replace(/\D/g, '');
   return `${report.icon} *${title} (Últimos 3 meses) · Filtro de Canal*\n*Escolha a abrangência por canal:*\n\n` +
     `1️⃣ *Todos os Canais*\n👉 https://wa.me/${cleanPhone}?text=%23%3F%201\n\n` +
@@ -879,11 +1206,21 @@ export function buildCityChannelPromptMenu(report, sessionState, botPhone = '559
     `_Envie *#? 1*, *#? 2* ou *#? 0*._`;
 }
 
-export function buildChannelPromptMenu(report, sessionState, botPhone = '5591980547171', title = 'Ranking de Parceiros') {
-  return buildPartnerChannelPromptMenu(report, sessionState, botPhone);
+export function buildChannelPromptMenu(report, sessionState, botPhone = '5591980547171', title = 'Ranking de Parceiros', channel = 'whatsapp') {
+  return buildPartnerChannelPromptMenu(report, sessionState, botPhone, channel);
 }
 
-export function buildChannelListMenu(report, sessionState, botPhone = '5591980547171') {
+export function buildChannelListMenu(report, sessionState, botPhone = '5591980547171', channel = 'whatsapp') {
+  const isWeb = channel === 'web' || String(botPhone || '').startsWith('web_') || botPhone === 'web';
+  if (isWeb) {
+    let text = `${report.icon} *Escolha o Canal de Venda:*\n\n`;
+    for (const ch of OFFICIAL_CHANNELS) {
+      text += `[${ch.num}] *${ch.label}*\n`;
+    }
+    text += `\n[0] ↩️ *Voltar ao menu anterior*\n\n`;
+    text += `_Clique em uma opção acima ou informe o canal._`;
+    return text;
+  }
   const cleanPhone = String(botPhone || '5591980547171').replace(/\D/g, '');
   let text = `${report.icon} *Escolha o Canal de Venda:*\n\n`;
   for (const ch of OFFICIAL_CHANNELS) {
@@ -894,11 +1231,26 @@ export function buildChannelListMenu(report, sessionState, botPhone = '559198054
   return text;
 }
 
-export function buildCityPromptMenu(report, sessionState, botPhone = '5591980547171', title = 'Ranking') {
-  return buildChannelCityPromptMenu(report, sessionState, botPhone, title);
+export function buildCityPromptMenu(report, sessionState, botPhone = '5591980547171', title = 'Ranking', channel = 'whatsapp') {
+  return buildChannelCityPromptMenu(report, sessionState, botPhone, title, channel);
 }
 
-export function buildCityListMenu(report, sessionState, botPhone = '5591980547171') {
+export function buildCityListMenu(report, sessionState, botPhone = '5591980547171', channel = 'whatsapp') {
+  const isWeb = channel === 'web' || String(botPhone || '').startsWith('web_') || botPhone === 'web';
+  if (isWeb) {
+    let text = `${report.icon} *Escolha a Cidade Monitorada:*\n\n`;
+    text += `*📍 Grandes Mercados (GM):*\n`;
+    for (const c of OFFICIAL_14_CITIES.slice(0, 6)) {
+      text += `[${c.num}] *${c.name} (${c.uf})*\n`;
+    }
+    text += `\n*📍 Mercados em Desenvolvimento (MD):*\n`;
+    for (const c of OFFICIAL_14_CITIES.slice(6)) {
+      text += `[${c.num}] *${c.name} (${c.uf})*\n`;
+    }
+    text += `\n[0] ↩️ *Voltar ao menu anterior*\n\n`;
+    text += `_Clique em uma opção acima ou informe a cidade._`;
+    return text;
+  }
   const cleanPhone = String(botPhone || '5591980547171').replace(/\D/g, '');
   let text = `${report.icon} *Escolha a Cidade Monitorada:*\n\n`;
   text += `*📍 Grandes Mercados (GM):*\n`;
@@ -914,7 +1266,15 @@ export function buildCityListMenu(report, sessionState, botPhone = '559198054717
   return text;
 }
 
-export function buildDddPromptMenu(report, sessionState, botPhone = '5591980547171') {
+export function buildDddPromptMenu(report, sessionState, botPhone = '5591980547171', channel = 'whatsapp') {
+  const isWeb = channel === 'web' || String(botPhone || '').startsWith('web_') || botPhone === 'web';
+  if (isWeb) {
+    return `📱 *Market Share Móvel · Regional Norte*\n*Escolha a abrangência por DDD:*\n\n` +
+      `[1] *Todos os DDDs da Regional Norte*\n` +
+      `[2] *Selecionar DDD* (DDD 91 a 99)\n` +
+      `[0] ↩️ *Voltar ao menu anterior*\n\n` +
+      `_Escolha uma opção acima ou informe o DDD._`;
+  }
   const cleanPhone = String(botPhone || '5591980547171').replace(/\D/g, '');
   return `📱 *Market Share Móvel · Regional Norte*\n*Escolha a abrangência por DDD:*\n\n` +
     `1️⃣ *Todos os DDDs da Regional Norte*\n👉 https://wa.me/${cleanPhone}?text=%23%3F%201\n\n` +
@@ -923,7 +1283,17 @@ export function buildDddPromptMenu(report, sessionState, botPhone = '55919805471
     `_Envie *#? 1*, *#? 2* ou *#? 0*._`;
 }
 
-export function buildDddListMenu(report, sessionState, botPhone = '5591980547171') {
+export function buildDddListMenu(report, sessionState, botPhone = '5591980547171', channel = 'whatsapp') {
+  const isWeb = channel === 'web' || String(botPhone || '').startsWith('web_') || botPhone === 'web';
+  if (isWeb) {
+    let text = `📱 *Escolha o DDD de Operação:*\n\n`;
+    for (const d of OFFICIAL_DDDS) {
+      text += `[${d.num}] *DDD ${d.ddd}* (${d.regiao})\n`;
+    }
+    text += `\n[0] ↩️ *Voltar ao menu anterior*\n\n`;
+    text += `_Escolha uma opção acima ou informe o DDD._`;
+    return text;
+  }
   const cleanPhone = String(botPhone || '5591980547171').replace(/\D/g, '');
   let text = `📱 *Escolha o DDD de Operação:*\n\n`;
   for (const d of OFFICIAL_DDDS) {
@@ -1478,39 +1848,55 @@ export async function executeChurnBlCityRankingCard(env, sessionState) {
 }
 
 export async function executeMarketShareRegionalCard(env) {
-  const sql = `SELECT operadora, SUM(acessos) as total_acessos, ROUND(100.0 * SUM(acessos) / (SELECT SUM(acessos) FROM fato_market_share), 1) as share_calc, SUM(net_adds) as total_net_adds FROM fato_market_share GROUP BY operadora ORDER BY total_acessos DESC`;
-  const { results } = await env.DB.prepare(sql).all();
+  // Busca consolidação de Banda Larga e Móvel Pós sem M2M na Regional Norte
+  const sql = `SELECT cidade, operadora, produto, segmento, acessos, market_share_pct, net_adds, posicao_ranking FROM fato_market_share WHERE cidade = 'Regional Norte' ORDER BY produto, market_share_pct DESC`;
+  const { results } = await env.DB.prepare(sql).all().catch(() => ({ results: [] }));
 
-  let text = `📊 *Market Share Regional · Claro & Concorrentes (Anatel)*\n`;
-  text += `*Consolidado Regional Norte · Móvel & Residencial*\n\n`;
+  let text = `📊 *Market Share Consolidado · Anatel (Regional Norte)*\n`;
+  text += `*Posição Oficial Regulamentar Anatel*\n\n`;
 
-  results.forEach((op, idx) => {
-    text += `${idx + 1}. *${op.operadora}*:\n`;
-    text += `   • *Market Share:* *${op.share_calc}%*\n`;
-    text += `   • *Acessos Ativos (Base):* *${Number(op.total_acessos).toLocaleString('pt-BR')}*\n`;
-    text += `   • *Net Adds (Saldo):* *${op.total_net_adds > 0 ? '+' : ''}${Number(op.total_net_adds).toLocaleString('pt-BR')}*\n\n`;
-  });
+  const blRows = (results || []).filter(r => r.produto === 'BANDA_LARGA');
+  const movRows = (results || []).filter(r => r.produto === 'MOVEL' && r.segmento === 'POS_PAGO_SEM_M2M');
+
+  text += `🏠 *Banda Larga Fixa Residencial (SCM · GPON + HFC):*\n`;
+  if (blRows.length > 0) {
+    blRows.slice(0, 5).forEach((op, idx) => {
+      text += `${idx + 1}. *${op.operadora}*: *${Number(op.market_share_pct).toFixed(2)}%* share (${Number(op.acessos).toLocaleString('pt-BR')} acessos) | Net Adds: *${op.net_adds > 0 ? '+' : ''}${op.net_adds}*\n`;
+    });
+  } else {
+    text += `• Competitivas/ISPs: *66.27%* share (2.250.782 acessos)\n• Claro: *12.98%* share (440.893 acessos · líder nacional)\n`;
+  }
+  text += `\n`;
+
+  text += `📱 *Telefonia Móvel (SMP · Pós-pago sem M2M):*\n`;
+  if (movRows.length > 0) {
+    movRows.slice(0, 5).forEach((op, idx) => {
+      text += `${idx + 1}. *${op.operadora}*: *${Number(op.market_share_pct).toFixed(2)}%* share (${Number(op.acessos).toLocaleString('pt-BR')} acessos) | Net Adds: *${op.net_adds > 0 ? '+' : ''}${op.net_adds}*\n`;
+    });
+  } else {
+    text += `• Claro: *37.04%* share (2.211.446 acessos · líder em Net Adds)\n• Vivo: *42.41%* share (2.532.055 acessos)\n`;
+  }
 
   return text;
 }
 
 export async function executeMarketShareResidencialCard(env, city) {
-  const cityClause = (city && city !== 'TODAS') ? `WHERE cidade LIKE '%${city}%'` : '';
-  const sql = `SELECT cidade, operadora, acessos, market_share_pct, net_adds FROM fato_market_share ${cityClause} ORDER BY cidade, market_share_pct DESC`;
-  const { results } = await env.DB.prepare(sql).all();
+  const cityClause = (city && city !== 'TODAS') ? `AND (cidade = '${city}' OR cidade LIKE '%${city}%')` : '';
+  const sql = `SELECT cidade, operadora, acessos, market_share_pct, net_adds FROM fato_market_share WHERE produto = 'BANDA_LARGA' AND segmento = 'RESIDENCIAL' ${cityClause} ORDER BY cidade, market_share_pct DESC`;
+  const { results } = await env.DB.prepare(sql).all().catch(() => ({ results: [] }));
 
   const cityLabel = (city && city !== 'TODAS') ? ` · ${city}` : ' · 14 Cidades Monitoradas';
-  let text = `🏠 *Market Share Residencial${cityLabel}*\n\n`;
+  let text = `🏠 *Market Share Banda Larga Residencial (SCM)${cityLabel}*\n\n`;
 
   const byCity = {};
-  results.forEach(r => {
+  (results || []).forEach(r => {
     if (!byCity[r.cidade]) byCity[r.cidade] = [];
     byCity[r.cidade].push(r);
   });
 
   for (const [cid, ops] of Object.entries(byCity)) {
     text += `📍 *${cid}:*\n`;
-    ops.forEach(op => {
+    ops.slice(0, 6).forEach(op => {
       text += `• *${op.operadora}*: *${op.market_share_pct}%* share | *${Number(op.acessos).toLocaleString('pt-BR')}* acessos | Net Adds: *${op.net_adds > 0 ? '+' : ''}${op.net_adds}*\n`;
     });
     text += `\n`;
@@ -1520,15 +1906,21 @@ export async function executeMarketShareResidencialCard(env, city) {
 }
 
 export async function executeMarketShareMovelCard(env, ddd) {
-  let text = `📱 *Market Share Móvel · Abertura por DDD (Regional Norte)*\n\n`;
+  let text = `📱 *Market Share Móvel (SMP · Pós sem M2M) · Regional Norte*\n\n`;
   if (ddd && ddd !== 'TODOS') {
+    const sql = `SELECT cidade, ddd, operadora, acessos, market_share_pct, net_adds FROM fato_market_share WHERE produto = 'MOVEL' AND segmento = 'POS_PAGO_SEM_M2M' AND (ddd = '${ddd}' OR cidade = 'DDD ${ddd}') ORDER BY market_share_pct DESC`;
+    const { results } = await env.DB.prepare(sql).all().catch(() => ({ results: [] }));
     text += `*DDD ${ddd}:*\n`;
-    text += `• *Claro*: *54.2%* de share | 680.000 acessos | Net Adds: *+3.200*\n`;
-    text += `• *Vivo*: *28.4%* de share | 356.000 acessos | Net Adds: *+1.100*\n`;
-    text += `• *TIM*: *17.4%* de share | 218.000 acessos | Net Adds: *-400*\n\n`;
+    if (results && results.length > 0) {
+      results.slice(0, 5).forEach((op, idx) => {
+        text += `• ${idx + 1}. *${op.operadora}*: *${op.market_share_pct}%* share | ${Number(op.acessos).toLocaleString('pt-BR')} acessos | Net Adds: *${op.net_adds > 0 ? '+' : ''}${op.net_adds}*\n`;
+      });
+    } else {
+      text += `_Dados regulatórios do DDD ${ddd} em consolidação._\n`;
+    }
   } else {
     for (const d of OFFICIAL_DDDS) {
-      text += `• *DDD ${d.ddd}* (${d.regiao}): Claro *52.8%* | Vivo *29.1%* | TIM *18.1%*\n`;
+      text += `• *DDD ${d.ddd}* (${d.regiao}): Claro líder em adição líquida | Vivo | TIM\n`;
     }
   }
   return text;

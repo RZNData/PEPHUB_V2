@@ -473,34 +473,118 @@ export async function getResponsibleEmails(env) {
   return [...new Set(list)];
 }
 
-// Disparo de E-mails (Resend API com suporte a suspensão administrativa)
-export async function sendEmail(env, { to, subject, html, text }) {
+// Disparo de E-mails com suporte a suspensão administrativa, pixel de tracking e auditoria em email_logs
+export async function sendEmail(env, { to, subject, html, text, userId = null, userName = null }) {
   const from = env.MAIL_FROM || 'Pephub Regional <notificacoes@pephub.cloud>';
   const replyTo = env.MAIL_REPLY_TO || 'arthur.rezende.analista@gmail.com';
+  const logId = `eml_${randomHex(8)}`;
+  const baseUrl = env.PUBLIC_BASE_URL || 'https://pephub.cloud';
 
-  // Verifica se o disparo global de e-mails está suspenso temporariamente
+  // Helper interno para persistir o log no D1 de forma resiliente
+  const logEmail = async (status, errDetail = null, resendId = null, injectedHtml = null) => {
+    if (!env || !env.DB) return;
+    try {
+      await env.DB.prepare(`
+        CREATE TABLE IF NOT EXISTS email_logs (
+          id TEXT PRIMARY KEY,
+          direction TEXT NOT NULL DEFAULT 'outbound',
+          user_id TEXT,
+          user_name TEXT,
+          user_email TEXT,
+          from_address TEXT NOT NULL,
+          to_address TEXT NOT NULL,
+          subject TEXT NOT NULL,
+          content_html TEXT,
+          content_text TEXT,
+          status TEXT NOT NULL DEFAULT 'sent',
+          error_message TEXT,
+          opened_at DATETIME,
+          open_count INTEGER DEFAULT 0,
+          ip_open TEXT,
+          user_agent_open TEXT,
+          resend_id TEXT,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+      `).run().catch(() => {});
+
+      let resolvedUserId = userId;
+      let resolvedUserName = userName;
+      let resolvedUserEmail = null;
+      const toStr = Array.isArray(to) ? to.join(', ') : String(to || '');
+      const firstTo = Array.isArray(to) ? to[0] : to;
+
+      if (!resolvedUserId && firstTo) {
+        const u = await env.DB.prepare(
+          "SELECT id, nome_completo, email_claro FROM users WHERE LOWER(email_claro) = LOWER(?) LIMIT 1"
+        ).bind(String(firstTo).trim()).first().catch(() => null);
+        if (u) {
+          resolvedUserId = u.id;
+          resolvedUserName = u.nome_completo;
+          resolvedUserEmail = u.email_claro;
+        }
+      }
+
+      await env.DB.prepare(`
+        INSERT INTO email_logs (
+          id, direction, user_id, user_name, user_email,
+          from_address, to_address, subject, content_html, content_text,
+          status, error_message, resend_id, created_at
+        ) VALUES (?, 'outbound', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      `).bind(
+        logId,
+        resolvedUserId,
+        resolvedUserName,
+        resolvedUserEmail || firstTo,
+        from,
+        toStr,
+        subject,
+        injectedHtml || html || null,
+        text || null,
+        status,
+        errDetail,
+        resendId
+      ).run().catch(() => {});
+    } catch (_) {}
+  };
+
+  // 1. Verifica se o disparo global de e-mails está suspenso temporariamente
   if (await getSystemControl(env, 'suspend_emails')) {
     console.warn(`[EMAIL BLOQUEADO - DISPAROS SUSPENSOS ADMINISTRATIVAMENTE] Para: ${Array.isArray(to) ? to.join(',') : to} | Assunto: ${subject}`);
+    await logEmail('suspended', 'Disparos suspensos temporariamente pelo painel administrativo');
     if (env.DB) {
       await env.DB.prepare(`
         INSERT INTO audit_logs (id, action, user_email, details, created_at)
         VALUES (?, 'EMAIL_SUSPENDED_BY_ADMIN', ?, ?, datetime('now'))
       `).bind(crypto.randomUUID(), Array.isArray(to) ? to.join(',') : to, JSON.stringify({ subject, suspended: true })).run().catch(() => {});
     }
-    return { success: true, suspended: true };
+    return { success: true, suspended: true, logId };
   }
 
+  // 2. Injeta pixel transparente 1x1 no HTML para rastreamento de abertura
+  let finalHtml = html;
+  if (finalHtml && typeof finalHtml === 'string') {
+    const trackerTag = `<img src="${baseUrl.replace(/\/$/, '')}/api/emails/track/${logId}" width="1" height="1" style="display:none;width:1px;height:1px;border:0;opacity:0;" alt="" />`;
+    if (finalHtml.includes('</body>')) {
+      finalHtml = finalHtml.replace('</body>', `${trackerTag}</body>`);
+    } else {
+      finalHtml += trackerTag;
+    }
+  }
+
+  // 3. Simulação caso RESEND_API_KEY esteja ausente
   if (!env.RESEND_API_KEY) {
     console.warn(`[EMAIL SIMULADO] RESEND_API_KEY ausente. Para: ${to} | Assunto: ${subject}`);
+    await logEmail('simulated', 'Simulado em ambiente de desenvolvimento (RESEND_API_KEY ausente)', null, finalHtml);
     if (env.DB) {
       await env.DB.prepare(`
         INSERT INTO audit_logs (id, action, user_email, details, created_at)
         VALUES (?, 'EMAIL_SIMULATED', ?, ?, datetime('now'))
       `).bind(crypto.randomUUID(), Array.isArray(to) ? to.join(',') : to, JSON.stringify({ subject, simulated: true })).run().catch(() => {});
     }
-    return { success: true, simulated: true };
+    return { success: true, simulated: true, logId };
   }
 
+  // 4. Disparo oficial via Resend API
   try {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -513,16 +597,24 @@ export async function sendEmail(env, { to, subject, html, text }) {
         to: Array.isArray(to) ? to : [to],
         reply_to: replyTo,
         subject,
-        html,
+        html: finalHtml,
         text,
       }),
     });
 
     const data = await res.json();
-    return { success: res.ok, data };
+    if (res.ok) {
+      await logEmail('sent', null, data?.id, finalHtml);
+      return { success: true, data, logId };
+    } else {
+      const errMsg = typeof data === 'object' ? JSON.stringify(data) : String(data);
+      await logEmail('failed', errMsg, null, finalHtml);
+      return { success: false, data, error: errMsg, logId };
+    }
   } catch (err) {
     console.error('Erro ao enviar e-mail via Resend:', err);
-    return { success: false, error: err.message };
+    await logEmail('failed', err.message, null, finalHtml);
+    return { success: false, error: err.message, logId };
   }
 }
 
@@ -899,7 +991,10 @@ export async function ensureAppSchema(env, force = false) {
         mes_referencia TEXT NOT NULL,
         cidade TEXT NOT NULL,
         uf TEXT NOT NULL,
+        ddd TEXT DEFAULT 'TODOS',
         operadora TEXT NOT NULL,
+        produto TEXT DEFAULT 'MOVEL',
+        segmento TEXT DEFAULT 'POS_PAGO_SEM_M2M',
         acessos INTEGER DEFAULT 0,
         market_share_pct REAL DEFAULT 0,
         net_adds INTEGER DEFAULT 0,
@@ -988,6 +1083,8 @@ export async function ensureAppSchema(env, force = false) {
     await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_fpd_safra_ord ON fato_fpd (safra_ord DESC)").run().catch(() => {});
     await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_aprov_mes_cid ON fato_aprovacao_credito (mes_referencia, cidade)").run().catch(() => {});
     await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_mkt_mes_cid_op ON fato_market_share (mes_referencia, cidade, operadora)").run().catch(() => {});
+    await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_mkt_prod_seg_cid ON fato_market_share (produto, segmento, cidade)").run().catch(() => {});
+    await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_mkt_prod_seg_ddd ON fato_market_share (produto, segmento, ddd)").run().catch(() => {});
     await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_knowledge_mod_topico ON bot_knowledge_chunks (modulo, topico)").run().catch(() => {});
 
     await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_upload_del_user ON upload_delegations (delegated_user_id)").run().catch(() => {});

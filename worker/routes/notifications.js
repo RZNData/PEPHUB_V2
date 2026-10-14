@@ -58,11 +58,34 @@ export async function ensureNotificationsTables(env) {
     `).run().catch(() => {});
 
     await env.DB.prepare(`
+      CREATE TABLE IF NOT EXISTS user_daily_popups_seen (
+        user_id TEXT NOT NULL,
+        notification_id TEXT NOT NULL,
+        seen_date TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY(user_id, notification_id, seen_date)
+      )
+    `).run().catch(() => {});
+
+    // Adiciona colunas para popup de 1º logon e prioridade
+    await env.DB.prepare("ALTER TABLE notifications ADD COLUMN is_popup INTEGER NOT NULL DEFAULT 0").run().catch(() => {});
+    await env.DB.prepare("ALTER TABLE notifications ADD COLUMN priority TEXT NOT NULL DEFAULT 'normal'").run().catch(() => {});
+    // Adiciona colunas para segmentação granular de público
+    await env.DB.prepare("ALTER TABLE notifications ADD COLUMN target_type TEXT NOT NULL DEFAULT 'all'").run().catch(() => {});
+    await env.DB.prepare("ALTER TABLE notifications ADD COLUMN target_users TEXT").run().catch(() => {});
+    await env.DB.prepare("ALTER TABLE notifications ADD COLUMN target_roles TEXT").run().catch(() => {});
+    await env.DB.prepare("ALTER TABLE notifications ADD COLUMN target_areas TEXT").run().catch(() => {});
+
+    await env.DB.prepare(`
       CREATE INDEX IF NOT EXISTS idx_notifications_active ON notifications(is_active, starts_at, expires_at)
     `).run().catch(() => {});
 
     await env.DB.prepare(`
       CREATE INDEX IF NOT EXISTS idx_user_notif_read_user ON user_notifications_read(user_id, notification_id)
+    `).run().catch(() => {});
+
+    await env.DB.prepare(`
+      CREATE INDEX IF NOT EXISTS idx_popup_seen_user ON user_daily_popups_seen(user_id, seen_date)
     `).run().catch(() => {});
 
     // Semeia presets institucionais se não houver notificações
@@ -73,6 +96,140 @@ export async function ensureNotificationsTables(env) {
   } catch (err) {
     console.error('Erro em ensureNotificationsTables:', err);
   }
+}
+
+// Avalia se uma notificação é elegível para o usuário com base em pessoa, cargo, setor ou regra global
+export function isNotificationEligible(item, user) {
+  if (!user) return false;
+  const isAdmin = Boolean(user.is_admin);
+  const targetType = String(item.target_type || '').trim().toLowerCase();
+
+  // 1. Verificação por tipo estruturado
+  if (targetType === 'admin') {
+    return isAdmin;
+  }
+  if (targetType === 'regular') {
+    return !isAdmin;
+  }
+  if (targetType === 'users') {
+    let allowedUsers = [];
+    try {
+      if (typeof item.target_users === 'string') {
+        const trimmed = item.target_users.trim();
+        if (trimmed.startsWith('[')) {
+          allowedUsers = JSON.parse(trimmed);
+        } else {
+          allowedUsers = trimmed.split(',').map(s => s.trim());
+        }
+      } else if (Array.isArray(item.target_users)) {
+        allowedUsers = item.target_users;
+      }
+    } catch (_) {
+      allowedUsers = [];
+    }
+    const cleanAllowed = allowedUsers.map(u => String(u).trim().toLowerCase());
+    const uid = String(user.id || '').trim().toLowerCase();
+    const ulogin = String(user.login_claro || '').trim().toLowerCase();
+    const uemail = String(user.email_claro || '').trim().toLowerCase();
+    return cleanAllowed.includes(uid) || cleanAllowed.includes(ulogin) || cleanAllowed.includes(uemail);
+  }
+  if (targetType === 'roles') {
+    let allowedRoles = [];
+    try {
+      if (typeof item.target_roles === 'string') {
+        const trimmed = item.target_roles.trim();
+        if (trimmed.startsWith('[')) {
+          allowedRoles = JSON.parse(trimmed);
+        } else {
+          allowedRoles = trimmed.split(',').map(s => s.trim());
+        }
+      } else if (Array.isArray(item.target_roles)) {
+        allowedRoles = item.target_roles;
+      }
+    } catch (_) {
+      allowedRoles = [];
+    }
+    const cleanAllowedRoles = allowedRoles.map(r => String(r).trim().toUpperCase());
+    const userRole = String(user.funcao || '').trim().toUpperCase();
+    return cleanAllowedRoles.includes(userRole);
+  }
+  if (targetType === 'areas') {
+    let allowedAreas = [];
+    try {
+      if (typeof item.target_areas === 'string') {
+        const trimmed = item.target_areas.trim();
+        if (trimmed.startsWith('[')) {
+          allowedAreas = JSON.parse(trimmed);
+        } else {
+          allowedAreas = trimmed.split(',').map(s => s.trim());
+        }
+      } else if (Array.isArray(item.target_areas)) {
+        allowedAreas = item.target_areas;
+      }
+    } catch (_) {
+      allowedAreas = [];
+    }
+    const cleanAllowedAreas = allowedAreas.map(a => String(a).trim().toUpperCase());
+    const userArea = String(user.area || '').trim().toUpperCase();
+    return cleanAllowedAreas.includes(userArea);
+  }
+  if (targetType === 'all') {
+    return true;
+  }
+
+  // 2. Fallback para target_audience textual legado
+  const aud = String(item.target_audience || 'ALL').trim();
+  const audUpper = aud.toUpperCase();
+  if (audUpper === 'ALL' || audUpper === '') return true;
+  if (audUpper === 'ADMIN') return isAdmin;
+  if (audUpper === 'REGULAR') return !isAdmin;
+
+  if (audUpper.startsWith('USERS:')) {
+    const raw = aud.substring(6).trim();
+    let ids = [];
+    try {
+      ids = raw.startsWith('[') ? JSON.parse(raw) : raw.split(',').map(s => s.trim());
+    } catch (_) {
+      ids = raw.split(',').map(s => s.trim());
+    }
+    const cleanIds = ids.map(s => String(s).trim().toLowerCase());
+    const uid = String(user.id || '').trim().toLowerCase();
+    const ulogin = String(user.login_claro || '').trim().toLowerCase();
+    const uemail = String(user.email_claro || '').trim().toLowerCase();
+    return cleanIds.includes(uid) || cleanIds.includes(ulogin) || cleanIds.includes(uemail);
+  }
+
+  if (audUpper.startsWith('ROLES:')) {
+    const raw = aud.substring(6).trim();
+    let roles = [];
+    try {
+      roles = raw.startsWith('[') ? JSON.parse(raw) : raw.split(',').map(s => s.trim());
+    } catch (_) {
+      roles = raw.split(',').map(s => s.trim());
+    }
+    const cleanRoles = roles.map(s => String(s).trim().toUpperCase());
+    const userRole = String(user.funcao || '').trim().toUpperCase();
+    return cleanRoles.includes(userRole);
+  }
+
+  if (audUpper.startsWith('AREAS:')) {
+    const raw = aud.substring(6).trim();
+    let areas = [];
+    try {
+      areas = raw.startsWith('[') ? JSON.parse(raw) : raw.split(',').map(s => s.trim());
+    } catch (_) {
+      areas = raw.split(',').map(s => s.trim());
+    }
+    const cleanAreas = areas.map(s => String(s).trim().toUpperCase());
+    const userArea = String(user.area || '').trim().toUpperCase();
+    return cleanAreas.includes(userArea);
+  }
+
+  if (user.area && user.area.toUpperCase() === audUpper) {
+    return true;
+  }
+
+  return false;
 }
 
 // Semeador de Presets Oficiais de Lançamento
@@ -156,7 +313,8 @@ export async function handleNotificationRoutes(request, env, url, pathname) {
           SELECT 
             n.*,
             (SELECT COUNT(*) FROM user_notifications_read r WHERE r.notification_id = n.id) as read_count,
-            (SELECT COUNT(*) FROM user_notifications_read r WHERE r.notification_id = n.id AND r.dismissed = 1) as dismiss_count
+            (SELECT COUNT(*) FROM user_notifications_read r WHERE r.notification_id = n.id AND r.dismissed = 1) as dismiss_count,
+            (SELECT COUNT(*) FROM user_notifications_read r WHERE r.notification_id = n.id AND r.dismissed = 1) as dismissed_count
           FROM notifications n
           ORDER BY n.created_at DESC
         `;
@@ -181,11 +339,18 @@ export async function handleNotificationRoutes(request, env, url, pathname) {
           type = 'info',
           preset = 'custom',
           target_audience = 'ALL',
+          audience,
+          target_type = 'all',
+          target_users = null,
+          target_roles = null,
+          target_areas = null,
           action_url = '',
           action_label = '',
           starts_at = null,
           expires_at = null,
-          is_active = 1
+          is_active = 1,
+          is_popup = 0,
+          priority = 'normal'
         } = body;
 
         if (!title || !title.trim() || !message || !message.trim()) {
@@ -195,24 +360,65 @@ export async function handleNotificationRoutes(request, env, url, pathname) {
         const notifId = `notif_${randomHex(8)}`;
         const validTypes = ['info', 'warning', 'success', 'update', 'security'];
         const cleanType = validTypes.includes(type) ? type : 'info';
+        const validPriorities = ['normal', 'alta', 'urgente'];
+        const cleanPriority = validPriorities.includes(priority) ? priority : 'normal';
+
+        // Normalização de segmentação
+        let cleanTargetType = String(target_type || '').toLowerCase();
+        if (!cleanTargetType || cleanTargetType === 'undefined') {
+          const rawAud = String(target_audience || audience || 'ALL').toUpperCase();
+          if (rawAud === 'ADMIN') cleanTargetType = 'admin';
+          else if (rawAud === 'REGULAR') cleanTargetType = 'regular';
+          else if (rawAud.startsWith('USERS:')) cleanTargetType = 'users';
+          else if (rawAud.startsWith('ROLES:')) cleanTargetType = 'roles';
+          else if (rawAud.startsWith('AREAS:')) cleanTargetType = 'areas';
+          else cleanTargetType = 'all';
+        }
+
+        const cleanTargetUsers = target_users ? (typeof target_users === 'string' ? target_users : JSON.stringify(target_users)) : null;
+        const cleanTargetRoles = target_roles ? (typeof target_roles === 'string' ? target_roles : JSON.stringify(target_roles)) : null;
+        const cleanTargetAreas = target_areas ? (typeof target_areas === 'string' ? target_areas : JSON.stringify(target_areas)) : null;
+
+        let cleanAudience = target_audience || audience || 'ALL';
+        if (cleanTargetType === 'users' && cleanTargetUsers) {
+          cleanAudience = `USERS:${cleanTargetUsers}`;
+        } else if (cleanTargetType === 'roles' && cleanTargetRoles) {
+          cleanAudience = `ROLES:${cleanTargetRoles}`;
+        } else if (cleanTargetType === 'areas' && cleanTargetAreas) {
+          cleanAudience = `AREAS:${cleanTargetAreas}`;
+        } else if (cleanTargetType === 'admin') {
+          cleanAudience = 'admin';
+        } else if (cleanTargetType === 'regular') {
+          cleanAudience = 'regular';
+        } else if (cleanTargetType === 'all') {
+          cleanAudience = 'ALL';
+        }
 
         await env.DB.prepare(`
           INSERT INTO notifications (
             id, title, message, type, preset, target_audience,
-            action_url, action_label, starts_at, expires_at, is_active, created_by
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            target_type, target_users, target_roles, target_areas,
+            action_url, action_label, starts_at, expires_at, is_active,
+            is_popup, priority, created_by
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `).bind(
           notifId,
           title.trim(),
           message.trim(),
           cleanType,
           preset || 'custom',
-          target_audience || 'ALL',
+          cleanAudience,
+          cleanTargetType,
+          cleanTargetUsers,
+          cleanTargetRoles,
+          cleanTargetAreas,
           action_url ? action_url.trim() : null,
           action_label ? action_label.trim() : null,
           starts_at || null,
           expires_at || null,
           is_active ? 1 : 0,
+          is_popup ? 1 : 0,
+          cleanPriority,
           user.login_claro || user.nome_completo || 'ADMIN'
         ).run();
 
@@ -263,11 +469,18 @@ export async function handleNotificationRoutes(request, env, url, pathname) {
           type = 'info',
           preset = 'custom',
           target_audience = 'ALL',
+          audience,
+          target_type = 'all',
+          target_users = null,
+          target_roles = null,
+          target_areas = null,
           action_url = '',
           action_label = '',
           starts_at = null,
           expires_at = null,
-          is_active = 1
+          is_active = 1,
+          is_popup = 0,
+          priority = 'normal'
         } = body;
 
         if (!title || !title.trim() || !message || !message.trim()) {
@@ -276,6 +489,38 @@ export async function handleNotificationRoutes(request, env, url, pathname) {
 
         const validTypes = ['info', 'warning', 'success', 'update', 'security'];
         const cleanType = validTypes.includes(type) ? type : 'info';
+        const validPriorities = ['normal', 'alta', 'urgente'];
+        const cleanPriority = validPriorities.includes(priority) ? priority : 'normal';
+
+        let cleanTargetType = String(target_type || '').toLowerCase();
+        if (!cleanTargetType || cleanTargetType === 'undefined') {
+          const rawAud = String(target_audience || audience || 'ALL').toUpperCase();
+          if (rawAud === 'ADMIN') cleanTargetType = 'admin';
+          else if (rawAud === 'REGULAR') cleanTargetType = 'regular';
+          else if (rawAud.startsWith('USERS:')) cleanTargetType = 'users';
+          else if (rawAud.startsWith('ROLES:')) cleanTargetType = 'roles';
+          else if (rawAud.startsWith('AREAS:')) cleanTargetType = 'areas';
+          else cleanTargetType = 'all';
+        }
+
+        const cleanTargetUsers = target_users ? (typeof target_users === 'string' ? target_users : JSON.stringify(target_users)) : null;
+        const cleanTargetRoles = target_roles ? (typeof target_roles === 'string' ? target_roles : JSON.stringify(target_roles)) : null;
+        const cleanTargetAreas = target_areas ? (typeof target_areas === 'string' ? target_areas : JSON.stringify(target_areas)) : null;
+
+        let cleanAudience = target_audience || audience || 'ALL';
+        if (cleanTargetType === 'users' && cleanTargetUsers) {
+          cleanAudience = `USERS:${cleanTargetUsers}`;
+        } else if (cleanTargetType === 'roles' && cleanTargetRoles) {
+          cleanAudience = `ROLES:${cleanTargetRoles}`;
+        } else if (cleanTargetType === 'areas' && cleanTargetAreas) {
+          cleanAudience = `AREAS:${cleanTargetAreas}`;
+        } else if (cleanTargetType === 'admin') {
+          cleanAudience = 'admin';
+        } else if (cleanTargetType === 'regular') {
+          cleanAudience = 'regular';
+        } else if (cleanTargetType === 'all') {
+          cleanAudience = 'ALL';
+        }
 
         await env.DB.prepare(`
           UPDATE notifications SET
@@ -284,11 +529,17 @@ export async function handleNotificationRoutes(request, env, url, pathname) {
             type = ?,
             preset = ?,
             target_audience = ?,
+            target_type = ?,
+            target_users = ?,
+            target_roles = ?,
+            target_areas = ?,
             action_url = ?,
             action_label = ?,
             starts_at = ?,
             expires_at = ?,
             is_active = ?,
+            is_popup = ?,
+            priority = ?,
             updated_at = CURRENT_TIMESTAMP
           WHERE id = ?
         `).bind(
@@ -296,12 +547,18 @@ export async function handleNotificationRoutes(request, env, url, pathname) {
           message.trim(),
           cleanType,
           preset || 'custom',
-          target_audience || 'ALL',
+          cleanAudience,
+          cleanTargetType,
+          cleanTargetUsers,
+          cleanTargetRoles,
+          cleanTargetAreas,
           action_url ? action_url.trim() : null,
           action_label ? action_label.trim() : null,
           starts_at || null,
           expires_at || null,
           is_active ? 1 : 0,
+          is_popup ? 1 : 0,
+          cleanPriority,
           notifId
         ).run();
 
@@ -336,7 +593,6 @@ export async function handleNotificationRoutes(request, env, url, pathname) {
   if (pathname === '/api/notifications' && method === 'GET') {
     try {
       const nowIso = new Date().toISOString();
-      const isAdmin = Boolean(user.is_admin);
 
       // Consulta todas as ativas que se enquadram na vigência
       const query = `
@@ -347,6 +603,10 @@ export async function handleNotificationRoutes(request, env, url, pathname) {
           n.type,
           n.preset,
           n.target_audience,
+          n.target_type,
+          n.target_users,
+          n.target_roles,
+          n.target_areas,
           n.action_url,
           n.action_label,
           n.created_at,
@@ -364,14 +624,8 @@ export async function handleNotificationRoutes(request, env, url, pathname) {
 
       const { results } = await env.DB.prepare(query).bind(user.id, nowIso, nowIso).all();
       const items = (results || []).filter(item => {
-        // Filtra por audiência alvo
-        const aud = String(item.target_audience || 'ALL').trim().toUpperCase();
-        if (aud === 'ADMIN' && !isAdmin) return false;
-        if (aud === 'REGULAR' && isAdmin) return false;
-        if (aud !== 'ALL' && aud !== 'ADMIN' && aud !== 'REGULAR') {
-          // Filtragem por área específica se coincidir
-          if (user.area && user.area.toUpperCase() !== aud) return false;
-        }
+        // Filtra por público-alvo (pessoa, cargo, setor, admin, etc.)
+        if (!isNotificationEligible(item, user)) return false;
 
         // Filtra dispensadas pelo usuário
         if (Boolean(item.dismissed)) return false;
@@ -393,15 +647,79 @@ export async function handleNotificationRoutes(request, env, url, pathname) {
 
       const unreadCount = formatted.filter(f => !f.is_read).length;
 
+      // 2. Detecção de Popup Prioritário no 1º logon do dia
+      let dailyPopup = null;
+      const todayDate = new Date().toISOString().slice(0, 10);
+
+      try {
+        const popupQuery = `
+          SELECT 
+            n.id, n.title, n.message, n.type, n.preset, n.priority,
+            n.action_url, n.action_label, n.created_at,
+            n.target_audience, n.target_type, n.target_users, n.target_roles, n.target_areas
+          FROM notifications n
+          LEFT JOIN user_daily_popups_seen p 
+            ON p.notification_id = n.id AND p.user_id = ? AND p.seen_date = ?
+          LEFT JOIN user_notifications_read r 
+            ON r.notification_id = n.id AND r.user_id = ?
+          WHERE n.is_active = 1
+            AND n.is_popup = 1
+            AND (n.starts_at IS NULL OR n.starts_at <= ?)
+            AND (n.expires_at IS NULL OR n.expires_at >= ?)
+            AND p.seen_date IS NULL
+            AND (r.dismissed IS NULL OR r.dismissed = 0)
+          ORDER BY CASE WHEN n.priority = 'urgente' THEN 1 WHEN n.priority = 'alta' THEN 2 ELSE 3 END, n.created_at DESC
+        `;
+
+        const { results: popupResults } = await env.DB.prepare(popupQuery).bind(user.id, todayDate, user.id, nowIso, nowIso).all();
+        for (const cand of (popupResults || [])) {
+          if (!isNotificationEligible(cand, user)) continue;
+
+          dailyPopup = {
+            id: cand.id,
+            title: cand.title,
+            message: cand.message,
+            type: cand.type || 'info',
+            preset: cand.preset || 'custom',
+            priority: cand.priority || 'alta',
+            action_url: cand.action_url || null,
+            action_label: cand.action_label || null,
+            created_at: cand.created_at
+          };
+          break; // Retorna o popup de maior prioridade elegível para o usuário
+        }
+      } catch (pErr) {
+        console.error('Erro ao verificar daily_popup:', pErr);
+      }
+
       return json({
         success: true,
         notifications: formatted,
         unread_count: unreadCount,
+        daily_popup: dailyPopup,
         server_time: nowIso
       });
     } catch (err) {
       console.error('Erro ao consultar notificações do usuário:', err);
       return json({ error: 'Falha ao buscar notificações.' }, 500);
+    }
+  }
+
+  // POST /api/notifications/:id/popup-seen — Registra visualização de popup diário
+  const popupSeenMatch = pathname.match(/^\/api\/notifications\/([^\/]+)\/popup-seen$/);
+  if (popupSeenMatch && method === 'POST') {
+    const notifId = popupSeenMatch[1];
+    const todayDate = new Date().toISOString().slice(0, 10);
+    try {
+      await env.DB.prepare(`
+        INSERT INTO user_daily_popups_seen (user_id, notification_id, seen_date)
+        VALUES (?, ?, ?)
+      `).bind(user.id, notifId, todayDate).run().catch(() => {});
+
+      return json({ success: true, message: 'Popup diário visualizado.' });
+    } catch (err) {
+      console.error('Erro ao marcar popup como visto:', err);
+      return json({ error: 'Falha ao registrar visualização.' }, 500);
     }
   }
 

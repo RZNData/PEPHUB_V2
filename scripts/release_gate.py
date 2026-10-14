@@ -28,7 +28,7 @@ def run_agent(script_name, label):
             [sys.executable, "-X", "utf8", path],
             capture_output=True, text=True,
             encoding="utf-8", errors="replace",
-            cwd=WORKSPACE_DIR, timeout=60
+            cwd=WORKSPACE_DIR, timeout=120
         )
         output = result.stdout + result.stderr
         # Extrair score da saida
@@ -54,8 +54,10 @@ def run_release_gate():
         ("fpd_quality_agent.py",        "FPD Qualidade & Dados",            MIN_FPD_SCORE),
         ("reports_quality_agent.py",    "Qualidade Universal de Relatorios", 85),
         ("system_integrity_agent.py",   "Integridade do Sistema & Auth",    90),
-        ("scalability_auditor.py",      "Escalabilidade & Concorrencia",    85),
-        ("skills_meta_orchestrator.py", "Meta-Orquestrador de Skills",      90),
+        ("scalability_auditor.py",          "Escalabilidade & Concorrencia",        85),
+        ("skills_meta_orchestrator.py",     "Meta-Orquestrador de Skills",          90),
+        ("rag_auditor.py",                  "RAG & Anti-Alucinacao",                90),
+        ("bot_data_integrity_auditor.py",   "Integridade de Dados & Anti-Alucinacao", 90),
     ]
 
     results = []

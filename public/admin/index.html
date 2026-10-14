@@ -615,6 +615,10 @@ tbody tr:hover{background:#f7f9fb}
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           Central de Notificações <span class="tab-badge" id="totalNotificationsCount">0</span>
         </button>
+        <button type="button" class="sub-nav-btn" id="tabEmailsBtn" onclick="showTab('emails')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Controle de E-mails <span class="tab-badge" id="totalEmailsCount">0</span>
+        </button>
         <button type="button" class="sub-nav-btn" id="tabUploadsBtn" onclick="showTab('uploads')">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           Carga de Insumos & Uploads <span class="tab-badge" id="totalUploadsCount">7</span>
@@ -1153,6 +1157,117 @@ tbody tr:hover{background:#f7f9fb}
       </div>
     </div>
   </div>
+
+  <!-- ABA 8: CONTROLE E RASTREAMENTO DE E-MAILS (ENVIADOS / RECEBIDOS) -->
+  <div id="sectionEmails" style="display:none">
+    <div class="panel">
+      <div class="sub-bar">
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Controle & Rastreamento de E-mails Corporativos
+          </div>
+          <div style="font-size:11.5px;color:var(--ink2);margin-top:2px">
+            Audite e-mails enviados e recebidos por cada colaborador, visualize o conteúdo exato, verifique a confirmação de abertura (tracking pixel) e diagnostique erros de entrega da API.
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <button id="btnOpenSendTestEmail" class="btn-primary" onclick="openSendTestEmailModal()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Disparar E-mail Teste / Comunicado
+          </button>
+          <button class="btn-act" onclick="openSimulateInboundModal()" title="Simular mensagem recebida de usuário">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Simular Inbound (Recebido)
+          </button>
+          <button class="btn-act" onclick="loadAdminEmails()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Atualizar Lista
+          </button>
+        </div>
+      </div>
+
+      <!-- Micro KPIs de E-mails -->
+      <div class="kpis" style="border-bottom:1px solid var(--line2);padding:14px 18px;margin-bottom:0">
+        <div class="kpi">
+          <div class="k">Total Disparados</div>
+          <div class="v" id="kpiTotalEmails">0</div>
+          <div class="d">Envios registrados</div>
+        </div>
+        <div class="kpi">
+          <div class="k">Aberturas Confirmadas</div>
+          <div class="v" style="color:var(--green)" id="kpiOpenedEmails">0</div>
+          <div class="d">Taxa de abertura: <b id="kpiOpenRatePct" style="margin-left:4px;color:var(--green)">0%</b></div>
+        </div>
+        <div class="kpi">
+          <div class="k">Erros & Falhas</div>
+          <div class="v" style="color:var(--red)" id="kpiFailedEmails">0</div>
+          <div class="d">Falhas de envio / rejeição</div>
+        </div>
+        <div class="kpi">
+          <div class="k">E-mails Recebidos (Inbound)</div>
+          <div class="v" style="color:var(--blue)" id="kpiInboundEmails">0</div>
+          <div class="d">Respostas e contatos</div>
+        </div>
+      </div>
+
+      <!-- Barra de Filtros e Busca de E-mails -->
+      <div style="background:#f7f8fa;border-bottom:1px solid var(--line2);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <!-- Filtro de Colaborador -->
+          <div style="display:flex;align-items:center;gap:6px">
+            <label for="emailFilterUser" style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px">Colaborador:</label>
+            <select id="emailFilterUser" class="form-select" onchange="filterEmails()" style="width:220px;padding:4px 8px;font-size:11.5px;margin-bottom:0">
+              <option value="all">Todos os Colaboradores</option>
+            </select>
+          </div>
+
+          <!-- Filtro de Direção -->
+          <div style="display:flex;gap:4px">
+            <button type="button" class="sub-filter-btn active" id="btnDirAll" onclick="setEmailDirection('all')">Todos</button>
+            <button type="button" class="sub-filter-btn" id="btnDirOutbound" onclick="setEmailDirection('outbound')">Enviados (Outbound)</button>
+            <button type="button" class="sub-filter-btn" id="btnDirInbound" onclick="setEmailDirection('inbound')">Recebidos (Inbound)</button>
+          </div>
+
+          <!-- Filtro de Status -->
+          <select id="emailFilterStatus" class="form-select" onchange="filterEmails()" style="width:160px;padding:4px 8px;font-size:11.5px;margin-bottom:0">
+            <option value="all">Todos os Status</option>
+            <option value="opened">Abertos (Confirmado)</option>
+            <option value="sent">Enviados (Não abertos)</option>
+            <option value="failed">Erros / Falhas</option>
+            <option value="simulated">Simulados (Dev)</option>
+            <option value="suspended">Suspensos (Trava)</option>
+          </select>
+        </div>
+
+        <!-- Campo de Busca Rápida -->
+        <div style="display:flex;align-items:center;gap:6px">
+          <input type="text" id="emailSearchInput" class="search-input" placeholder="Buscar por assunto, e-mail ou nome…" oninput="debounceEmailSearch()">
+          <button type="button" class="sub-filter-btn" onclick="clearEmailFilters()" title="Limpar filtros">&times; Limpar</button>
+        </div>
+      </div>
+
+      <!-- Tabela de E-mails -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:14%">Data / Horário</th>
+              <th style="width:10%">Direção</th>
+              <th style="width:20%">Destinatário / Colaborador</th>
+              <th style="width:24%">Assunto</th>
+              <th style="width:12%">Status de Abertura</th>
+              <th style="width:10%">Envio / Entrega</th>
+              <th style="width:10%;text-align:right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="emailsTbody">
+            <tr><td colspan="7" style="text-align:center;color:var(--ink3);padding:24px">Carregando registros de e-mail…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Modal: Gerenciamento de Delegações de Upload -->
@@ -1623,12 +1738,62 @@ tbody tr:hover{background:#f7f9fb}
           </select>
         </div>
         <div class="form-group" style="flex:1">
-          <label class="form-label" for="notifAudience">Público-alvo / Destinatários</label>
-          <select id="notifAudience" class="form-select">
-            <option value="ALL">Todos os Colaboradores (Regional Norte)</option>
+          <label class="form-label" for="notifTargetType">Público-alvo / Segmentação</label>
+          <select id="notifTargetType" class="form-select" onchange="onNotifTargetTypeChange()">
+            <option value="all">Todos os Colaboradores (Regional Norte)</option>
+            <option value="users">Pessoa ou Grupo de Pessoas Específicas</option>
+            <option value="roles">Grupo por Cargo(s) / Função</option>
+            <option value="areas">Grupo por Setor(es) / Área</option>
             <option value="regular">Apenas Colaboradores Comuns (Não-Admins)</option>
             <option value="admin">Apenas Administradores do Sistema</option>
           </select>
+          <input type="hidden" id="notifAudience" value="ALL">
+        </div>
+      </div>
+
+      <!-- Container: Segmentação por Pessoas Específicas -->
+      <div id="notifTargetUsersBox" style="display:none;background:#f8fafc;border:1px solid var(--line2);border-radius:4px;padding:12px 14px;margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px;flex-wrap:wrap">
+          <label class="form-label" style="margin-bottom:0">Selecionar Colaborador(es) Específico(s):</label>
+          <div style="display:flex;align-items:center;gap:6px">
+            <button type="button" class="sub-filter-btn" style="padding:2px 7px;font-size:11px" onclick="selectFilteredNotifUsers(true)">Marcar Visíveis</button>
+            <button type="button" class="sub-filter-btn" style="padding:2px 7px;font-size:11px" onclick="selectFilteredNotifUsers(false)">Desmarcar</button>
+            <span id="notifSelectedUsersBadge" style="font-size:11px;font-weight:700;color:var(--blue);background:#e8f1fd;padding:2px 8px;border-radius:3px">0 selecionado(s)</span>
+          </div>
+        </div>
+        <input type="text" id="notifUsersSearch" class="form-input" placeholder="Filtrar colaboradores por nome, login, cargo ou área…" oninput="filterNotifUsersList(this.value)" style="margin-bottom:8px;font-size:12px;padding:6px 10px">
+        <div id="notifUsersList" style="max-height:180px;overflow-y:auto;border:1px solid var(--line2);background:#fff;border-radius:3px;padding:6px 10px;display:flex;flex-direction:column;gap:4px">
+          <!-- Gerado dinamicamente via JS -->
+        </div>
+      </div>
+
+      <!-- Container: Segmentação por Cargo(s) -->
+      <div id="notifTargetRolesBox" style="display:none;background:#f8fafc;border:1px solid var(--line2);border-radius:4px;padding:12px 14px;margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px;flex-wrap:wrap">
+          <label class="form-label" style="margin-bottom:0">Selecionar Cargo(s) / Função dos Colaboradores:</label>
+          <div style="display:flex;align-items:center;gap:6px">
+            <button type="button" class="sub-filter-btn" style="padding:2px 7px;font-size:11px" onclick="toggleAllNotifRoles(true)">Marcar Todos</button>
+            <button type="button" class="sub-filter-btn" style="padding:2px 7px;font-size:11px" onclick="toggleAllNotifRoles(false)">Desmarcar</button>
+            <span id="notifSelectedRolesBadge" style="font-size:11px;font-weight:700;color:var(--purple);background:#f3e8ff;padding:2px 8px;border-radius:3px">0 cargo(s)</span>
+          </div>
+        </div>
+        <div id="notifRolesList" style="max-height:160px;overflow-y:auto;border:1px solid var(--line2);background:#fff;border-radius:3px;padding:8px 10px;display:grid;grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));gap:6px">
+          <!-- Gerado dinamicamente via JS -->
+        </div>
+      </div>
+
+      <!-- Container: Segmentação por Setor(es) / Área -->
+      <div id="notifTargetAreasBox" style="display:none;background:#f8fafc;border:1px solid var(--line2);border-radius:4px;padding:12px 14px;margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px;flex-wrap:wrap">
+          <label class="form-label" style="margin-bottom:0">Selecionar Setor(es) / Área dos Colaboradores:</label>
+          <div style="display:flex;align-items:center;gap:6px">
+            <button type="button" class="sub-filter-btn" style="padding:2px 7px;font-size:11px" onclick="toggleAllNotifAreas(true)">Marcar Todos</button>
+            <button type="button" class="sub-filter-btn" style="padding:2px 7px;font-size:11px" onclick="toggleAllNotifAreas(false)">Desmarcar</button>
+            <span id="notifSelectedAreasBadge" style="font-size:11px;font-weight:700;color:#c98a15;background:#fef3c7;padding:2px 8px;border-radius:3px">0 setor(es)</span>
+          </div>
+        </div>
+        <div id="notifAreasList" style="max-height:160px;overflow-y:auto;border:1px solid var(--line2);background:#fff;border-radius:3px;padding:8px 10px;display:grid;grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));gap:6px">
+          <!-- Gerado dinamicamente via JS -->
         </div>
       </div>
 
@@ -1664,7 +1829,25 @@ tbody tr:hover{background:#f7f9fb}
         </div>
       </div>
 
-      <div class="checkbox-row" style="margin-top:6px;display:flex;align-items:center;gap:8px">
+      <div class="form-row" style="margin-top:8px;background:#f8fafc;border:1px solid var(--line2);border-radius:4px;padding:10px 12px">
+        <div class="form-group" style="flex:1;margin-bottom:0">
+          <label class="form-label" for="notifPriority" style="margin-bottom:4px">Nível de Prioridade</label>
+          <select id="notifPriority" class="form-select" style="margin-bottom:0" onchange="updateNotifModalPreview()">
+            <option value="normal">Prioridade Normal (Apenas no sino)</option>
+            <option value="alta" selected>Alta Prioridade (Destaque visual)</option>
+            <option value="urgente">Urgente (Aviso crítico)</option>
+          </select>
+        </div>
+        <div class="form-group" style="flex:1;margin-bottom:0;display:flex;flex-direction:column;justify-content:center">
+          <label class="form-label" style="margin-bottom:4px">Exibição Especial</label>
+          <label style="display:flex;align-items:center;gap:7px;margin:0;cursor:pointer;font-size:12px;font-weight:600;color:var(--ink)">
+            <input type="checkbox" id="notifIsPopup" style="width:auto;margin:0" onchange="updateNotifModalPreview()">
+            <span>Exibir como <strong>Popup no 1º logon do dia</strong></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="checkbox-row" style="margin-top:10px;display:flex;align-items:center;gap:8px">
         <input type="checkbox" id="notifActive" checked style="width:auto;margin:0">
         <label for="notifActive" style="margin:0;text-transform:none;font-weight:600;font-size:12px;color:var(--ink)">Notificação ativa imediatamente no sino dos colaboradores</label>
       </div>
@@ -1682,6 +1865,177 @@ tbody tr:hover{background:#f7f9fb}
     <div class="modal-ft">
       <button class="sub-filter-btn modal-close" data-close="modalNotification">Cancelar</button>
       <button id="btnSaveNotification" class="btn-primary" onclick="saveNotification()">Salvar Notificação</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Visualização Detalhada do E-mail & Auditoria de Abertura -->
+<div class="modal" id="modalViewEmail">
+  <div class="modal-box" style="max-width:760px;max-height:90vh;display:flex;flex-direction:column">
+    <div class="modal-hd">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div id="viewEmailDirectionBadge" class="badge">OUTBOUND</div>
+        <h3 id="viewEmailSubjectTitle" style="margin:0;font-size:14px;font-weight:700;max-width:540px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          Detalhes do E-mail
+        </h3>
+      </div>
+      <button class="modal-close" data-close="modalViewEmail">×</button>
+    </div>
+    <div class="modal-bd" style="overflow-y:auto;flex:1;padding:16px 20px">
+      <!-- Painel de Metadados do E-mail -->
+      <div style="background:#f8fafc;border:1px solid var(--line2);border-radius:4px;padding:12px 14px;margin-bottom:14px;font-size:12px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
+          <div>
+            <span style="font-size:10.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;display:block">De (Remetente):</span>
+            <span id="viewEmailFrom" style="font-weight:600;color:var(--ink);word-break:break-all">-</span>
+          </div>
+          <div>
+            <span style="font-size:10.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;display:block">Para (Destinatário):</span>
+            <span id="viewEmailTo" style="font-weight:600;color:var(--ink);word-break:break-all">-</span>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
+          <div>
+            <span style="font-size:10.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;display:block">Colaborador Claro:</span>
+            <span id="viewEmailUser" style="font-weight:600;color:var(--ink)">-</span>
+          </div>
+          <div>
+            <span style="font-size:10.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;display:block">Data / Horário do Disparo:</span>
+            <span id="viewEmailDate" style="font-weight:600;color:var(--ink)">-</span>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;border-top:1px solid var(--line2);padding-top:8px">
+          <div>
+            <span style="font-size:10.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;display:block">Status de Envio:</span>
+            <span id="viewEmailSendStatus" style="font-weight:700">-</span>
+          </div>
+          <div>
+            <span style="font-size:10.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;display:block">Status de Abertura (Tracking Pixel):</span>
+            <span id="viewEmailOpenStatus" style="font-weight:700">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alerta de Erro de Envio (se houver) -->
+      <div id="viewEmailErrorBox" style="display:none;background:#fdece9;border:1px solid #f6c8c2;color:#9b1c1c;padding:10px 14px;border-radius:4px;margin-bottom:14px;font-size:12px">
+        <div style="font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Diagnóstico de Falha de Envio:
+        </div>
+        <div id="viewEmailErrorMsg" style="font-family:Consolas,monospace;font-size:11.5px;word-break:break-all"></div>
+      </div>
+
+      <!-- Abas de Visualização do Conteúdo -->
+      <div style="display:flex;border-bottom:1px solid var(--line2);margin-bottom:12px;gap:4px">
+        <button type="button" class="sub-filter-btn active" id="btnViewEmailTabHtml" onclick="switchEmailViewTab('html')">Visualização Formatada (HTML)</button>
+        <button type="button" class="sub-filter-btn" id="btnViewEmailTabRaw" onclick="switchEmailViewTab('raw')">Texto Puro</button>
+        <button type="button" class="sub-filter-btn" id="btnViewEmailTabMeta" onclick="switchEmailViewTab('meta')">Metadados Técnicos</button>
+      </div>
+
+      <!-- Corpo Formatado HTML -->
+      <div id="viewEmailBodyHtml" style="border:1px solid var(--line);border-radius:4px;background:#ffffff;padding:16px;min-height:220px;max-height:360px;overflow-y:auto"></div>
+
+      <!-- Corpo Texto Puro -->
+      <div id="viewEmailBodyRaw" style="display:none;border:1px solid var(--line);border-radius:4px;background:#f8fafc;padding:14px;font-family:Consolas,monospace;font-size:12px;white-space:pre-wrap;min-height:220px;max-height:360px;overflow-y:auto"></div>
+
+      <!-- Metadados Técnicos -->
+      <div id="viewEmailBodyMeta" style="display:none;border:1px solid var(--line);border-radius:4px;background:#f8fafc;padding:14px;font-size:12px">
+        <div style="margin-bottom:8px"><strong>ID Interno:</strong> <code id="viewEmailMetaId" style="background:#e2e8f0;padding:2px 6px;border-radius:3px"></code></div>
+        <div style="margin-bottom:8px"><strong>Resend Message ID:</strong> <code id="viewEmailMetaResendId" style="background:#e2e8f0;padding:2px 6px;border-radius:3px"></code></div>
+        <div style="margin-bottom:8px"><strong>Qtd. de Aberturas:</strong> <span id="viewEmailMetaOpenCount">0</span> vez(es)</div>
+        <div style="margin-bottom:8px"><strong>Data/Hora 1ª Abertura:</strong> <span id="viewEmailMetaOpenedAt">-</span></div>
+        <div style="margin-bottom:8px"><strong>IP da Abertura:</strong> <code id="viewEmailMetaIp" style="background:#e2e8f0;padding:2px 6px;border-radius:3px">-</code></div>
+        <div><strong>User-Agent da Abertura:</strong> <span id="viewEmailMetaUa" style="color:var(--ink2);word-break:break-all">-</span></div>
+      </div>
+    </div>
+    <div class="modal-ft" style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <button id="btnResendCurrentEmail" class="btn-act danger" style="display:none" onclick="resendCurrentEmail()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Reenviar Este E-mail
+        </button>
+      </div>
+      <button class="sub-filter-btn modal-close" data-close="modalViewEmail">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Disparar E-mail Teste / Comunicado -->
+<div class="modal" id="modalSendTestEmail">
+  <div class="modal-box" style="max-width:560px">
+    <div class="modal-hd">
+      <h3>Disparar E-mail Teste / Comunicado</h3>
+      <button class="modal-close" data-close="modalSendTestEmail">×</button>
+    </div>
+    <div class="modal-bd">
+      <div class="form-group">
+        <label class="form-label" for="sendTestUserSelect">Destinatário (Colaborador Cadastrado)</label>
+        <select id="sendTestUserSelect" class="form-select" onchange="onTestUserSelectChange()">
+          <option value="">Selecione um colaborador da Regional…</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="sendTestEmailInput">Ou Digite um E-mail Direto</label>
+        <input type="email" id="sendTestEmailInput" class="form-input" placeholder="exemplo@claro.com.br">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="sendTestSubjectInput">Assunto da Mensagem</label>
+        <input type="text" id="sendTestSubjectInput" class="form-input" placeholder="[PEP HUB] Atualização dos Painéis Analíticos da Regional Norte">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="sendTestMsgInput">Conteúdo da Mensagem</label>
+        <textarea id="sendTestMsgInput" class="form-textarea" rows="4" placeholder="Escreva o comunicado que será enviado ao colaborador…"></textarea>
+      </div>
+
+      <div style="font-size:11px;color:var(--ink3);line-height:1.4">
+        O e-mail será enviado com a identidade visual oficial da Claro e com o pixel transparente de tracking injetado automaticamente para auditoria de leitura.
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="sub-filter-btn modal-close" data-close="modalSendTestEmail">Cancelar</button>
+      <button id="btnSubmitSendTestEmail" class="btn-primary" onclick="submitSendTestEmail()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Enviar Agora
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Simular E-mail Recebido (Inbound) -->
+<div class="modal" id="modalSimulateInbound">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-hd">
+      <h3>Simular E-mail Recebido (Inbound)</h3>
+      <button class="modal-close" data-close="modalSimulateInbound">×</button>
+    </div>
+    <div class="modal-bd">
+      <div class="form-group">
+        <label class="form-label" for="inboundUserSelect">Remetente (Colaborador)</label>
+        <select id="inboundUserSelect" class="form-select">
+          <option value="">Selecione quem enviou a mensagem…</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inboundSubjectInput">Assunto da Mensagem Recebida</label>
+        <input type="text" id="inboundSubjectInput" class="form-input" value="Dúvida referente ao indicador FPD 60 da Fixa">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="inboundMsgInput">Conteúdo da Mensagem</label>
+        <textarea id="inboundMsgInput" class="form-textarea" rows="3">Gostaria de verificar se a base de FPD 60 de Belém já contempla os fechamentos da última semana.</textarea>
+      </div>
+
+      <div style="font-size:11px;color:var(--ink3)">
+        Permite auditar e testar a exibição de e-mails recebidos na esteira de monitoramento da Regional Norte.
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="sub-filter-btn modal-close" data-close="modalSimulateInbound">Cancelar</button>
+      <button class="btn-primary" onclick="submitSimulateInbound()">Registrar Inbound</button>
     </div>
   </div>
 </div>

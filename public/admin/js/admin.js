@@ -192,6 +192,7 @@ let statsDateFilter = {
 // Navegação de Abas
 const tabUsersBtn = document.getElementById('tabUsersBtn');
 const tabNotificationsBtn = document.getElementById('tabNotificationsBtn');
+const tabEmailsBtn = document.getElementById('tabEmailsBtn');
 const tabStatsBtn = document.getElementById('tabStatsBtn');
 const tabLogsBtn = document.getElementById('tabLogsBtn');
 const tabControlsBtn = document.getElementById('tabControlsBtn');
@@ -201,6 +202,7 @@ const tabRequestsBtn = document.getElementById('tabRequestsBtn');
 
 const sectionUsers = document.getElementById('sectionUsers');
 const sectionNotifications = document.getElementById('sectionNotifications');
+const sectionEmails = document.getElementById('sectionEmails');
 const sectionStats = document.getElementById('sectionStats');
 const sectionLogs = document.getElementById('sectionLogs');
 const sectionControls = document.getElementById('sectionControls');
@@ -216,6 +218,7 @@ const PILLAR_MAPPING = {
   modules: { pillarId: 'pillarTabGovernance', groupId: 'subGroupGovernance' },
   controls: { pillarId: 'pillarTabGovernance', groupId: 'subGroupGovernance' },
   notifications: { pillarId: 'pillarTabOperations', groupId: 'subGroupOperations' },
+  emails: { pillarId: 'pillarTabOperations', groupId: 'subGroupOperations' },
   uploads: { pillarId: 'pillarTabOperations', groupId: 'subGroupOperations' }
 };
 
@@ -223,8 +226,8 @@ function showTab(tab) {
   closeActionMenu();
 
   // Desativa todas as sub-abas e oculta todas as seções
-  [tabUsersBtn, tabRequestsBtn, tabNotificationsBtn, tabStatsBtn, tabLogsBtn, tabControlsBtn, tabModulesBtn, tabUploadsBtn].filter(Boolean).forEach(b => b.classList.remove('active'));
-  [sectionUsers, sectionRequests, sectionNotifications, sectionStats, sectionLogs, sectionControls, sectionModules, sectionUploads].filter(Boolean).forEach(s => s.style.display = 'none');
+  [tabUsersBtn, tabRequestsBtn, tabNotificationsBtn, tabEmailsBtn, tabStatsBtn, tabLogsBtn, tabControlsBtn, tabModulesBtn, tabUploadsBtn].filter(Boolean).forEach(b => b.classList.remove('active'));
+  [sectionUsers, sectionRequests, sectionNotifications, sectionEmails, sectionStats, sectionLogs, sectionControls, sectionModules, sectionUploads].filter(Boolean).forEach(s => s.style.display = 'none');
 
   // Sincroniza Pilar Estratégico e Sub-Grupo Contextual
   const mapping = PILLAR_MAPPING[tab] || PILLAR_MAPPING.users;
@@ -249,6 +252,10 @@ function showTab(tab) {
     if (tabNotificationsBtn) tabNotificationsBtn.classList.add('active');
     if (sectionNotifications) sectionNotifications.style.display = 'block';
     loadAdminNotifications();
+  } else if (tab === 'emails') {
+    if (tabEmailsBtn) tabEmailsBtn.classList.add('active');
+    if (sectionEmails) sectionEmails.style.display = 'block';
+    loadAdminEmails();
   } else if (tab === 'stats') {
     if (tabStatsBtn) tabStatsBtn.classList.add('active');
     sectionStats.style.display = 'block';
@@ -275,6 +282,7 @@ function showTab(tab) {
 
 tabUsersBtn.addEventListener('click', () => showTab('users'));
 if (tabNotificationsBtn) tabNotificationsBtn.addEventListener('click', () => showTab('notifications'));
+if (tabEmailsBtn) tabEmailsBtn.addEventListener('click', () => showTab('emails'));
 tabRequestsBtn.addEventListener('click', () => showTab('requests'));
 tabStatsBtn.addEventListener('click', () => showTab('stats'));
 tabLogsBtn.addEventListener('click', () => showTab('logs'));
@@ -2521,15 +2529,16 @@ function renderAdminNotifications() {
   const total = allAdminNotifications.length;
   const activeCount = allAdminNotifications.filter(n => n.is_active === 1 || n.is_active === true).length;
   const totalReads = allAdminNotifications.reduce((acc, n) => acc + (Number(n.read_count) || 0), 0);
-  const totalDismisses = allAdminNotifications.reduce((acc, n) => acc + (Number(n.dismissed_count) || 0), 0);
+  const totalDismisses = allAdminNotifications.reduce((acc, n) => acc + (Number(n.dismiss_count) || Number(n.dismissed_count) || 0), 0);
 
-  const kpiAct = document.getElementById('kpiNotifActive');
-  const kpiAud = document.getElementById('kpiNotifAudience');
-  const kpiReads = document.getElementById('kpiNotifReads');
-  const kpiDism = document.getElementById('kpiNotifDismisses');
+  // Atualização dos Micro-KPIs de Notificações
+  const kpiTotal = document.getElementById('kpiTotalNotifs') || document.getElementById('kpiNotifAudience');
+  const kpiAct = document.getElementById('kpiActiveNotifs') || document.getElementById('kpiNotifActive');
+  const kpiReads = document.getElementById('kpiReadNotifs') || document.getElementById('kpiNotifReads');
+  const kpiDism = document.getElementById('kpiDismissNotifs') || document.getElementById('kpiNotifDismisses');
 
+  if (kpiTotal) kpiTotal.textContent = total;
   if (kpiAct) kpiAct.textContent = activeCount;
-  if (kpiAud) kpiAud.textContent = total;
   if (kpiReads) kpiReads.textContent = totalReads.toLocaleString('pt-BR');
   if (kpiDism) kpiDism.textContent = totalDismisses.toLocaleString('pt-BR');
 
@@ -2558,7 +2567,42 @@ function renderAdminNotifications() {
       statusBadge = `<span class="badge-mod ativo" style="font-size:10.5px">Ativa</span>`;
     }
 
-    const audLabel = n.audience === 'admin' ? 'Apenas Admins' : (n.audience === 'regular' ? 'Não-Admins' : 'Todos');
+    // Segmentação de Público-alvo
+    let audBadge = '';
+    const tType = String(n.target_type || '').toLowerCase();
+    const rawAud = String(n.target_audience || n.audience || 'ALL').trim();
+
+    if (tType === 'users' || rawAud.startsWith('USERS:')) {
+      let usersList = [];
+      try {
+        const raw = n.target_users || (rawAud.startsWith('USERS:') ? rawAud.substring(6) : '[]');
+        usersList = (typeof raw === 'string' && raw.startsWith('[')) ? JSON.parse(raw) : (typeof raw === 'string' ? raw.split(',').filter(Boolean) : (Array.isArray(raw) ? raw : []));
+      } catch (_) { usersList = []; }
+      const uCount = usersList.length;
+      audBadge = `<span class="badge" style="background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;font-size:10.5px;font-weight:700" title="${usersList.join(', ')}">Pessoas (${uCount})</span>`;
+    } else if (tType === 'roles' || rawAud.startsWith('ROLES:')) {
+      let rolesList = [];
+      try {
+        const raw = n.target_roles || (rawAud.startsWith('ROLES:') ? rawAud.substring(6) : '[]');
+        rolesList = (typeof raw === 'string' && raw.startsWith('[')) ? JSON.parse(raw) : (typeof raw === 'string' ? raw.split(',').filter(Boolean) : (Array.isArray(raw) ? raw : []));
+      } catch (_) { rolesList = []; }
+      const rCount = rolesList.length;
+      audBadge = `<span class="badge" style="background:#f3e8ff;color:#7e22ce;border:1px solid #e9d5ff;font-size:10.5px;font-weight:700" title="${rolesList.join(', ')}">Cargos (${rCount})</span>`;
+    } else if (tType === 'areas' || rawAud.startsWith('AREAS:')) {
+      let areasList = [];
+      try {
+        const raw = n.target_areas || (rawAud.startsWith('AREAS:') ? rawAud.substring(6) : '[]');
+        areasList = (typeof raw === 'string' && raw.startsWith('[')) ? JSON.parse(raw) : (typeof raw === 'string' ? raw.split(',').filter(Boolean) : (Array.isArray(raw) ? raw : []));
+      } catch (_) { areasList = []; }
+      const aCount = areasList.length;
+      audBadge = `<span class="badge" style="background:#fef3c7;color:#b45309;border:1px solid #fde68a;font-size:10.5px;font-weight:700" title="${areasList.join(', ')}">Setores (${aCount})</span>`;
+    } else if (tType === 'admin' || rawAud.toUpperCase() === 'ADMIN') {
+      audBadge = `<span class="badge" style="background:#fee2e2;color:#b91c1c;border:1px solid #fecaca;font-size:10.5px;font-weight:700">Apenas Admins</span>`;
+    } else if (tType === 'regular' || rawAud.toUpperCase() === 'REGULAR') {
+      audBadge = `<span class="badge" style="background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;font-size:10.5px;font-weight:700">Não-Admins</span>`;
+    } else {
+      audBadge = `<span class="badge" style="background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;font-size:10.5px;font-weight:700">Todos (Regional)</span>`;
+    }
 
     const vigencia = [];
     if (n.starts_at) {
@@ -2569,6 +2613,17 @@ function renderAdminNotifications() {
     }
     const vigenciaStr = vigencia.length > 0 ? vigencia.join('<br>') : '<span style="color:var(--ink3)">Sem expiração</span>';
 
+    let priorityBadge = '';
+    if (n.priority === 'urgente') {
+      priorityBadge = `<span style="display:inline-block;padding:2px 5px;border-radius:2px;font-size:9px;font-weight:800;background:#c0392b;color:#fff;margin-top:2px">URGENTE</span>`;
+    } else if (n.priority === 'alta') {
+      priorityBadge = `<span style="display:inline-block;padding:2px 5px;border-radius:2px;font-size:9px;font-weight:800;background:#d97706;color:#fff;margin-top:2px">ALTA PRIORIDADE</span>`;
+    }
+
+    const popupBadge = (n.is_popup === 1 || n.is_popup === true) 
+      ? `<span style="display:inline-block;padding:2px 5px;border-radius:2px;font-size:9px;font-weight:800;background:#1c2430;color:#f9b233;border:1px solid rgba(249,178,51,.55);margin-top:2px">POPUP 1º LOGON</span>` 
+      : '';
+
     const safeTitle = (n.title || '').replace(/"/g, '&quot;');
 
     return `
@@ -2577,6 +2632,8 @@ function renderAdminNotifications() {
           <span style="display:inline-block;padding:3px 8px;border-radius:3px;font-size:10.5px;font-weight:700;background:${typeCfg.bg};color:${typeCfg.color};border:1px solid ${typeCfg.border}">
             ${typeCfg.label}
           </span>
+          ${priorityBadge ? `<div>${priorityBadge}</div>` : ''}
+          ${popupBadge ? `<div>${popupBadge}</div>` : ''}
         </td>
         <td>
           <div style="font-weight:700;color:var(--ink);font-size:12px;margin-bottom:2px">${escapeHtml(n.title)}</div>
@@ -2586,17 +2643,17 @@ function renderAdminNotifications() {
           ${n.action_url ? `<div style="font-size:10.5px;color:var(--blue);margin-top:3px">↳ Destino: <a href="${escapeHtml(n.action_url)}" target="_blank" style="color:var(--blue);text-decoration:underline">${escapeHtml(n.action_label || n.action_url)}</a></div>` : ''}
         </td>
         <td>
-          <span style="font-size:11px;font-weight:600;color:var(--ink)">${audLabel}</span>
+          ${audBadge}
         </td>
         <td style="font-size:10.5px;color:var(--ink2);line-height:1.3">
           ${vigenciaStr}
         </td>
         <td>
-          <div style="font-size:11px;font-weight:600;color:var(--ink)">
-            <span style="color:#2f7d5d">👁️ ${n.read_count || 0}</span> lidas
+          <div style="font-size:11px;font-weight:600;color:var(--green)">
+            ${n.read_count || 0} lidas
           </div>
           <div style="font-size:10.5px;color:var(--ink3);margin-top:1px">
-            ✖ ${n.dismissed_count || 0} dispensadas
+            ${Number(n.dismiss_count || n.dismissed_count || 0)} dispensadas
           </div>
         </td>
         <td>
@@ -2620,13 +2677,172 @@ function renderAdminNotifications() {
   }).join('');
 }
 
-function openNotificationModal(presetKey = null, notifId = null) {
+// -----------------------------------------------------------------------------
+// Funções de Segmentação Granular (Pessoas, Cargos, Setores)
+// -----------------------------------------------------------------------------
+function onNotifTargetTypeChange() {
+  const type = document.getElementById('notifTargetType')?.value || 'all';
+  const usersBox = document.getElementById('notifTargetUsersBox');
+  const rolesBox = document.getElementById('notifTargetRolesBox');
+  const areasBox = document.getElementById('notifTargetAreasBox');
+  
+  if (usersBox) usersBox.style.display = type === 'users' ? 'block' : 'none';
+  if (rolesBox) rolesBox.style.display = type === 'roles' ? 'block' : 'none';
+  if (areasBox) areasBox.style.display = type === 'areas' ? 'block' : 'none';
+
+  populateNotifTargetOptions();
+  updateNotifTargetBadges();
+  updateNotifModalPreview();
+}
+
+let _notifTargetOptionsPopulated = false;
+async function populateNotifTargetOptions(forceReload = false) {
+  if (_notifTargetOptionsPopulated && !forceReload) return;
+
+  if (!allUsers || allUsers.length === 0) {
+    try {
+      const res = await fetch('/api/admin/users');
+      if (res.ok) {
+        const uData = await res.json();
+        allUsers = Array.isArray(uData) ? uData : (uData.users || []);
+      }
+    } catch (_) {}
+  }
+
+  const approvedUsers = (allUsers || []).filter(u => u.status === 'aprovado' || !u.status || u.status === 'ativo');
+
+  // 1. Popula lista de usuários
+  const usersListEl = document.getElementById('notifUsersList');
+  if (usersListEl) {
+    if (approvedUsers.length === 0) {
+      usersListEl.innerHTML = `<div style="font-size:11.5px;color:var(--ink3);padding:8px">Nenhum colaborador aprovado encontrado.</div>`;
+    } else {
+      usersListEl.innerHTML = approvedUsers.map(u => `
+        <label class="notif-user-item" data-search="${escapeHtml(((u.nome_completo||'') + ' ' + (u.login_claro||'') + ' ' + (u.email_claro||'') + ' ' + (u.area||'') + ' ' + (u.funcao||'')).toLowerCase())}" style="display:flex;align-items:center;justify-content:space-between;padding:5px 8px;border-radius:3px;cursor:pointer;border-bottom:1px solid #f1f5f9;font-size:11.5px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" class="chk-notif-user" value="${u.id}" onchange="updateNotifTargetBadges();updateNotifModalPreview();" style="margin:0;width:auto">
+            <div>
+              <strong style="color:var(--ink)">${escapeHtml(u.nome_completo || u.login_claro)}</strong>
+              <span style="font-size:10.5px;color:var(--ink3);margin-left:4px">(${escapeHtml(u.login_claro || u.email_claro || '-')})</span>
+            </div>
+          </div>
+          <div style="font-size:10.5px;color:var(--ink2)">
+            ${escapeHtml(u.area || 'Sem Área')} · ${escapeHtml(u.funcao || 'Colaborador')}
+          </div>
+        </label>
+      `).join('');
+    }
+  }
+
+  // 2. Popula lista de Cargos / Funções
+  const rolesListEl = document.getElementById('notifRolesList');
+  if (rolesListEl) {
+    const roleCounts = {};
+    approvedUsers.forEach(u => {
+      const r = String(u.funcao || '').trim();
+      if (r) roleCounts[r] = (roleCounts[r] || 0) + 1;
+    });
+    const sortedRoles = Object.keys(roleCounts).sort((a,b) => a.localeCompare(b, 'pt-BR'));
+    if (sortedRoles.length === 0) {
+      rolesListEl.innerHTML = `<div style="font-size:11.5px;color:var(--ink3);padding:8px">Nenhum cargo cadastrado.</div>`;
+    } else {
+      rolesListEl.innerHTML = sortedRoles.map(r => `
+        <label style="display:flex;align-items:center;gap:7px;padding:4px 6px;background:#f8fafc;border:1px solid var(--line2);border-radius:3px;cursor:pointer;font-size:11.5px">
+          <input type="checkbox" class="chk-notif-role" value="${escapeHtml(r)}" onchange="updateNotifTargetBadges();updateNotifModalPreview();" style="margin:0;width:auto">
+          <span style="color:var(--ink);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(r)}</span>
+          <span style="font-size:10px;font-weight:700;color:var(--purple);background:#f3e8ff;padding:1px 5px;border-radius:10px">${roleCounts[r]}</span>
+        </label>
+      `).join('');
+    }
+  }
+
+  // 3. Popula lista de Setores / Áreas
+  const areasListEl = document.getElementById('notifAreasList');
+  if (areasListEl) {
+    const areaCounts = {};
+    approvedUsers.forEach(u => {
+      const a = String(u.area || '').trim();
+      if (a) areaCounts[a] = (areaCounts[a] || 0) + 1;
+    });
+    const sortedAreas = Object.keys(areaCounts).sort((a,b) => a.localeCompare(b, 'pt-BR'));
+    if (sortedAreas.length === 0) {
+      areasListEl.innerHTML = `<div style="font-size:11.5px;color:var(--ink3);padding:8px">Nenhum setor cadastrado.</div>`;
+    } else {
+      areasListEl.innerHTML = sortedAreas.map(a => `
+        <label style="display:flex;align-items:center;gap:7px;padding:4px 6px;background:#f8fafc;border:1px solid var(--line2);border-radius:3px;cursor:pointer;font-size:11.5px">
+          <input type="checkbox" class="chk-notif-area" value="${escapeHtml(a)}" onchange="updateNotifTargetBadges();updateNotifModalPreview();" style="margin:0;width:auto">
+          <span style="color:var(--ink);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(a)}</span>
+          <span style="font-size:10px;font-weight:700;color:#c98a15;background:#fef3c7;padding:1px 5px;border-radius:10px">${areaCounts[a]}</span>
+        </label>
+      `).join('');
+    }
+  }
+
+  _notifTargetOptionsPopulated = true;
+}
+
+function filterNotifUsersList(query) {
+  const q = String(query || '').trim().toLowerCase();
+  const items = document.querySelectorAll('.notif-user-item');
+  items.forEach(el => {
+    const searchTxt = el.getAttribute('data-search') || '';
+    el.style.display = (!q || searchTxt.includes(q)) ? 'flex' : 'none';
+  });
+}
+
+function selectFilteredNotifUsers(select) {
+  const items = document.querySelectorAll('.notif-user-item');
+  items.forEach(el => {
+    if (el.style.display !== 'none') {
+      const chk = el.querySelector('.chk-notif-user');
+      if (chk) chk.checked = Boolean(select);
+    }
+  });
+  updateNotifTargetBadges();
+  updateNotifModalPreview();
+}
+
+function toggleAllNotifRoles(select) {
+  document.querySelectorAll('.chk-notif-role').forEach(c => c.checked = Boolean(select));
+  updateNotifTargetBadges();
+  updateNotifModalPreview();
+}
+
+function toggleAllNotifAreas(select) {
+  document.querySelectorAll('.chk-notif-area').forEach(c => c.checked = Boolean(select));
+  updateNotifTargetBadges();
+  updateNotifModalPreview();
+}
+
+function updateNotifTargetBadges() {
+  const uChecked = document.querySelectorAll('.chk-notif-user:checked').length;
+  const rChecked = document.querySelectorAll('.chk-notif-role:checked').length;
+  const aChecked = document.querySelectorAll('.chk-notif-area:checked').length;
+
+  const uBadge = document.getElementById('notifSelectedUsersBadge');
+  if (uBadge) uBadge.textContent = `${uChecked} selecionado(s)`;
+
+  const rBadge = document.getElementById('notifSelectedRolesBadge');
+  if (rBadge) rBadge.textContent = `${rChecked} cargo(s)`;
+
+  const aBadge = document.getElementById('notifSelectedAreasBadge');
+  if (aBadge) aBadge.textContent = `${aChecked} setor(es)`;
+}
+
+async function openNotificationModal(presetKey = null, notifId = null) {
   const modal = document.getElementById('modalNotification');
   if (!modal) return;
+
+  await populateNotifTargetOptions();
 
   const titleEl = document.getElementById('modalNotificationTitle');
   const notifIdInput = document.getElementById('notifId');
   const presetSelect = document.getElementById('notifPreset');
+
+  // Limpa checkboxes antes de restaurar
+  document.querySelectorAll('.chk-notif-user').forEach(c => c.checked = false);
+  document.querySelectorAll('.chk-notif-role').forEach(c => c.checked = false);
+  document.querySelectorAll('.chk-notif-area').forEach(c => c.checked = false);
 
   if (notifId) {
     const notif = allAdminNotifications.find(n => n.id === notifId);
@@ -2637,7 +2853,56 @@ function openNotificationModal(presetKey = null, notifId = null) {
     if (presetSelect) presetSelect.value = 'custom';
 
     document.getElementById('notifType').value = notif.type || 'info';
-    document.getElementById('notifAudience').value = notif.audience || 'ALL';
+
+    // Determina target_type
+    let tType = String(notif.target_type || '').toLowerCase();
+    const rawAud = String(notif.target_audience || notif.audience || 'ALL').trim();
+    if (!tType || tType === 'undefined') {
+      if (rawAud.toUpperCase() === 'ADMIN') tType = 'admin';
+      else if (rawAud.toUpperCase() === 'REGULAR') tType = 'regular';
+      else if (rawAud.startsWith('USERS:')) tType = 'users';
+      else if (rawAud.startsWith('ROLES:')) tType = 'roles';
+      else if (rawAud.startsWith('AREAS:')) tType = 'areas';
+      else tType = 'all';
+    }
+    const targetTypeSelect = document.getElementById('notifTargetType');
+    if (targetTypeSelect) targetTypeSelect.value = tType;
+
+    // Restaura seleções
+    if (tType === 'users') {
+      let uList = [];
+      try {
+        const raw = notif.target_users || (rawAud.startsWith('USERS:') ? rawAud.substring(6) : '[]');
+        uList = (typeof raw === 'string' && raw.startsWith('[')) ? JSON.parse(raw) : (typeof raw === 'string' ? raw.split(',').filter(Boolean) : (Array.isArray(raw) ? raw : []));
+      } catch (_) {}
+      const cleanList = uList.map(u => String(u).trim().toLowerCase());
+      document.querySelectorAll('.chk-notif-user').forEach(c => {
+        if (cleanList.includes(c.value.toLowerCase())) c.checked = true;
+      });
+    } else if (tType === 'roles') {
+      let rList = [];
+      try {
+        const raw = notif.target_roles || (rawAud.startsWith('ROLES:') ? rawAud.substring(6) : '[]');
+        rList = (typeof raw === 'string' && raw.startsWith('[')) ? JSON.parse(raw) : (typeof raw === 'string' ? raw.split(',').filter(Boolean) : (Array.isArray(raw) ? raw : []));
+      } catch (_) {}
+      const cleanRoles = rList.map(r => String(r).trim().toUpperCase());
+      document.querySelectorAll('.chk-notif-role').forEach(c => {
+        if (cleanRoles.includes(c.value.toUpperCase())) c.checked = true;
+      });
+    } else if (tType === 'areas') {
+      let aList = [];
+      try {
+        const raw = notif.target_areas || (rawAud.startsWith('AREAS:') ? rawAud.substring(6) : '[]');
+        aList = (typeof raw === 'string' && raw.startsWith('[')) ? JSON.parse(raw) : (typeof raw === 'string' ? raw.split(',').filter(Boolean) : (Array.isArray(raw) ? raw : []));
+      } catch (_) {}
+      const cleanAreas = aList.map(a => String(a).trim().toUpperCase());
+      document.querySelectorAll('.chk-notif-area').forEach(c => {
+        if (cleanAreas.includes(c.value.toUpperCase())) c.checked = true;
+      });
+    }
+
+    document.getElementById('notifPriority').value = notif.priority || 'normal';
+    document.getElementById('notifIsPopup').checked = notif.is_popup === 1 || notif.is_popup === true;
     document.getElementById('notifTitle').value = notif.title || '';
     document.getElementById('notifMessage').value = notif.message || '';
     document.getElementById('notifActionUrl').value = notif.action_url || '';
@@ -2653,7 +2918,9 @@ function openNotificationModal(presetKey = null, notifId = null) {
     
     // Resetar campos
     document.getElementById('notifType').value = 'info';
-    document.getElementById('notifAudience').value = 'ALL';
+    if (document.getElementById('notifTargetType')) document.getElementById('notifTargetType').value = 'all';
+    document.getElementById('notifPriority').value = 'alta';
+    document.getElementById('notifIsPopup').checked = false;
     document.getElementById('notifTitle').value = '';
     document.getElementById('notifMessage').value = '';
     document.getElementById('notifActionUrl').value = '';
@@ -2670,7 +2937,7 @@ function openNotificationModal(presetKey = null, notifId = null) {
     }
   }
 
-  updateNotifModalPreview();
+  onNotifTargetTypeChange();
   modal.classList.add('on');
 }
 
@@ -2680,11 +2947,18 @@ function applyNotificationPreset(presetKey) {
   if (!p) return;
 
   if (p.type) document.getElementById('notifType').value = p.type;
-  if (p.audience) document.getElementById('notifAudience').value = p.audience;
   if (p.title) document.getElementById('notifTitle').value = p.title;
   if (p.message) document.getElementById('notifMessage').value = p.message;
   if (p.action_url !== undefined) document.getElementById('notifActionUrl').value = p.action_url;
   if (p.action_label !== undefined) document.getElementById('notifActionLabel').value = p.action_label;
+
+  if (presetKey === 'first_login') {
+    document.getElementById('notifPriority').value = 'alta';
+    document.getElementById('notifIsPopup').checked = true;
+  } else if (presetKey === 'password_change') {
+    document.getElementById('notifPriority').value = 'urgente';
+    document.getElementById('notifIsPopup').checked = true;
+  }
 
   updateNotifModalPreview();
 }
@@ -2694,20 +2968,46 @@ function updateNotifModalPreview() {
   if (!box) return;
 
   const type = document.getElementById('notifType').value || 'info';
+  const targetType = document.getElementById('notifTargetType')?.value || 'all';
+  const priority = document.getElementById('notifPriority')?.value || 'normal';
+  const isPopup = document.getElementById('notifIsPopup')?.checked;
   const title = document.getElementById('notifTitle').value.trim() || 'Título da Notificação';
-  const msg = document.getElementById('notifMessage').value.trim() || 'Texto explicativo ou comunicado direcionado ao colaborador…';
+  const msg = document.getElementById('notifMessage').value.trim() || 'Texto explicativo ou comunicado direcionado aos colaboradores…';
   const actionUrl = document.getElementById('notifActionUrl').value.trim();
   const actionLabel = document.getElementById('notifActionLabel').value.trim() || 'Acessar Link';
 
   const typeCfg = NOTIF_TYPE_CONFIG[type] || NOTIF_TYPE_CONFIG.info;
 
+  let audPreviewText = 'Destinado a: Todos os Colaboradores (Regional Norte)';
+  if (targetType === 'users') {
+    const count = document.querySelectorAll('.chk-notif-user:checked').length;
+    audPreviewText = `Destinado a: ${count} Colaborador(es) selecionado(s)`;
+  } else if (targetType === 'roles') {
+    const count = document.querySelectorAll('.chk-notif-role:checked').length;
+    audPreviewText = `Destinado a: ${count} Cargo(s) selecionado(s)`;
+  } else if (targetType === 'areas') {
+    const count = document.querySelectorAll('.chk-notif-area:checked').length;
+    audPreviewText = `Destinado a: ${count} Setor(es) selecionado(s)`;
+  } else if (targetType === 'admin') {
+    audPreviewText = 'Destinado a: Apenas Administradores do Sistema';
+  } else if (targetType === 'regular') {
+    audPreviewText = 'Destinado a: Apenas Colaboradores Comuns (Não-Admins)';
+  }
+
   box.innerHTML = `
     <div style="background:#fff;border:1px solid #dfe3e8;border-left:4px solid ${typeCfg.color};border-radius:4px;padding:12px;position:relative">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px">
-        <span style="font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 6px;border-radius:2px;background:${typeCfg.bg};color:${typeCfg.color};border:1px solid ${typeCfg.border}">
-          ${typeCfg.label}
-        </span>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 6px;border-radius:2px;background:${typeCfg.bg};color:${typeCfg.color};border:1px solid ${typeCfg.border}">
+            ${typeCfg.label}
+          </span>
+          ${priority === 'urgente' ? '<span style="font-size:9.5px;font-weight:800;background:#c0392b;color:#fff;padding:1px 5px;border-radius:2px">URGENTE</span>' : (priority === 'alta' ? '<span style="font-size:9.5px;font-weight:800;background:#d97706;color:#fff;padding:1px 5px;border-radius:2px">ALTA PRIORIDADE</span>' : '')}
+          ${isPopup ? '<span style="font-size:9.5px;font-weight:800;background:#1c2430;color:#f9b233;padding:1px 5px;border-radius:2px;border:1px solid rgba(249,178,51,.5)">POPUP 1º LOGON</span>' : ''}
+        </div>
         <span style="font-size:10px;color:var(--ink3)">Agora mesmo</span>
+      </div>
+      <div style="font-size:11px;font-weight:600;color:var(--blue);margin-bottom:6px">
+        ${escapeHtml(audPreviewText)}
       </div>
       <div style="font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px">
         ${escapeHtml(title)}
@@ -2729,7 +3029,9 @@ function updateNotifModalPreview() {
 async function saveNotification() {
   const id = document.getElementById('notifId').value.trim();
   const type = document.getElementById('notifType').value;
-  const audience = document.getElementById('notifAudience').value;
+  const targetType = document.getElementById('notifTargetType')?.value || 'all';
+  const priority = document.getElementById('notifPriority')?.value || 'normal';
+  const is_popup = document.getElementById('notifIsPopup')?.checked ? 1 : 0;
   const title = document.getElementById('notifTitle').value.trim();
   const message = document.getElementById('notifMessage').value.trim();
   const action_url = document.getElementById('notifActionUrl').value.trim() || null;
@@ -2749,9 +3051,41 @@ async function saveNotification() {
     return;
   }
 
+  let targetUsers = null;
+  let targetRoles = null;
+  let targetAreas = null;
+
+  if (targetType === 'users') {
+    const selected = Array.from(document.querySelectorAll('.chk-notif-user:checked')).map(c => c.value);
+    if (selected.length === 0) {
+      showToast('Selecione ao menos um colaborador específico como destinatário.', 'error');
+      return;
+    }
+    targetUsers = selected;
+  } else if (targetType === 'roles') {
+    const selected = Array.from(document.querySelectorAll('.chk-notif-role:checked')).map(c => c.value);
+    if (selected.length === 0) {
+      showToast('Selecione ao menos um cargo destinatário.', 'error');
+      return;
+    }
+    targetRoles = selected;
+  } else if (targetType === 'areas') {
+    const selected = Array.from(document.querySelectorAll('.chk-notif-area:checked')).map(c => c.value);
+    if (selected.length === 0) {
+      showToast('Selecione ao menos um setor destinatário.', 'error');
+      return;
+    }
+    targetAreas = selected;
+  }
+
   const payload = {
     type,
-    audience,
+    target_type: targetType,
+    target_users: targetUsers,
+    target_roles: targetRoles,
+    target_areas: targetAreas,
+    priority,
+    is_popup,
     title,
     message,
     action_url,
@@ -2822,6 +3156,483 @@ async function deleteNotification(id, title) {
   }
 }
 
+// ==========================================
+// MÓDULO 8: CONTROLE E RASTREAMENTO DE E-MAILS
+// ==========================================
+let allAdminEmails = [];
+let emailFilterState = {
+  userId: 'all',
+  direction: 'all',
+  status: 'all',
+  search: ''
+};
+let currentViewingEmail = null;
+let emailSearchTimeout = null;
+
+async function loadAdminEmails() {
+  const tbody = document.getElementById('emailsTbody');
+  if (tbody) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--ink3);padding:24px">Carregando registros de e-mail…</td></tr>`;
+  }
+
+  try {
+    const params = new URLSearchParams();
+    if (emailFilterState.userId && emailFilterState.userId !== 'all') params.set('user_id', emailFilterState.userId);
+    if (emailFilterState.direction && emailFilterState.direction !== 'all') params.set('direction', emailFilterState.direction);
+    if (emailFilterState.status && emailFilterState.status !== 'all') params.set('status', emailFilterState.status);
+    if (emailFilterState.search && emailFilterState.search.trim()) params.set('search', emailFilterState.search.trim());
+    params.set('limit', '100');
+
+    const res = await fetch(`/api/admin/emails?${params.toString()}`);
+    if (!res.ok) {
+      if (tbody) tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--red);padding:24px">Falha ao consultar e-mails no servidor.</td></tr>`;
+      return;
+    }
+
+    const data = await res.json();
+    allAdminEmails = data.emails || [];
+
+    // Atualiza KPIs
+    const stats = data.stats || {};
+    const kpiTot = document.getElementById('kpiTotalEmails');
+    const kpiOp = document.getElementById('kpiOpenedEmails');
+    const kpiRate = document.getElementById('kpiOpenRatePct');
+    const kpiFail = document.getElementById('kpiFailedEmails');
+    const kpiIn = document.getElementById('kpiInboundEmails');
+    const tabCount = document.getElementById('totalEmailsCount');
+
+    if (kpiTot) kpiTot.textContent = Number(stats.total_outbound || 0).toLocaleString('pt-BR');
+    if (kpiOp) kpiOp.textContent = Number(stats.total_opened || 0).toLocaleString('pt-BR');
+    if (kpiRate) kpiRate.textContent = `${stats.open_rate_pct || 0}%`;
+    if (kpiFail) kpiFail.textContent = Number(stats.total_failed || 0).toLocaleString('pt-BR');
+    if (kpiIn) kpiIn.textContent = Number(stats.total_inbound || 0).toLocaleString('pt-BR');
+    if (tabCount) tabCount.textContent = (stats.total || 0).toLocaleString('pt-BR');
+
+    // Popula dropdown de colaboradores se ainda vazio
+    if (data.users && Array.isArray(data.users)) {
+      populateEmailUsersSelects(data.users);
+    }
+
+    renderAdminEmails();
+  } catch (err) {
+    console.error('Erro loadAdminEmails:', err);
+    if (tbody) tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--red);padding:24px">Erro de comunicação com o servidor ao carregar e-mails.</td></tr>`;
+  }
+}
+
+function populateEmailUsersSelects(users) {
+  const selFilter = document.getElementById('emailFilterUser');
+  const selTest = document.getElementById('sendTestUserSelect');
+  const selInbound = document.getElementById('inboundUserSelect');
+
+  const curFilter = selFilter ? selFilter.value : 'all';
+  const curTest = selTest ? selTest.value : '';
+  const curInbound = selInbound ? selInbound.value : '';
+
+  const optsHtml = users.map(u => `<option value="${u.id}">${escapeHtml(u.nome_completo || u.login_claro)} (${escapeHtml(u.email_claro || 'sem e-mail')})</option>`).join('');
+
+  if (selFilter && selFilter.options.length <= 1) {
+    selFilter.innerHTML = `<option value="all">Todos os Colaboradores</option>` + optsHtml;
+    selFilter.value = curFilter;
+  }
+  if (selTest && selTest.options.length <= 1) {
+    selTest.innerHTML = `<option value="">Selecione um colaborador da Regional…</option>` + optsHtml;
+    selTest.value = curTest;
+  }
+  if (selInbound && selInbound.options.length <= 1) {
+    selInbound.innerHTML = `<option value="">Selecione quem enviou a mensagem…</option>` + optsHtml;
+    selInbound.value = curInbound;
+  }
+}
+
+function renderAdminEmails() {
+  const tbody = document.getElementById('emailsTbody');
+  if (!tbody) return;
+
+  if (allAdminEmails.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--ink3);padding:32px">Nenhum registro de e-mail encontrado para os filtros selecionados.<br><span style="font-size:11px">Utilize o botão "Disparar E-mail Teste / Comunicado" para enviar um e-mail de teste.</span></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = allAdminEmails.map(em => {
+    const isOutbound = em.direction === 'outbound';
+    const isOpened = em.status === 'opened';
+    const isFailed = em.status === 'failed';
+    const isSimulated = em.status === 'simulated';
+    const isSuspended = em.status === 'suspended';
+
+    // Badge de Direção
+    const dirBadge = isOutbound
+      ? `<span class="badge" style="background:#e8f0fe;color:#1a73e8;border:1px solid #c8dafc">Enviado</span>`
+      : `<span class="badge" style="background:#f3e8fd;color:#7627bb;border:1px solid #e1bee7">Recebido</span>`;
+
+    // Status de Abertura
+    let openStatusHtml = '';
+    if (!isOutbound) {
+      openStatusHtml = `<span style="color:var(--ink3);font-size:11px">Inbound (N/A)</span>`;
+    } else if (isOpened) {
+      const openDate = em.opened_at ? new Date(em.opened_at).toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : 'Confirmado';
+      openStatusHtml = `
+        <span class="badge" style="background:#eaf2ec;color:#1e5837;border:1px solid #c3e2cb;display:inline-flex;align-items:center;gap:4px">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          Aberto (${openDate})
+        </span>
+      `;
+    } else {
+      openStatusHtml = `<span class="badge" style="background:#f1f3f4;color:#5f6368;border:1px solid #dadce0">Não aberto</span>`;
+    }
+
+    // Status de Entrega / Envio
+    let sendStatusHtml = '';
+    if (isFailed) {
+      sendStatusHtml = `
+        <span class="badge" style="background:#fdece9;color:#9b1c1c;border:1px solid #f6c8c2;display:inline-flex;align-items:center;gap:4px" title="${escapeHtml(em.error_message || 'Erro de envio')}">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg>
+          Falha no Envio
+        </span>
+      `;
+    } else if (isSimulated) {
+      sendStatusHtml = `<span class="badge" style="background:#fff8e1;color:#b78103;border:1px solid #ffe082">Simulado</span>`;
+    } else if (isSuspended) {
+      sendStatusHtml = `<span class="badge" style="background:#fdf3e2;color:#8a5d06;border:1px solid #f0dcb4">Suspenso</span>`;
+    } else if (em.direction === 'inbound') {
+      sendStatusHtml = `<span class="badge" style="background:#e8f0fe;color:#1a73e8;border:1px solid #c8dafc">Recebido</span>`;
+    } else {
+      sendStatusHtml = `<span class="badge" style="background:#eaf2ec;color:#235c44;border:1px solid #c9dfd2">Entregue</span>`;
+    }
+
+    // Formatação de data
+    const dateFormatted = em.created_at
+      ? new Date(em.created_at).toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
+      : '-';
+
+    const partyEmail = isOutbound ? em.to_address : em.from_address;
+    const userNameDisplay = em.user_name || 'Colaborador';
+
+    return `
+      <tr>
+        <td style="font-size:11.5px;color:var(--ink2)">
+          ${dateFormatted}
+        </td>
+        <td>
+          ${dirBadge}
+        </td>
+        <td>
+          <div style="font-weight:700;color:var(--ink);font-size:12px">${escapeHtml(userNameDisplay)}</div>
+          <div style="font-size:11px;color:var(--ink2);word-break:break-all">${escapeHtml(partyEmail)}</div>
+        </td>
+        <td>
+          <div style="font-weight:600;color:var(--ink);font-size:12px;line-height:1.35;max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escapeHtml(em.subject)}">
+            ${escapeHtml(em.subject)}
+          </div>
+        </td>
+        <td>
+          ${openStatusHtml}
+        </td>
+        <td>
+          ${sendStatusHtml}
+        </td>
+        <td style="text-align:right">
+          <div class="actions-cell">
+            <button class="btn-act primary" onclick="openViewEmailModal('${em.id}')" title="Visualizar conteúdo original e diagnóstico">
+              Ver Conteúdo
+            </button>
+            ${isFailed ? `
+              <button class="btn-act danger" onclick="resendEmailDirect('${em.id}')" title="Tentar reenviar este e-mail">
+                Reenviar
+              </button>
+            ` : ''}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function setEmailDirection(dir) {
+  emailFilterState.direction = dir;
+  ['btnDirAll', 'btnDirOutbound', 'btnDirInbound'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.classList.remove('active');
+  });
+  if (dir === 'all') document.getElementById('btnDirAll')?.classList.add('active');
+  if (dir === 'outbound') document.getElementById('btnDirOutbound')?.classList.add('active');
+  if (dir === 'inbound') document.getElementById('btnDirInbound')?.classList.add('active');
+  loadAdminEmails();
+}
+
+function filterEmails() {
+  const selUser = document.getElementById('emailFilterUser');
+  const selStatus = document.getElementById('emailFilterStatus');
+  if (selUser) emailFilterState.userId = selUser.value;
+  if (selStatus) emailFilterState.status = selStatus.value;
+  loadAdminEmails();
+}
+
+function debounceEmailSearch() {
+  clearTimeout(emailSearchTimeout);
+  emailSearchTimeout = setTimeout(() => {
+    const input = document.getElementById('emailSearchInput');
+    if (input) {
+      emailFilterState.search = input.value;
+      loadAdminEmails();
+    }
+  }, 300);
+}
+
+function clearEmailFilters() {
+  emailFilterState = {
+    userId: 'all',
+    direction: 'all',
+    status: 'all',
+    search: ''
+  };
+  const selUser = document.getElementById('emailFilterUser');
+  const selStatus = document.getElementById('emailFilterStatus');
+  const inputSearch = document.getElementById('emailSearchInput');
+  if (selUser) selUser.value = 'all';
+  if (selStatus) selStatus.value = 'all';
+  if (inputSearch) inputSearch.value = '';
+  setEmailDirection('all');
+}
+
+async function openViewEmailModal(id) {
+  const modal = document.getElementById('modalViewEmail');
+  if (!modal) return;
+
+  try {
+    const res = await fetch(`/api/admin/emails/${id}`);
+    if (!res.ok) {
+      showToast('Falha ao carregar conteúdo do e-mail.', 'error');
+      return;
+    }
+    const data = await res.json();
+    currentViewingEmail = data.email;
+    if (!currentViewingEmail) return;
+
+    // Popula cabeçalho e metadados
+    const isOut = currentViewingEmail.direction === 'outbound';
+    document.getElementById('viewEmailDirectionBadge').textContent = isOut ? 'OUTBOUND (ENVIADO)' : 'INBOUND (RECEBIDO)';
+    document.getElementById('viewEmailDirectionBadge').className = `badge ${isOut ? 'admin' : 'colab'}`;
+    document.getElementById('viewEmailSubjectTitle').textContent = currentViewingEmail.subject || 'Sem assunto';
+
+    document.getElementById('viewEmailFrom').textContent = currentViewingEmail.from_address || '-';
+    document.getElementById('viewEmailTo').textContent = currentViewingEmail.to_address || '-';
+    document.getElementById('viewEmailUser').textContent = currentViewingEmail.user_name ? `${currentViewingEmail.user_name} (${currentViewingEmail.user_email || ''})` : 'Não associado';
+    document.getElementById('viewEmailDate').textContent = currentViewingEmail.created_at ? new Date(currentViewingEmail.created_at).toLocaleString('pt-BR') : '-';
+
+    // Status de envio
+    const elSendStatus = document.getElementById('viewEmailSendStatus');
+    if (currentViewingEmail.status === 'failed') {
+      elSendStatus.innerHTML = '<span style="color:#c0392b">Falha de Envio</span>';
+    } else if (currentViewingEmail.status === 'opened') {
+      elSendStatus.innerHTML = '<span style="color:#2f7d5d">Entregue & Aberto</span>';
+    } else {
+      elSendStatus.innerHTML = `<span style="color:#2f7d5d">${currentViewingEmail.status.toUpperCase()}</span>`;
+    }
+
+    // Status de abertura
+    const elOpenStatus = document.getElementById('viewEmailOpenStatus');
+    if (!isOut) {
+      elOpenStatus.innerHTML = '<span style="color:var(--ink3)">N/A (Mensagem Recebida)</span>';
+    } else if (currentViewingEmail.status === 'opened' || (currentViewingEmail.open_count && currentViewingEmail.open_count > 0)) {
+      const openDate = currentViewingEmail.opened_at ? new Date(currentViewingEmail.opened_at).toLocaleString('pt-BR') : '';
+      elOpenStatus.innerHTML = `<span style="color:#2f7d5d;font-weight:700">Aberto em ${openDate} (${currentViewingEmail.open_count || 1}x)</span>`;
+    } else {
+      elOpenStatus.innerHTML = '<span style="color:var(--ink3)">Não aberto pelo destinatário</span>';
+    }
+
+    // Diagnóstico de erro
+    const errBox = document.getElementById('viewEmailErrorBox');
+    const errMsg = document.getElementById('viewEmailErrorMsg');
+    const btnResend = document.getElementById('btnResendCurrentEmail');
+
+    if (currentViewingEmail.status === 'failed' && currentViewingEmail.error_message) {
+      errBox.style.display = 'block';
+      errMsg.textContent = currentViewingEmail.error_message;
+      if (btnResend) btnResend.style.display = 'inline-flex';
+    } else {
+      errBox.style.display = 'none';
+      if (btnResend) btnResend.style.display = 'none';
+    }
+
+    // Abas de visualização
+    document.getElementById('viewEmailBodyHtml').innerHTML = currentViewingEmail.content_html || '<div style="color:var(--ink3);font-style:italic">Nenhum conteúdo HTML gerado para esta mensagem.</div>';
+    document.getElementById('viewEmailBodyRaw').textContent = currentViewingEmail.content_text || currentViewingEmail.content_html || '(Vazio)';
+
+    // Metadados técnicos
+    document.getElementById('viewEmailMetaId').textContent = currentViewingEmail.id || '-';
+    document.getElementById('viewEmailMetaResendId').textContent = currentViewingEmail.resend_id || 'Nenhum ID retornado pelo provedor';
+    document.getElementById('viewEmailMetaOpenCount').textContent = currentViewingEmail.open_count || 0;
+    document.getElementById('viewEmailMetaOpenedAt').textContent = currentViewingEmail.opened_at ? new Date(currentViewingEmail.opened_at).toLocaleString('pt-BR') : 'Não registrado';
+    document.getElementById('viewEmailMetaIp').textContent = currentViewingEmail.ip_open || 'Não capturado';
+    document.getElementById('viewEmailMetaUa').textContent = currentViewingEmail.user_agent_open || 'Não capturado';
+
+    switchEmailViewTab('html');
+    modal.classList.add('on');
+  } catch (err) {
+    console.error('Erro openViewEmailModal:', err);
+    showToast('Falha ao abrir detalhes do e-mail.', 'error');
+  }
+}
+
+function switchEmailViewTab(tab) {
+  const btnHtml = document.getElementById('btnViewEmailTabHtml');
+  const btnRaw = document.getElementById('btnViewEmailTabRaw');
+  const btnMeta = document.getElementById('btnViewEmailTabMeta');
+  const bHtml = document.getElementById('viewEmailBodyHtml');
+  const bRaw = document.getElementById('viewEmailBodyRaw');
+  const bMeta = document.getElementById('viewEmailBodyMeta');
+
+  [btnHtml, btnRaw, btnMeta].forEach(b => b?.classList.remove('active'));
+  [bHtml, bRaw, bMeta].forEach(d => { if (d) d.style.display = 'none'; });
+
+  if (tab === 'html') {
+    btnHtml?.classList.add('active');
+    if (bHtml) bHtml.style.display = 'block';
+  } else if (tab === 'raw') {
+    btnRaw?.classList.add('active');
+    if (bRaw) bRaw.style.display = 'block';
+  } else if (tab === 'meta') {
+    btnMeta?.classList.add('active');
+    if (bMeta) bMeta.style.display = 'block';
+  }
+}
+
+async function resendCurrentEmail() {
+  if (!currentViewingEmail || !currentViewingEmail.id) return;
+  await resendEmailDirect(currentViewingEmail.id);
+  document.getElementById('modalViewEmail')?.classList.remove('on');
+}
+
+async function resendEmailDirect(id) {
+  if (!confirm('Deseja reenviar este e-mail agora?')) return;
+  try {
+    const res = await fetch(`/api/admin/emails/resend/${id}`, { method: 'POST' });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      showToast('E-mail reenviado com sucesso!', 'success');
+      loadAdminEmails();
+    } else {
+      showToast(data.message || 'Falha ao reenviar e-mail.', 'error');
+    }
+  } catch (err) {
+    showToast('Falha de conexão com o servidor.', 'error');
+  }
+}
+
+function openSendTestEmailModal() {
+  const modal = document.getElementById('modalSendTestEmail');
+  if (!modal) return;
+  document.getElementById('sendTestUserSelect').value = '';
+  document.getElementById('sendTestEmailInput').value = '';
+  document.getElementById('sendTestSubjectInput').value = '[PEP HUB] Comunicado Oficial da Regional Norte';
+  document.getElementById('sendTestMsgInput').value = 'Este é um e-mail de teste e auditoria oficial da plataforma PEP HUB.';
+  modal.classList.add('on');
+}
+
+function onTestUserSelectChange() {
+  const sel = document.getElementById('sendTestUserSelect');
+  const inEmail = document.getElementById('sendTestEmailInput');
+  if (sel && inEmail && sel.value) {
+    const u = allUsers.find(user => user.id === sel.value);
+    if (u && u.email_claro) inEmail.value = u.email_claro;
+  }
+}
+
+async function submitSendTestEmail() {
+  const selUser = document.getElementById('sendTestUserSelect');
+  const inEmail = document.getElementById('sendTestEmailInput');
+  const inSub = document.getElementById('sendTestSubjectInput');
+  const inMsg = document.getElementById('sendTestMsgInput');
+
+  const userId = selUser ? selUser.value : null;
+  const targetEmail = inEmail ? inEmail.value.trim() : '';
+  const subject = inSub ? inSub.value.trim() : '';
+  const message = inMsg ? inMsg.value.trim() : '';
+
+  if (!targetEmail && !userId) {
+    showToast('Informe o destinatário do e-mail.', 'error');
+    return;
+  }
+  if (!subject) {
+    showToast('Informe o assunto da mensagem.', 'error');
+    return;
+  }
+  if (!message) {
+    showToast('Informe o conteúdo da mensagem.', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('btnSubmitSendTestEmail');
+  if (btn) btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/admin/emails/test-send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        target_user_id: userId,
+        target_email: targetEmail,
+        subject,
+        message
+      })
+    });
+
+    const data = await res.json();
+    if (res.ok && data.success) {
+      showToast('E-mail disparado com sucesso! Log registrado na esteira.', 'success');
+      document.getElementById('modalSendTestEmail')?.classList.remove('on');
+      loadAdminEmails();
+    } else {
+      showToast(data.message || data.error || 'Falha no envio do e-mail.', 'error');
+    }
+  } catch (err) {
+    showToast('Erro de comunicação com o servidor.', 'error');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+function openSimulateInboundModal() {
+  const modal = document.getElementById('modalSimulateInbound');
+  if (!modal) return;
+  modal.classList.add('on');
+}
+
+async function submitSimulateInbound() {
+  const sel = document.getElementById('inboundUserSelect');
+  const inSub = document.getElementById('inboundSubjectInput');
+  const inMsg = document.getElementById('inboundMsgInput');
+
+  const userId = sel ? sel.value : null;
+  const subject = inSub ? inSub.value.trim() : '';
+  const message = inMsg ? inMsg.value.trim() : '';
+
+  try {
+    const res = await fetch('/api/admin/emails/simulate-inbound', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: userId,
+        subject,
+        message
+      })
+    });
+
+    const data = await res.json();
+    if (res.ok && data.success) {
+      showToast('Mensagem inbound registrada com sucesso!', 'success');
+      document.getElementById('modalSimulateInbound')?.classList.remove('on');
+      loadAdminEmails();
+    } else {
+      showToast(data.error || 'Falha ao registrar inbound.', 'error');
+    }
+  } catch (err) {
+    showToast('Falha de conexão com o servidor.', 'error');
+  }
+}
+
 // Expor métodos globais para uso inline no HTML
 window.loadAdminNotifications = loadAdminNotifications;
 window.openNotificationModal = openNotificationModal;
@@ -2830,6 +3641,26 @@ window.updateNotifModalPreview = updateNotifModalPreview;
 window.saveNotification = saveNotification;
 window.toggleNotificationStatus = toggleNotificationStatus;
 window.deleteNotification = deleteNotification;
+window.onNotifTargetTypeChange = onNotifTargetTypeChange;
+window.filterNotifUsersList = filterNotifUsersList;
+window.selectFilteredNotifUsers = selectFilteredNotifUsers;
+window.toggleAllNotifRoles = toggleAllNotifRoles;
+window.toggleAllNotifAreas = toggleAllNotifAreas;
+
+window.loadAdminEmails = loadAdminEmails;
+window.setEmailDirection = setEmailDirection;
+window.filterEmails = filterEmails;
+window.debounceEmailSearch = debounceEmailSearch;
+window.clearEmailFilters = clearEmailFilters;
+window.openViewEmailModal = openViewEmailModal;
+window.switchEmailViewTab = switchEmailViewTab;
+window.resendCurrentEmail = resendCurrentEmail;
+window.resendEmailDirect = resendEmailDirect;
+window.openSendTestEmailModal = openSendTestEmailModal;
+window.onTestUserSelectChange = onTestUserSelectChange;
+window.submitSendTestEmail = submitSendTestEmail;
+window.openSimulateInboundModal = openSimulateInboundModal;
+window.submitSimulateInbound = submitSimulateInbound;
 
 async function initAdminPanel() {
   setDatePreset('30d');
@@ -2853,6 +3684,7 @@ async function initAdminPanel() {
   loadProfileFields();
   loadUploadsConfig();
   loadAdminNotifications();
+  loadAdminEmails();
 
   // O botão "Online" do cabeçalho é montado pelo header-widget.js ([data-pephub-online])
   refreshPendingRequestsCount();

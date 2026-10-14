@@ -196,13 +196,16 @@ CREATE TABLE IF NOT EXISTS fato_aprovacao_credito (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- 3.5. Fato Market Share (Anatel / Regional Norte)
+-- 3.5. Fato Market Share (Anatel / Regional Norte - Móvel SMP & Banda Larga SCM)
 CREATE TABLE IF NOT EXISTS fato_market_share (
     id TEXT PRIMARY KEY,
-    mes_referencia TEXT NOT NULL,         -- '2026-08', '2026-09'
+    mes_referencia TEXT NOT NULL,         -- '2026-08'
     cidade TEXT NOT NULL,
     uf TEXT NOT NULL,
-    operadora TEXT NOT NULL,              -- 'Claro', 'Vivo', 'Oi', 'Competitivas/ISPs'
+    ddd TEXT DEFAULT 'TODOS',             -- 'TODOS', '91', '92', etc.
+    operadora TEXT NOT NULL,              -- 'Claro', 'Vivo', 'TIM', 'Oi', 'Competitivas/ISPs', 'Sky', 'Surf'
+    produto TEXT DEFAULT 'MOVEL',         -- 'MOVEL', 'BANDA_LARGA'
+    segmento TEXT DEFAULT 'POS_PAGO_SEM_M2M', -- 'POS_PAGO_SEM_M2M', '5G', 'RESIDENCIAL'
     acessos INTEGER DEFAULT 0,
     market_share_pct REAL DEFAULT 0,
     net_adds INTEGER DEFAULT 0,
@@ -304,13 +307,19 @@ CREATE TABLE IF NOT EXISTS notifications (
     title TEXT NOT NULL,
     message TEXT NOT NULL,
     type TEXT NOT NULL DEFAULT 'info',         -- 'info', 'warning', 'success', 'update', 'security'
+    priority TEXT NOT NULL DEFAULT 'normal',   -- 'normal', 'high', 'urgent'
     preset TEXT NOT NULL DEFAULT 'custom',     -- 'custom', 'first_login', 'password_change', 'new_report', 'maintenance'
     target_audience TEXT NOT NULL DEFAULT 'ALL',-- 'ALL', 'regular', 'admin', ou área
+    target_type TEXT NOT NULL DEFAULT 'all',   -- 'all', 'users', 'roles', 'areas', 'regular', 'admin'
+    target_users TEXT,                         -- JSON array ou lista de user_ids
+    target_roles TEXT,                         -- JSON array ou lista de cargos/funções
+    target_areas TEXT,                         -- JSON array ou lista de setores/áreas
     action_url TEXT,
     action_label TEXT,
     starts_at TEXT,
     expires_at TEXT,
     is_active INTEGER NOT NULL DEFAULT 1,
+    is_popup INTEGER NOT NULL DEFAULT 0,       -- 1 se deve exibir popup prioritário no primeiro logon do dia
     created_by TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -327,5 +336,46 @@ CREATE TABLE IF NOT EXISTS user_notifications_read (
     FOREIGN KEY(notification_id) REFERENCES notifications(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS user_daily_popups_seen (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT NOT NULL,
+    notification_id TEXT NOT NULL,
+    seen_date TEXT NOT NULL,                   -- Data YYYY-MM-DD do primeiro logon diário
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, notification_id, seen_date)
+);
+
 CREATE INDEX IF NOT EXISTS idx_notifications_active ON notifications(is_active, starts_at, expires_at);
 CREATE INDEX IF NOT EXISTS idx_user_notif_read_user ON user_notifications_read(user_id, notification_id);
+CREATE INDEX IF NOT EXISTS idx_user_daily_popups ON user_daily_popups_seen(user_id, seen_date);
+
+-- =====================================================================
+-- 8. GESTÃO E RASTREAMENTO DE E-MAILS CORPORATIVOS
+-- =====================================================================
+CREATE TABLE IF NOT EXISTS email_logs (
+    id TEXT PRIMARY KEY,
+    direction TEXT NOT NULL DEFAULT 'outbound', -- 'outbound' ou 'inbound'
+    user_id TEXT,                              -- ID do colaborador associado (se identificado)
+    user_name TEXT,                            -- Nome do colaborador
+    user_email TEXT,                           -- E-mail institucional do colaborador
+    from_address TEXT NOT NULL,
+    to_address TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    content_html TEXT,                         -- HTML renderizado do e-mail
+    content_text TEXT,                         -- Versão em texto puro
+    status TEXT NOT NULL DEFAULT 'sent',       -- 'sent', 'opened', 'failed', 'simulated', 'received'
+    error_message TEXT,                        -- Detalhamento técnico da falha/erro
+    opened_at DATETIME,                        -- Timestamp do pixel de abertura ou webhook
+    open_count INTEGER DEFAULT 0,              -- Quantidade de aberturas registradas
+    ip_open TEXT,                              -- IP da última abertura
+    user_agent_open TEXT,                      -- User-Agent do cliente de e-mail na abertura
+    resend_id TEXT,                            -- ID de rastreamento do provedor (Resend/SMTP)
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_email_logs_user ON email_logs(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_email_logs_to ON email_logs(to_address, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_email_logs_status ON email_logs(status);
+CREATE INDEX IF NOT EXISTS idx_email_logs_direction ON email_logs(direction);
+CREATE INDEX IF NOT EXISTS idx_email_logs_created ON email_logs(created_at DESC);
+

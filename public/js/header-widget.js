@@ -1039,6 +1039,631 @@
       color: #334155 !important;
       cursor: pointer !important;
     }
+
+    /* Modal de Popup Corporativo de Maior Prioridade (1º Logon do Dia) */
+    .pephub-daily-priority-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(18, 24, 32, 0.72);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 100000;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      font-family: "Segoe UI", Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .pephub-daily-priority-modal.show {
+      display: flex;
+      animation: dpOverlayFade .18s ease-out forwards;
+    }
+    @keyframes dpOverlayFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes dpBoxPop { from { opacity: 0; transform: scale(0.96) translateY(-8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .dp-modal-box {
+      background: #ffffff;
+      border-radius: 6px;
+      width: 100%;
+      max-width: 540px;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
+      border: 1px solid #dfe3e8;
+      display: flex;
+      flex-direction: column;
+      animation: dpBoxPop .2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .dp-modal-accent {
+      height: 4px;
+      background: linear-gradient(90deg, #8a0f18 0%, #c0191f 26%, #e23a1e 50%, #f47a1f 74%, #f9b233 100%);
+    }
+    .dp-modal-hd {
+      background: #1c2430;
+      color: #ffffff;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .dp-modal-hd-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .dp-badge-priority {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 3px;
+    }
+    .dp-badge-priority.urgente {
+      background: #c0392b;
+      color: #ffffff;
+    }
+    .dp-badge-priority.alta {
+      background: #d97706;
+      color: #ffffff;
+    }
+    .dp-badge-priority.normal {
+      background: #2a5d8f;
+      color: #ffffff;
+    }
+    .dp-tag-type {
+      font-size: 11px;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+    .dp-modal-close {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0 4px;
+      transition: color .15s;
+    }
+    .dp-modal-close:hover { color: #ffffff; }
+    .dp-modal-bd {
+      padding: 22px 24px;
+      display: flex;
+      gap: 16px;
+      background: #ffffff;
+    }
+    .dp-modal-icon-wrap {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f1f5f9;
+      color: #1e293b;
+    }
+    .dp-modal-icon-wrap.warning { background: #fef3c7; color: #b45309; }
+    .dp-modal-icon-wrap.security { background: #fee2e2; color: #b91c1c; }
+    .dp-modal-icon-wrap.update { background: #f3e8ff; color: #7e22ce; }
+    .dp-modal-icon-wrap.success { background: #dcfce7; color: #15803d; }
+    .dp-modal-icon-wrap.info { background: #e0f2fe; color: #0369a1; }
+    .dp-modal-content { flex: 1; min-width: 0; }
+    .dp-modal-title {
+      margin: 0 0 8px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #1c2430;
+      line-height: 1.3;
+    }
+    .dp-modal-msg {
+      font-size: 13px;
+      line-height: 1.55;
+      color: #475569;
+      word-break: break-word;
+    }
+    .dp-modal-action-row {
+      margin-top: 16px;
+    }
+    .dp-btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #1c2430;
+      color: #ffffff !important;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background .15s;
+    }
+    .dp-btn-action:hover { background: #27323f; }
+    .dp-modal-ft {
+      padding: 12px 24px;
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .dp-modal-hint {
+      font-size: 11px;
+      color: #64748b;
+    }
+    .dp-btn-ack {
+      background: #ffffff;
+      color: #1e293b;
+      border: 1px solid #cbd5e1;
+      padding: 6px 16px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .dp-btn-ack:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+    }
+
+    /* ================================================================
+       BOTÃO FLUTUANTE (FAB) E JANELA DE CHATBOT RAG (CANTO INFERIOR DIREITO)
+       ================================================================ */
+    .pephub-rag-fab {
+      position: fixed !important;
+      bottom: 24px !important;
+      right: 24px !important;
+      width: 52px !important;
+      height: 52px !important;
+      border-radius: 50% !important;
+      background: #1c2430 !important;
+      color: #ffffff !important;
+      border: 2px solid rgba(255, 255, 255, 0.9) !important;
+      box-shadow: 0 8px 24px rgba(28, 36, 48, 0.35), 0 2px 6px rgba(0, 0, 0, 0.18) !important;
+      cursor: pointer !important;
+      z-index: 99990 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      outline: none !important;
+      padding: 0 !important;
+    }
+    .pephub-rag-fab:hover {
+      transform: scale(1.08) !important;
+      background: #27323f !important;
+      box-shadow: 0 12px 30px rgba(28, 36, 48, 0.45), 0 0 0 4px rgba(192, 25, 31, 0.2) !important;
+    }
+    .pephub-rag-fab.open {
+      background: #8a0f18 !important;
+      transform: rotate(90deg) scale(1.02) !important;
+      box-shadow: 0 8px 20px rgba(138, 15, 24, 0.45) !important;
+    }
+    .rag-fab-online-dot {
+      position: absolute !important;
+      top: 1px !important;
+      right: 1px !important;
+      width: 12px !important;
+      height: 12px !important;
+      border-radius: 50% !important;
+      background: #16a34a !important;
+      border: 2px solid #ffffff !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+      pointer-events: none !important;
+    }
+    .rag-fab-icon-wrap {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      color: #ffffff !important;
+    }
+
+    /* Janela de Chat RAG */
+    .pephub-rag-chatbox {
+      position: fixed !important;
+      bottom: 86px !important;
+      right: 24px !important;
+      width: 390px !important;
+      height: 560px !important;
+      max-width: calc(100vw - 32px) !important;
+      max-height: calc(100vh - 105px) !important;
+      background: #ffffff !important;
+      border-radius: 6px !important;
+      box-shadow: 0 20px 52px rgba(28, 36, 48, 0.36) !important;
+      border: 1px solid #dfe3e8 !important;
+      z-index: 99995 !important;
+      display: none !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif !important;
+    }
+    .pephub-rag-chatbox.open {
+      display: flex !important;
+      animation: ragBoxPop .2s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    }
+    @keyframes ragBoxPop {
+      from { opacity: 0; transform: scale(0.96) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .rag-header-accent {
+      height: 4px !important;
+      background: linear-gradient(90deg, #8a0f18 0%, #c0191f 26%, #e23a1e 50%, #f47a1f 74%, #f9b233 100%) !important;
+      flex: none !important;
+    }
+    .rag-header {
+      background: #1c2430 !important;
+      color: #ffffff !important;
+      padding: 12px 14px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 10px !important;
+      flex: none !important;
+    }
+    .rag-header-left {
+      display: flex !important;
+      align-items: center !important;
+      gap: 10px !important;
+      min-width: 0 !important;
+    }
+    .rag-header-avatar {
+      width: 32px !important;
+      height: 32px !important;
+      min-width: 32px !important;
+      border-radius: 50% !important;
+      background: linear-gradient(135deg, #8a0f18 0%, #c0191f 50%, #f47a1f 100%) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border: 1.5px solid #ffffff !important;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2) !important;
+      flex: none !important;
+    }
+    .rag-header-titles {
+      min-width: 0 !important;
+    }
+    .rag-header-name {
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      color: #ffffff !important;
+      line-height: 1.2 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+    .rag-header-sub {
+      font-size: 10.5px !important;
+      color: #aab4c0 !important;
+      margin-top: 2px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+    }
+    .rag-badge-model {
+      font-size: 9px !important;
+      font-weight: 800 !important;
+      text-transform: uppercase !important;
+      letter-spacing: .4px !important;
+      background: rgba(249, 178, 51, 0.2) !important;
+      color: #f9b233 !important;
+      border: 1px solid rgba(249, 178, 51, 0.5) !important;
+      padding: 1px 5px !important;
+      border-radius: 2px !important;
+    }
+    .rag-header-actions {
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      flex: none !important;
+    }
+    .rag-btn-head {
+      background: rgba(255, 255, 255, 0.12) !important;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+      color: #ffffff !important;
+      width: 28px !important;
+      height: 28px !important;
+      border-radius: 4px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      cursor: pointer !important;
+      padding: 0 !important;
+      transition: all 0.15s ease !important;
+    }
+    .rag-btn-head:hover {
+      background: rgba(255, 255, 255, 0.28) !important;
+      border-color: #ffffff !important;
+    }
+    .rag-status-bar {
+      background: #f8fafc !important;
+      border-bottom: 1px solid #eef2f6 !important;
+      padding: 6px 14px !important;
+      font-size: 10.5px !important;
+      color: #5b6675 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      flex: none !important;
+    }
+    .rag-status-bar span {
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+    /* Barra de Atalhos / Abas de Relatórios */
+    .rag-preset-bar {
+      background: #ffffff !important;
+      border-bottom: 1px solid #eef2f6 !important;
+      padding: 6px 10px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      overflow-x: auto !important;
+      flex: none !important;
+      scrollbar-width: none !important;
+    }
+    .rag-preset-bar::-webkit-scrollbar { display: none !important; }
+    .rag-preset-tab {
+      background: #f1f5f9 !important;
+      color: #475569 !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 12px !important;
+      padding: 3px 8px !important;
+      font-size: 10px !important;
+      font-weight: 700 !important;
+      cursor: pointer !important;
+      white-space: nowrap !important;
+      transition: all .15s ease !important;
+      flex: none !important;
+      font-family: inherit !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+    }
+    .rag-preset-tab:hover, .rag-preset-tab.active {
+      background: #1c2430 !important;
+      color: #ffffff !important;
+      border-color: #1c2430 !important;
+    }
+    .rag-preset-drawer {
+      background: #f8fafc !important;
+      border-bottom: 1px solid #e2e8f0 !important;
+      padding: 8px 10px !important;
+      display: none !important;
+      flex-direction: column !important;
+      gap: 4px !important;
+      max-height: 140px !important;
+      overflow-y: auto !important;
+      flex: none !important;
+    }
+    .rag-preset-drawer.open {
+      display: flex !important;
+      animation: ragBoxPop .15s ease forwards !important;
+    }
+    .rag-preset-drawer-header {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      font-size: 10px !important;
+      font-weight: 800 !important;
+      text-transform: uppercase !important;
+      letter-spacing: .4px !important;
+      color: #64748b !important;
+      margin-bottom: 2px !important;
+    }
+    .rag-preset-item {
+      text-align: left !important;
+      background: #ffffff !important;
+      border: 1px solid #cbd5e1 !important;
+      color: #1e293b !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      padding: 5px 8px !important;
+      border-radius: 4px !important;
+      cursor: pointer !important;
+      transition: all .12s ease !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 6px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      font-family: inherit !important;
+    }
+    .rag-preset-item:hover {
+      border-color: #c0191f !important;
+      color: #c0191f !important;
+      background: #fff5f5 !important;
+      transform: translateX(2px) !important;
+    }
+    .rag-messages-area {
+      flex: 1 !important;
+      overflow-y: auto !important;
+      padding: 14px !important;
+      background: #f4f6f8 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+    }
+    .rag-bubble {
+      max-width: 88% !important;
+      word-break: break-word !important;
+      line-height: 1.45 !important;
+      position: relative !important;
+    }
+    .rag-bubble-user {
+      align-self: flex-end !important;
+      background: #1c2430 !important;
+      color: #ffffff !important;
+      padding: 9px 13px !important;
+      border-radius: 12px 12px 2px 12px !important;
+      font-size: 12.5px !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important;
+    }
+    .rag-bubble-bot {
+      align-self: flex-start !important;
+      background: #ffffff !important;
+      color: #1c2430 !important;
+      border: 1px solid #e2e8f0 !important;
+      border-left: 3px solid #c0191f !important;
+      padding: 11px 14px !important;
+      border-radius: 12px 12px 12px 2px !important;
+      font-size: 12px !important;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+    }
+    .rag-bubble-time {
+      font-size: 9.5px !important;
+      opacity: 0.65 !important;
+      margin-top: 5px !important;
+      display: block !important;
+      text-align: right !important;
+    }
+    .rag-bubble-user .rag-bubble-time {
+      color: rgba(255, 255, 255, 0.75) !important;
+    }
+    .rag-chips-container {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      gap: 6px !important;
+      margin-top: 10px !important;
+    }
+    .rag-chip {
+      background: #ffffff !important;
+      border: 1px solid #d0d7de !important;
+      color: #1c2430 !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      padding: 4px 9px !important;
+      border-radius: 14px !important;
+      cursor: pointer !important;
+      transition: all .15s ease !important;
+      white-space: nowrap !important;
+      font-family: inherit !important;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+    }
+    .rag-chip:hover {
+      background: #1c2430 !important;
+      color: #ffffff !important;
+      border-color: #1c2430 !important;
+      transform: translateY(-1px) !important;
+    }
+    .rag-option-btn {
+      display: inline-flex !important;
+      align-items: center !important;
+      background: #f0f6fc !important;
+      color: #2a5d8f !important;
+      border: 1px solid #d0e2f5 !important;
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      padding: 2px 7px !important;
+      border-radius: 3px !important;
+      cursor: pointer !important;
+      margin: 2px 4px 2px 0 !important;
+      transition: all .12s !important;
+      font-family: inherit !important;
+      text-decoration: none !important;
+    }
+    .rag-option-btn:hover {
+      background: #2a5d8f !important;
+      color: #ffffff !important;
+      border-color: #2a5d8f !important;
+    }
+    .rag-typing-indicator {
+      align-self: flex-start !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      padding: 8px 14px !important;
+      border-radius: 12px 12px 12px 2px !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+    }
+    .rag-typing-dot {
+      width: 6px !important;
+      height: 6px !important;
+      border-radius: 50% !important;
+      background: #94a3b8 !important;
+      animation: ragTypingBounce 1.2s infinite ease-in-out !important;
+    }
+    .rag-typing-dot:nth-child(2) { animation-delay: 0.2s !important; }
+    .rag-typing-dot:nth-child(3) { animation-delay: 0.4s !important; }
+    @keyframes ragTypingBounce {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1.1); opacity: 1; background: #c0191f; }
+    }
+    .rag-input-box {
+      background: #ffffff !important;
+      border-top: 1px solid #eef2f6 !important;
+      padding: 10px 12px !important;
+      display: flex !important;
+      align-items: flex-end !important;
+      gap: 8px !important;
+      flex: none !important;
+    }
+    .rag-textarea {
+      flex: 1 !important;
+      border: 1px solid #dfe3e8 !important;
+      border-radius: 4px !important;
+      padding: 8px 10px !important;
+      font-size: 12.5px !important;
+      font-family: inherit !important;
+      resize: none !important;
+      max-height: 84px !important;
+      min-height: 38px !important;
+      line-height: 1.35 !important;
+      outline: none !important;
+      transition: border-color .15s !important;
+      box-sizing: border-box !important;
+      background: #ffffff !important;
+      color: #1c2430 !important;
+    }
+    .rag-textarea:focus {
+      border-color: #c0191f !important;
+      box-shadow: 0 0 0 2px rgba(192, 25, 31, 0.12) !important;
+    }
+    .rag-btn-send {
+      width: 38px !important;
+      height: 38px !important;
+      min-width: 38px !important;
+      border-radius: 4px !important;
+      background: #8a0f18 !important;
+      border: none !important;
+      color: #ffffff !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      cursor: pointer !important;
+      transition: background .15s !important;
+      flex: none !important;
+      padding: 0 !important;
+    }
+    .rag-btn-send:hover {
+      background: #c0191f !important;
+    }
+    .rag-btn-send:disabled {
+      background: #e2e8f0 !important;
+      color: #94a3b8 !important;
+      cursor: not-allowed !important;
+    }
+
+    @media (max-width: 480px) {
+      .pephub-rag-chatbox {
+        right: 12px !important;
+        bottom: 74px !important;
+        width: calc(100vw - 24px) !important;
+        height: calc(100vh - 90px) !important;
+      }
+      .pephub-rag-fab {
+        bottom: 16px !important;
+        right: 16px !important;
+        width: 48px !important;
+        height: 48px !important;
+      }
+    }
   `;
   if (!document.getElementById('pephub-header-styles')) {
     document.head.appendChild(style);
@@ -1370,10 +1995,109 @@
       const data = await res.json();
       _userNotifications = data.notifications || [];
       updateNotificationsUI(data.unread_count || 0);
+
+      // Verificação e exibição do popup de maior prioridade no 1º logon do dia
+      if (data.daily_popup) {
+        checkAndShowDailyPriorityPopup(data.daily_popup);
+      }
+
       return _userNotifications;
     } catch (_) {
       return [];
     }
+  }
+
+  // Exibe popup corporativo de alta prioridade na tela no 1º logon do dia
+  function checkAndShowDailyPriorityPopup(popup) {
+    if (!popup || !popup.id) return;
+    if (document.getElementById('pephubDailyPriorityModal')) return;
+
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const seenKey = `pephub_popup_seen_${popup.id}_${todayStr}`;
+    if (localStorage.getItem(seenKey)) return;
+
+    const meta = getNotifTypeMeta(popup.type);
+    const priority = String(popup.priority || 'alta').toLowerCase();
+    const priorityLabel = priority === 'urgente' ? 'Urgente · 1º Acesso' : (priority === 'alta' ? 'Alta Prioridade · 1º Acesso' : 'Comunicado do Dia');
+
+    const modalEl = document.createElement('div');
+    modalEl.id = 'pephubDailyPriorityModal';
+    modalEl.className = 'pephub-daily-priority-modal show';
+    modalEl.setAttribute('role', 'dialog');
+    modalEl.setAttribute('aria-modal', 'true');
+    modalEl.setAttribute('aria-labelledby', 'dpModalTitle');
+
+    const iconLarge = meta.icon.replace(/width="12" height="12"/g, 'width="22" height="22"');
+
+    modalEl.innerHTML = `
+      <div class="dp-modal-box">
+        <div class="dp-modal-accent"></div>
+        <div class="dp-modal-hd">
+          <div class="dp-modal-hd-left">
+            <span class="dp-badge-priority ${priority}">${priorityLabel}</span>
+            <span class="dp-tag-type">${escapeHtml(meta.label)}</span>
+          </div>
+          <button type="button" class="dp-modal-close" id="btnDailyPriorityClose" title="Fechar aviso">&times;</button>
+        </div>
+        <div class="dp-modal-bd">
+          <div class="dp-modal-icon-wrap ${escapeHtml(popup.type || 'info')}">
+            ${iconLarge}
+          </div>
+          <div class="dp-modal-content">
+            <h3 id="dpModalTitle" class="dp-modal-title">${escapeHtml(popup.title)}</h3>
+            <div class="dp-modal-msg">${escapeHtml(popup.message).replace(/\n/g, '<br>')}</div>
+            ${popup.action_url ? `
+              <div class="dp-modal-action-row">
+                <a href="${escapeHtml(popup.action_url)}" id="btnDailyPriorityAction" class="dp-btn-action">
+                  ${escapeHtml(popup.action_label || 'Acessar')} &rarr;
+                </a>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+        <div class="dp-modal-ft">
+          <span class="dp-modal-hint">Aviso institucional exibido no seu 1º acesso de hoje.</span>
+          <button type="button" id="btnDailyPriorityAck" class="dp-btn-ack">Entendido</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modalEl);
+
+    const dismissModal = () => {
+      try {
+        localStorage.setItem(seenKey, '1');
+        fetch(`/api/notifications/${popup.id}/popup-seen`, { method: 'POST' }).catch(() => {});
+        fetch(`/api/notifications/${popup.id}/read`, { method: 'POST' }).catch(() => {});
+      } catch (_) {}
+      modalEl.classList.remove('show');
+      setTimeout(() => {
+        if (modalEl.parentNode) modalEl.parentNode.removeChild(modalEl);
+      }, 200);
+    };
+
+    const btnClose = modalEl.querySelector('#btnDailyPriorityClose');
+    const btnAck = modalEl.querySelector('#btnDailyPriorityAck');
+    const btnAction = modalEl.querySelector('#btnDailyPriorityAction');
+
+    if (btnClose) btnClose.addEventListener('click', dismissModal);
+    if (btnAck) btnAck.addEventListener('click', dismissModal);
+    if (btnAction) {
+      btnAction.addEventListener('click', () => {
+        dismissModal();
+      });
+    }
+
+    modalEl.addEventListener('click', (e) => {
+      if (e.target === modalEl) dismissModal();
+    });
+
+    document.addEventListener('keydown', function escHandler(e) {
+      if (e.key === 'Escape' && document.getElementById('pephubDailyPriorityModal')) {
+        dismissModal();
+        document.removeEventListener('keydown', escHandler);
+      }
+    });
   }
 
   function formatRelativeDate(isoStr) {
@@ -2626,9 +3350,450 @@
             window.pephubMountProfileWidget(host);
           }
         });
+
+        // 5. Botão Flutuante do Chatbot RAG (Canto Inferior Direito)
+        if (!window.location.pathname.startsWith('/login')) {
+          initFloatingRagChatbot(me);
+        }
       }
     }).catch(() => {});
   }
+
+  // ------------------------------------------------------------------
+  // Chatbot RAG Corporativo Flutuante (Canto Inferior Direito)
+  // ------------------------------------------------------------------
+  function initFloatingRagChatbot(currentUser) {
+    if (document.getElementById('pephubRagFab') || document.getElementById('pephubRagChatbox')) return;
+    if (window.location.pathname.startsWith('/login')) return;
+
+    const firstName = currentUser && currentUser.nome_completo ? currentUser.nome_completo.split(' ')[0] : 'Colaborador';
+
+    // 1. Criação do Botão Flutuante (FAB)
+    const fab = document.createElement('button');
+    fab.type = 'button';
+    fab.className = 'pephub-rag-fab';
+    fab.id = 'pephubRagFab';
+    fab.setAttribute('aria-label', 'Abrir Assistente Analítico RAG');
+    fab.title = 'Assistente Analítico RAG · Regional Norte';
+    fab.innerHTML = `
+      <span class="rag-fab-online-dot" title="Assistente Online"></span>
+      <span class="rag-fab-icon-wrap" id="ragFabIconWrap">
+        <svg class="rag-fab-icon-chat" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          <circle cx="9" cy="10" r="1" fill="currentColor"></circle>
+          <circle cx="12" cy="10" r="1" fill="currentColor"></circle>
+          <circle cx="15" cy="10" r="1" fill="currentColor"></circle>
+        </svg>
+      </span>
+    `;
+
+    // 2. Criação da Janela de Chat
+    const chatbox = document.createElement('div');
+    chatbox.className = 'pephub-rag-chatbox';
+    chatbox.id = 'pephubRagChatbox';
+    chatbox.setAttribute('role', 'dialog');
+    chatbox.setAttribute('aria-label', 'Chat com Assistente RAG');
+    chatbox.innerHTML = `
+      <div class="rag-header-accent"></div>
+      <div class="rag-header">
+        <div class="rag-header-left">
+          <div class="rag-header-avatar">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+              <circle cx="12" cy="5" r="2"></circle>
+              <path d="M12 7v4"></path>
+              <line x1="8" y1="16" x2="8.01" y2="16"></line>
+              <line x1="16" y1="16" x2="16.01" y2="16"></line>
+            </svg>
+          </div>
+          <div class="rag-header-titles">
+            <div class="rag-header-name">Assistente Analítico RAG</div>
+            <div class="rag-header-sub">Regional Norte <span class="rag-badge-model">IA D1</span></div>
+          </div>
+        </div>
+        <div class="rag-header-actions">
+          <button type="button" class="rag-btn-head" id="ragBtnClear" title="Limpar conversa" aria-label="Limpar conversa">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+          </button>
+          <button type="button" class="rag-btn-head" id="ragBtnClose" title="Minimizar chat" aria-label="Minimizar">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="rag-status-bar">
+        <span>Bases: FPD, Churn Safra, Banda Larga, Crédito, Market Share, Speech</span>
+      </div>
+      <div class="rag-preset-bar" id="ragPresetBar">
+        <button type="button" class="rag-preset-tab" data-preset-cat="FPD">💳 FPD</button>
+        <button type="button" class="rag-preset-tab" data-preset-cat="SAFRA">🌱 Safra</button>
+        <button type="button" class="rag-preset-tab" data-preset-cat="CHURN_BL">📉 Churn BL</button>
+        <button type="button" class="rag-preset-tab" data-preset-cat="CREDITO">🛡️ Crédito</button>
+        <button type="button" class="rag-preset-tab" data-preset-cat="MARKET_SHARE">📊 Mkt Share</button>
+        <button type="button" class="rag-preset-tab" data-preset-cat="SPEECH">🗣️ Speech</button>
+        <button type="button" class="rag-preset-tab" data-preset-cat="MOTIVOS">📞 Motivos/OS</button>
+      </div>
+      <div class="rag-preset-drawer" id="ragPresetDrawer"></div>
+      <div class="rag-messages-area" id="ragMessagesArea"></div>
+      <div class="rag-input-box">
+        <textarea class="rag-textarea" id="ragInputText" rows="1" placeholder="Faça sua pergunta sobre indicadores, cidades, canais... (Enter envia)"></textarea>
+        <button type="button" class="rag-btn-send" id="ragBtnSend" aria-label="Enviar mensagem" title="Enviar">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+    `;
+
+    document.body.appendChild(fab);
+    document.body.appendChild(chatbox);
+
+    const messagesArea = chatbox.querySelector('#ragMessagesArea');
+    const inputArea = chatbox.querySelector('#ragInputText');
+    const sendBtn = chatbox.querySelector('#ragBtnSend');
+    const closeBtn = chatbox.querySelector('#ragBtnClose');
+    const clearBtn = chatbox.querySelector('#ragBtnClear');
+    const presetBar = chatbox.querySelector('#ragPresetBar');
+    const presetDrawer = chatbox.querySelector('#ragPresetDrawer');
+
+    const PRESET_QUESTIONS = {
+      FPD: [
+        { title: '💳 FPD consolidado Regional', query: 'FPD consolidado da Regional Norte' },
+        { title: '🏙️ Qual o FPD de Belém?', query: 'Qual o FPD de Belém?' },
+        { title: '🏙️ Qual o FPD de Manaus?', query: 'Qual o FPD de Manaus?' },
+        { title: '📍 Ranking de FPD por Cidade', query: 'ranking de cidades com pior FPD' },
+        { title: '🚪 FPD no Canal PAP', query: 'Qual o FPD do canal PAP?' },
+        { title: '📞 FPD no DDD 91', query: 'Qual o FPD no DDD 91?' },
+        { title: '📖 Diferença entre FPD 30 e 60', query: 'qual a diferença entre FPD 30 e FPD 60?' }
+      ],
+      SAFRA: [
+        { title: '🌱 Taxa Churn Safra D120 Regional', query: 'qual a taxa de churn safra D120 Regional?' },
+        { title: '🤝 Piores parceiros em D120', query: 'ranking de parceiros com pior churn safra' },
+        { title: '🏙️ Churn Safra em São Luís', query: 'qual o churn safra em São Luís?' },
+        { title: '📖 O que é Safra Madura D120?', query: 'o que é safra madura D120 e quando consolida?' }
+      ],
+      CHURN_BL: [
+        { title: '📉 Resumo Churn Banda Larga Geral', query: 'resumo do churn banda larga na Regional' },
+        { title: '📍 Ranking Churn por Cidade', query: 'ranking de churn banda larga por cidade' },
+        { title: '🏢 Churn no segmento PME', query: 'qual a taxa de churn no segmento PME?' },
+        { title: '🏪 Churn no Canal Lojas', query: 'churn banda larga no canal Lojas' }
+      ],
+      CREDITO: [
+        { title: '🛡️ Taxa de Aprovação Regional', query: 'taxa de aprovação de crédito na Regional' },
+        { title: '⚠️ Cidades com mais recusa antifraude', query: 'quais cidades tiveram mais recusas antifraude?' },
+        { title: '🏙️ Aprovação de crédito em Macapá', query: 'como está a aprovação de crédito em Macapá?' },
+        { title: '🤝 Aprovação por Canal e PDVs', query: 'aprovação de crédito no canal PAP e parceiros' }
+      ],
+      MARKET_SHARE: [
+        { title: '📊 Market Share Claro em Belém', query: 'qual o market share da Claro em Belém?' },
+        { title: '🏆 Líder de Mercado em Manaus', query: 'quem lidera o market share em Manaus?' },
+        { title: '📱 Market Share Móvel no DDD 98', query: 'market share móvel no DDD 98' },
+        { title: '📈 Net Adds consolidado regional', query: 'saldo de adições líquidas Net Adds regional' }
+      ],
+      SPEECH: [
+        { title: '🗣️ Principais motivos no Speech', query: 'quais os principais motivos de cancelamento no Speech?' },
+        { title: '💰 Percentual do motivo "Acha Caro"', query: 'qual o percentual do motivo acha caro?' },
+        { title: '🏙️ Motivos Speech em Belém', query: 'motivos de cancelamento em Belém no Speech' }
+      ],
+      MOTIVOS: [
+        { title: '📞 Taxa de OS Técnica Regional', query: 'qual a taxa de ordens de serviço geradas na Regional?' },
+        { title: '🔧 Motivos que mais geram visita técnica', query: 'quais motivos de procura geram mais visita técnica?' },
+        { title: '🏙️ Taxa de OS técnica em Manaus', query: 'taxa de OS técnica em Manaus' }
+      ]
+    };
+
+    let activePresetCategory = null;
+
+    function renderPresetDrawer(categoryKey) {
+      if (!categoryKey || !PRESET_QUESTIONS[categoryKey]) {
+        presetDrawer.innerHTML = '';
+        presetDrawer.classList.remove('open');
+        activePresetCategory = null;
+        presetBar.querySelectorAll('.rag-preset-tab').forEach(t => t.classList.remove('active'));
+        return;
+      }
+
+      activePresetCategory = categoryKey;
+      presetBar.querySelectorAll('.rag-preset-tab').forEach(t => {
+        t.classList.toggle('active', t.getAttribute('data-preset-cat') === categoryKey);
+      });
+
+      const list = PRESET_QUESTIONS[categoryKey];
+      let html = `
+        <div class="rag-preset-drawer-header">
+          <span>Perguntas Sugeridas · ${categoryKey}</span>
+          <button type="button" id="ragCloseDrawerBtn" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:12px;padding:0;">✕</button>
+        </div>
+      `;
+      list.forEach(q => {
+        html += `
+          <button type="button" class="rag-preset-item" data-rag-cmd="${escapeHtml(q.query)}">
+            <span>${escapeHtml(q.title)}</span>
+            <span style="color:#c0191f;font-weight:700;">→</span>
+          </button>
+        `;
+      });
+
+      presetDrawer.innerHTML = html;
+      presetDrawer.classList.add('open');
+
+      const closeDrawerBtn = presetDrawer.querySelector('#ragCloseDrawerBtn');
+      if (closeDrawerBtn) {
+        closeDrawerBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          renderPresetDrawer(null);
+        });
+      }
+    }
+
+    presetBar.addEventListener('click', (e) => {
+      const tab = e.target.closest('[data-preset-cat]');
+      if (!tab) return;
+      const cat = tab.getAttribute('data-preset-cat');
+      if (activePresetCategory === cat) {
+        renderPresetDrawer(null);
+      } else {
+        renderPresetDrawer(cat);
+      }
+    });
+
+    const STORAGE_KEY = 'pephub_rag_history_v1';
+
+    function loadHistory() {
+      try {
+        const raw = sessionStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const list = JSON.parse(raw);
+          if (Array.isArray(list) && list.length > 0) return list;
+        }
+      } catch (_) {}
+      return [
+        {
+          sender: 'bot',
+          time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+          text: `Olá, *${firstName}*! Sou o *Assistente Analítico RAG* da Regional Norte.\n\nVocê pode me fazer perguntas diretas em linguagem natural sobre indicadores, cidades, canais, DDDs e parceiros (sem necessidade de códigos ou prefixos).\n\nUse também as abas de relatórios acima para ver perguntas sugeridas. Como posso apoiar sua análise hoje?`,
+          chips: [
+            { label: '💳 FPD Regional', query: 'FPD consolidado da Regional Norte' },
+            { label: '📍 Ranking FPD Cidades', query: 'ranking de cidades com pior FPD' },
+            { label: '🌱 Churn Safra D120', query: 'qual a taxa de churn safra D120 Regional?' },
+            { label: '📉 Churn Banda Larga', query: 'resumo do churn banda larga na Regional' },
+            { label: '🛡️ Aprovação de Crédito', query: 'taxa de aprovação de crédito na Regional' },
+            { label: '📊 Market Share Belém', query: 'qual o market share da Claro em Belém?' }
+          ]
+        }
+      ];
+    }
+
+    function saveHistory(msgList) {
+      try {
+        const sliced = msgList.slice(-40);
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(sliced));
+      } catch (_) {}
+    }
+
+    let messages = loadHistory();
+
+    function formatText(text) {
+      if (!text) return '';
+      let safe = escapeHtml(text);
+      // Markdown: **negrito** ou *negrito*
+      safe = safe.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      safe = safe.replace(/\*([^*\n]+)\*/g, '<strong>$1</strong>');
+      // Quebras de linha
+      safe = safe.replace(/\n/g, '<br>');
+      // Opções em colchetes para chips clicáveis: ex: [0], [1], [2] até [14]
+      safe = safe.replace(/\[(\d{1,2})\]/g, '<button type="button" class="rag-option-btn" data-rag-cmd="$1">[$1]</button>');
+      return safe;
+    }
+
+    function renderMessages() {
+      messagesArea.innerHTML = '';
+      messages.forEach(m => {
+        const bubble = document.createElement('div');
+        bubble.className = `rag-bubble ${m.sender === 'user' ? 'rag-bubble-user' : 'rag-bubble-bot'}`;
+
+        let contentHtml = `<div>${formatText(m.text)}</div>`;
+
+        if (m.chips && Array.isArray(m.chips) && m.chips.length > 0) {
+          contentHtml += `<div class="rag-chips-container">` +
+            m.chips.map(c => `<button type="button" class="rag-chip" data-rag-cmd="${escapeHtml(c.query)}">${escapeHtml(c.label)}</button>`).join('') +
+            `</div>`;
+        }
+
+        contentHtml += `<span class="rag-bubble-time">${escapeHtml(m.time || '')}</span>`;
+        bubble.innerHTML = contentHtml;
+        messagesArea.appendChild(bubble);
+      });
+      messagesArea.scrollTop = messagesArea.scrollHeight;
+    }
+
+    function showTyping() {
+      const existing = messagesArea.querySelector('.rag-typing-indicator');
+      if (existing) existing.remove();
+      const typing = document.createElement('div');
+      typing.className = 'rag-typing-indicator';
+      typing.innerHTML = `
+        <span class="rag-typing-dot"></span>
+        <span class="rag-typing-dot"></span>
+        <span class="rag-typing-dot"></span>
+      `;
+      messagesArea.appendChild(typing);
+      messagesArea.scrollTop = messagesArea.scrollHeight;
+    }
+
+    function hideTyping() {
+      const existing = messagesArea.querySelector('.rag-typing-indicator');
+      if (existing) existing.remove();
+    }
+
+    async function handleSend(textToSend) {
+      const text = (textToSend !== undefined ? textToSend : inputArea.value).trim();
+      if (!text) return;
+
+      // Fecha gaveta de presets se estiver aberta
+      renderPresetDrawer(null);
+
+      const userTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      messages.push({ sender: 'user', text, time: userTime });
+      saveHistory(messages);
+      renderMessages();
+
+      if (textToSend === undefined) {
+        inputArea.value = '';
+        inputArea.style.height = 'auto';
+      }
+
+      inputArea.disabled = true;
+      sendBtn.disabled = true;
+      showTyping();
+
+      try {
+        const payload = {
+          query: text,
+          phone: currentUser?.telefone || `web_${currentUser?.id || 'anon'}`,
+          channel: 'web'
+        };
+        const res = await fetch('/api/bot/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        hideTyping();
+
+        const botTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+        if (res.ok) {
+          const data = await res.json().catch(() => ({}));
+          const answer = data.answer || 'Não obtive resposta da base analítica.';
+          messages.push({ sender: 'bot', text: answer, time: botTime });
+        } else if (res.status === 403) {
+          const errData = await res.json().catch(() => ({}));
+          messages.push({
+            sender: 'bot',
+            text: `⚠️ *Acesso Restrito ao Bot*\n\n${errData.error || 'Seu usuário precisa estar com status aprovado para realizar consultas analíticas no bot.'}`,
+            time: botTime
+          });
+        } else {
+          messages.push({
+            sender: 'bot',
+            text: `⚠️ *Instabilidade Temporária*\n\nNão foi possível processar sua consulta analítica neste momento (código ${res.status}). Por favor, tente novamente em alguns instantes.`,
+            time: botTime
+          });
+        }
+      } catch (err) {
+        hideTyping();
+        const botTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        messages.push({
+          sender: 'bot',
+          text: `⚠️ *Falha de Conexão*\n\nNão conseguimos nos comunicar com o servidor. Verifique sua conexão e tente novamente.`,
+          time: botTime
+        });
+      } finally {
+        inputArea.disabled = false;
+        sendBtn.disabled = false;
+        saveHistory(messages);
+        renderMessages();
+        inputArea.focus();
+      }
+    }
+
+    function toggleChat(forceOpen) {
+      const isOpen = chatbox.classList.contains('open');
+      const targetState = forceOpen !== undefined ? forceOpen : !isOpen;
+
+      if (targetState) {
+        chatbox.classList.add('open');
+        fab.classList.add('open');
+        renderMessages();
+        setTimeout(() => inputArea.focus(), 120);
+      } else {
+        chatbox.classList.remove('open');
+        fab.classList.remove('open');
+      }
+    }
+
+    fab.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleChat();
+    });
+
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleChat(false);
+    });
+
+    clearBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sessionStorage.removeItem(STORAGE_KEY);
+      messages = loadHistory();
+      renderMessages();
+    });
+
+    sendBtn.addEventListener('click', () => handleSend());
+
+    inputArea.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSend();
+      } else if (e.key === 'Escape') {
+        toggleChat(false);
+      }
+    });
+
+    inputArea.addEventListener('input', () => {
+      inputArea.style.height = 'auto';
+      inputArea.style.height = Math.min(inputArea.scrollHeight, 84) + 'px';
+    });
+
+    messagesArea.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-rag-cmd]');
+      if (btn) {
+        const cmd = btn.getAttribute('data-rag-cmd');
+        if (cmd) {
+          handleSend(cmd);
+        }
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (chatbox.classList.contains('open') && !chatbox.contains(e.target) && !fab.contains(e.target)) {
+        if (window.innerWidth <= 600) {
+          toggleChat(false);
+        }
+      }
+    });
+
+    renderMessages();
+  }
+
+  window.pephubMountRagChatbot = initFloatingRagChatbot;
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', autoInit);
   else autoInit();
