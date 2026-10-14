@@ -393,11 +393,14 @@ CREATE TABLE IF NOT EXISTS bot_feedback (
     report_id TEXT,
     rating TEXT NOT NULL,                      -- 'correct', 'partially_correct', 'incorrect'
     comment TEXT,
+    is_approved_fewshot INTEGER DEFAULT 0,     -- 1 = homologado como gabarito few-shot
+    curated_answer TEXT,                       -- resposta homologada / gabarito editado pelo admin
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_bot_feedback_rating ON bot_feedback(rating);
 CREATE INDEX IF NOT EXISTS idx_bot_feedback_report ON bot_feedback(report_id);
 CREATE INDEX IF NOT EXISTS idx_bot_feedback_created ON bot_feedback(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bot_feedback_fewshot ON bot_feedback(is_approved_fewshot);
 
 

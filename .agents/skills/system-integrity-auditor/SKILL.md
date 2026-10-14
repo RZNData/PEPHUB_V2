@@ -50,8 +50,19 @@ python scripts/system_integrity_agent.py
   - `bloqueado` / `rejeitado`: acesso revogado imediatamente.
 - **Isolamento Administrativo**: Rotas `/admin/*` e `/api/admin/*` protegidas por checagem estrita de `user.is_admin`.
 
-### 6. Integridade Estrutural do D1 (Schema & Tabelas)
-- Existência das tabelas críticas: `users`, `sessions`, `login_attempts`, `access_logs`, `system_controls`, `required_profile_fields`.
+### 6. Travas e Controles Globais do Sistema (System Controls & Killswitches)
+- **Interruptores Mestres Canônicos**:
+  - `suspend_emails`: Pausa temporariamente todos os e-mails automáticos enviados pela plataforma (notificações de cadastro, aprovações e comunicados).
+  - `suspend_portal_access`: Bloqueia temporariamente o acesso de colaboradores aos painéis e ferramentas com mensagem corporativa de manutenção programada (503). Administradores continuam com acesso total.
+  - `suspend_whatsapp_bot`: Pausa e bloqueia temporariamente o Assistente Analítico RAG no portal web e o Bot corporativo no WhatsApp com mensagem de manutenção programada. Administradores mantêm acesso para testes com aviso informativo de suspensão.
+  - `suspend_tv_submissions`: Pausa a submissão de novas imagens e vídeos pelos colaboradores no painel de Divulgação Corporativa, mantendo a grade atual em exibição.
+- **Resiliência e Performance**:
+  - Leitura ultra-rápida via cache in-memory (`_systemControlsCache`) de 30 segundos, purgado imediatamente após qualquer alteração via `invalidateSystemControlsCache()`.
+  - Tratamento de aliases canônicos: `suspend_bot` mapeado transparentemente para `suspend_whatsapp_bot`.
+- **Garantia de Não-Bloqueio do Gestor (Admin Bypass)**:
+  - Todas as travas preservam o acesso de credenciais `is_admin = 1` para permitir auditoria, manutenção e testes ao vivo.
+- **Auditoria Transparente**:
+  - Todas as ativações e desativações de travas registram logs com matrícula e nome do gestor em `access_logs` (`ADMIN_SYSTEM_CONTROL:<key>:<val>`).
 
 ### 7. Padronização Institucional de Cabeçalhos e Monitoramento de Sessões Ativas
 - **Componente Oficial**: Todos os relatórios analíticos devem integrar `/js/header-widget.js` e o botão padronizado `btn-nav-catalog`.
@@ -84,7 +95,7 @@ python scripts/system_integrity_agent.py
 | 3 | Máscara de Telefone funcional com Backspace | MEDIUM | -10 |
 | 4 | Server-Side Gate na Raiz e Relatórios | CRITICAL | -25 |
 | 5 | Anti-cache em HTML e Service Worker Network-Only | HIGH | -15 |
-| 6 | RBAC e Tratamento de Status (Pendente/Bloqueado) | HIGH | -15 |
+| 6 | Travas e Controles Globais do Sistema (System Controls & Killswitches) | HIGH | -20 |
 | 7 | Cabeçalho Padronizado e Header-Widget | HIGH | -15 |
 | 8 | Otimização de CPU Worker e Fast Static Bypass | HIGH | -15 |
 | 9 | Integridade Sintática de Scripts nos Relatórios | CRITICAL | -20 |

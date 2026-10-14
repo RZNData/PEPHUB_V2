@@ -199,6 +199,7 @@ const tabControlsBtn = document.getElementById('tabControlsBtn');
 const tabModulesBtn = document.getElementById('tabModulesBtn');
 const tabUploadsBtn = document.getElementById('tabUploadsBtn');
 const tabRequestsBtn = document.getElementById('tabRequestsBtn');
+const tabBotFeedbackBtn = document.getElementById('tabBotFeedbackBtn');
 
 const sectionUsers = document.getElementById('sectionUsers');
 const sectionNotifications = document.getElementById('sectionNotifications');
@@ -209,6 +210,7 @@ const sectionControls = document.getElementById('sectionControls');
 const sectionModules = document.getElementById('sectionModules');
 const sectionUploads = document.getElementById('sectionUploads');
 const sectionRequests = document.getElementById('sectionRequests');
+const sectionBotFeedback = document.getElementById('sectionBotFeedback');
 
 const PILLAR_MAPPING = {
   users: { pillarId: 'pillarTabUsers', groupId: 'subGroupUsers' },
@@ -217,6 +219,7 @@ const PILLAR_MAPPING = {
   logs: { pillarId: 'pillarTabTelemetry', groupId: 'subGroupTelemetry' },
   modules: { pillarId: 'pillarTabGovernance', groupId: 'subGroupGovernance' },
   controls: { pillarId: 'pillarTabGovernance', groupId: 'subGroupGovernance' },
+  'bot-feedback': { pillarId: 'pillarTabGovernance', groupId: 'subGroupGovernance' },
   notifications: { pillarId: 'pillarTabOperations', groupId: 'subGroupOperations' },
   emails: { pillarId: 'pillarTabOperations', groupId: 'subGroupOperations' },
   uploads: { pillarId: 'pillarTabOperations', groupId: 'subGroupOperations' }
@@ -226,8 +229,8 @@ function showTab(tab) {
   closeActionMenu();
 
   // Desativa todas as sub-abas e oculta todas as seções
-  [tabUsersBtn, tabRequestsBtn, tabNotificationsBtn, tabEmailsBtn, tabStatsBtn, tabLogsBtn, tabControlsBtn, tabModulesBtn, tabUploadsBtn].filter(Boolean).forEach(b => b.classList.remove('active'));
-  [sectionUsers, sectionRequests, sectionNotifications, sectionEmails, sectionStats, sectionLogs, sectionControls, sectionModules, sectionUploads].filter(Boolean).forEach(s => s.style.display = 'none');
+  [tabUsersBtn, tabRequestsBtn, tabNotificationsBtn, tabEmailsBtn, tabStatsBtn, tabLogsBtn, tabControlsBtn, tabModulesBtn, tabUploadsBtn, tabBotFeedbackBtn].filter(Boolean).forEach(b => b.classList.remove('active'));
+  [sectionUsers, sectionRequests, sectionNotifications, sectionEmails, sectionStats, sectionLogs, sectionControls, sectionModules, sectionUploads, sectionBotFeedback].filter(Boolean).forEach(s => s.style.display = 'none');
 
   // Sincroniza Pilar Estratégico e Sub-Grupo Contextual
   const mapping = PILLAR_MAPPING[tab] || PILLAR_MAPPING.users;
@@ -277,6 +280,10 @@ function showTab(tab) {
     if (tabUploadsBtn) tabUploadsBtn.classList.add('active');
     sectionUploads.style.display = 'block';
     loadUploadsConfig();
+  } else if (tab === 'bot-feedback') {
+    if (tabBotFeedbackBtn) tabBotFeedbackBtn.classList.add('active');
+    if (sectionBotFeedback) sectionBotFeedback.style.display = 'block';
+    loadBotFeedbacks();
   }
 }
 
@@ -289,6 +296,7 @@ tabLogsBtn.addEventListener('click', () => showTab('logs'));
 tabControlsBtn.addEventListener('click', () => showTab('controls'));
 tabModulesBtn.addEventListener('click', () => showTab('modules'));
 tabUploadsBtn.addEventListener('click', () => showTab('uploads'));
+if (tabBotFeedbackBtn) tabBotFeedbackBtn.addEventListener('click', () => showTab('bot-feedback'));
 
 // Dropdown de Painéis no Header do Admin
 const btnAdminReportsMenu = document.getElementById('btnAdminReportsMenu');
@@ -1408,10 +1416,22 @@ function renderSystemControls() {
 
   container.innerHTML = allControls.map(c => {
     const isActive = c.value === '1';
+    let categoryBadge = '';
+    if (c.key.includes('bot')) {
+      categoryBadge = '<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:800;letter-spacing:.4px;background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;margin-bottom:6px">🤖 CHATBOT RAG & ASSISTENTE</span>';
+    } else if (c.key.includes('portal')) {
+      categoryBadge = '<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:800;letter-spacing:.4px;background:#fef2f2;color:#991b1b;border:1px solid #fecaca;margin-bottom:6px">🔒 PORTAL & RELATÓRIOS</span>';
+    } else if (c.key.includes('email')) {
+      categoryBadge = '<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:800;letter-spacing:.4px;background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;margin-bottom:6px">✉️ E-MAILS & NOTIFICAÇÕES</span>';
+    } else if (c.key.includes('tv')) {
+      categoryBadge = '<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:800;letter-spacing:.4px;background:#fffbeb;color:#92400e;border:1px solid #fde68a;margin-bottom:6px">📺 MÍDIA TV & DIVULGAÇÃO</span>';
+    }
+
     return `
       <div class="ctrl-card ${isActive ? 'locked' : ''}">
         <div class="ctrl-hd">
           <div>
+            ${categoryBadge}
             <div class="ctrl-title">${escapeHtml(c.label)}</div>
             <div class="ctrl-desc">${escapeHtml(c.description)}</div>
           </div>
@@ -3662,6 +3682,194 @@ window.submitSendTestEmail = submitSendTestEmail;
 window.openSimulateInboundModal = openSimulateInboundModal;
 window.submitSimulateInbound = submitSimulateInbound;
 
+// ==========================================
+// 12. CALIBRAÇÃO DO CHATBOT RAG & FEW-SHOT
+// ==========================================
+let allFeedbacks = [];
+let currentFeedbackRating = 'all';
+
+async function loadBotFeedbacks() {
+  const tbody = document.getElementById('botFeedbackTbody');
+  if (tbody) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--ink3);padding:24px">Carregando feedbacks analíticos…</td></tr>';
+  }
+  const reportSelect = document.getElementById('feedbackReportSelect');
+  const report = reportSelect ? reportSelect.value : '';
+
+  try {
+    const params = new URLSearchParams();
+    if (currentFeedbackRating && currentFeedbackRating !== 'all') {
+      params.set('rating', currentFeedbackRating);
+    }
+    if (report) {
+      params.set('report', report);
+    }
+    params.set('limit', '100');
+
+    const res = await fetch(`/api/admin/bot-feedbacks?${params.toString()}`);
+    if (!res.ok) throw new Error('Falha ao obter feedbacks');
+    const data = await res.json();
+    allFeedbacks = data.feedbacks || [];
+    renderBotFeedbacks(allFeedbacks);
+    updateBotFeedbackKPIs(data.stats);
+  } catch (err) {
+    console.error('Erro loadBotFeedbacks:', err);
+    if (tbody) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--red);padding:20px">Erro ao carregar feedbacks do bot. Tente novamente.</td></tr>';
+    }
+  }
+}
+
+function updateBotFeedbackKPIs(stats) {
+  if (!stats) return;
+  const kpiTotal = document.getElementById('kpiTotalFeedbacks');
+  const kpiCorrect = document.getElementById('kpiCorrectFeedbacks');
+  const kpiPartial = document.getElementById('kpiPartialFeedbacks');
+  const kpiIncorrect = document.getElementById('kpiIncorrectFeedbacks');
+  const kpiFewshot = document.getElementById('kpiFewshotFeedbacks');
+  const badgeTotal = document.getElementById('totalFeedbacksCount');
+
+  if (kpiTotal) kpiTotal.textContent = stats.total || 0;
+  if (kpiCorrect) kpiCorrect.textContent = stats.total_correct || 0;
+  if (kpiPartial) kpiPartial.textContent = stats.total_partial || 0;
+  if (kpiIncorrect) kpiIncorrect.textContent = stats.total_incorrect || 0;
+  if (kpiFewshot) kpiFewshot.textContent = stats.total_fewshot || 0;
+  if (badgeTotal) badgeTotal.textContent = stats.total || 0;
+}
+
+function setFeedbackRatingFilter(rating) {
+  currentFeedbackRating = rating;
+  const container = document.getElementById('feedbackRatingFilters');
+  if (container) {
+    container.querySelectorAll('.date-preset-btn').forEach(btn => {
+      if (btn.getAttribute('data-rating') === rating) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
+  loadBotFeedbacks();
+}
+
+function renderBotFeedbacks(feedbacks) {
+  const tbody = document.getElementById('botFeedbackTbody');
+  if (!tbody) return;
+
+  if (!feedbacks || feedbacks.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--ink3);padding:24px">Nenhuma avaliação encontrada com os filtros selecionados.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = feedbacks.map(fb => {
+    let ratingBadge = '';
+    if (fb.rating === 'correct') {
+      ratingBadge = '<span class="badge aprovado">🟢 Correta</span>';
+    } else if (fb.rating === 'partially_correct') {
+      ratingBadge = '<span class="badge pendente">🟡 Parcial</span>';
+    } else {
+      ratingBadge = '<span class="badge bloqueado">🔴 Incorreta</span>';
+    }
+
+    const isFewshot = fb.is_approved_fewshot === 1;
+    const fewshotBadge = isFewshot
+      ? '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:3px;font-size:10.5px;font-weight:700;background:#f3e8fd;color:#7627bb;border:1px solid #e1bee7">🌟 Gabarito</span>'
+      : '<span style="color:var(--ink3);font-size:11px">⚪ Normal</span>';
+
+    const cleanUser = fb.user_name || fb.user_email || 'Colaborador';
+    const cleanComment = fb.comment ? escapeHtml(fb.comment) : '<span style="color:var(--ink3);font-style:italic">Sem comentário</span>';
+
+    return `
+      <tr>
+        <td style="white-space:nowrap;font-size:11px;color:var(--ink2)">
+          ${escapeHtml(formatRelativeTime(fb.created_at))}
+        </td>
+        <td style="font-size:11.5px;font-weight:600;color:var(--ink)">
+          ${escapeHtml(cleanUser)}
+        </td>
+        <td style="font-size:11.5px">
+          <code>${escapeHtml(fb.report_id || 'Geral')}</code>
+        </td>
+        <td style="font-size:12px;font-weight:600;color:var(--ink);max-width:240px;overflow:hidden;text-overflow:ellipsis" title="${escapeHtml(fb.query || '')}">
+          ${escapeHtml(fb.query || '')}
+        </td>
+        <td style="font-size:11px;color:var(--ink2);max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escapeHtml(fb.curated_answer || fb.response_text || '')}">
+          ${escapeHtml(fb.curated_answer || fb.response_text || 'Sem resposta')}
+        </td>
+        <td>${ratingBadge}</td>
+        <td style="font-size:11.5px;max-width:200px;overflow:hidden;text-overflow:ellipsis">
+          ${cleanComment}
+        </td>
+        <td>${fewshotBadge}</td>
+        <td style="text-align:right">
+          <button class="btn-act ${isFewshot ? 'danger' : 'approve'}" onclick="openCurateFeedbackModal('${fb.id}')" title="${isFewshot ? 'Editar ou Revogar Gabarito' : 'Homologar Resposta como Gabarito Oficial'}">
+            ${isFewshot ? 'Gerenciar' : 'Homologar'}
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function openCurateFeedbackModal(id) {
+  const fb = allFeedbacks.find(f => f.id === id);
+  if (!fb) return;
+
+  const modal = document.getElementById('modalCurateFeedback');
+  const idInput = document.getElementById('curateFeedbackId');
+  const queryDiv = document.getElementById('curateQueryText');
+  const answerArea = document.getElementById('curateAnswerText');
+  const btnRevoke = document.getElementById('btnRevokeFewshot');
+  const btnSave = document.getElementById('btnSaveFewshot');
+
+  if (idInput) idInput.value = fb.id;
+  if (queryDiv) queryDiv.textContent = fb.query || '';
+  if (answerArea) answerArea.value = fb.curated_answer || fb.response_text || '';
+
+  const isFewshot = fb.is_approved_fewshot === 1;
+  if (btnRevoke) btnRevoke.style.display = isFewshot ? 'inline-flex' : 'none';
+  if (btnSave) btnSave.textContent = isFewshot ? 'Salvar Alterações do Gabarito' : 'Homologar como Gabarito';
+
+  if (modal) modal.classList.add('open');
+}
+
+async function submitCuratedFeedback(isApproved) {
+  const idInput = document.getElementById('curateFeedbackId');
+  const answerArea = document.getElementById('curateAnswerText');
+  const modal = document.getElementById('modalCurateFeedback');
+
+  const id = idInput ? idInput.value : '';
+  const curated_answer = answerArea ? answerArea.value.trim() : '';
+
+  if (!id) return;
+
+  try {
+    const res = await fetch('/api/admin/bot-feedbacks/approve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id,
+        is_approved: isApproved,
+        curated_answer: isApproved ? curated_answer : null
+      })
+    });
+
+    if (!res.ok) throw new Error('Falha ao homologar gabarito');
+
+    showToast(isApproved ? 'Gabarito homologado com sucesso! Resposta ativa no Few-Shot Learning.' : 'Gabarito revogado com sucesso.', 'success');
+    if (modal) modal.classList.remove('open');
+    loadBotFeedbacks();
+  } catch (err) {
+    console.error('Erro submitCuratedFeedback:', err);
+    showToast('Erro ao processar homologação de gabarito.', 'error');
+  }
+}
+
+window.loadBotFeedbacks = loadBotFeedbacks;
+window.setFeedbackRatingFilter = setFeedbackRatingFilter;
+window.openCurateFeedbackModal = openCurateFeedbackModal;
+window.submitCuratedFeedback = submitCuratedFeedback;
+
 async function initAdminPanel() {
   setDatePreset('30d');
   try {
@@ -3685,6 +3893,7 @@ async function initAdminPanel() {
   loadUploadsConfig();
   loadAdminNotifications();
   loadAdminEmails();
+  loadBotFeedbacks();
 
   // O botão "Online" do cabeçalho é montado pelo header-widget.js ([data-pephub-online])
   refreshPendingRequestsCount();

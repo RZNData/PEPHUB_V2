@@ -28,7 +28,7 @@ def run_agent(script_name, label):
             [sys.executable, "-X", "utf8", path],
             capture_output=True, text=True,
             encoding="utf-8", errors="replace",
-            cwd=WORKSPACE_DIR, timeout=120
+            cwd=WORKSPACE_DIR, timeout=240
         )
         output = result.stdout + result.stderr
         # Extrair score da saida

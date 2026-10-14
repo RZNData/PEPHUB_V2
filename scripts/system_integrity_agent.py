@@ -169,6 +169,91 @@ def audit_system_integrity():
             print("  [FALHA] Service Worker sem Network-Only para requisições de página.")
 
     # -------------------------------------------------------------
+    # 6. TRAVAS E CONTROLES GLOBAIS DO SISTEMA (SYSTEM CONTROLS) (HIGH - 20 pts)
+    # -------------------------------------------------------------
+    print("\n[PILAR 6] Travas e Controles Globais do Sistema (System Controls & Killswitches)...")
+    p6_ok = True
+    
+    # 6.1. Verificação de Chaves Canônicas e Seed em security.js
+    required_controls = [
+        ('suspend_emails', 'Suspender Disparo de E-mails'),
+        ('suspend_portal_access', 'Impedir Acessos aos Relatórios & Ferramentas'),
+        ('suspend_whatsapp_bot', 'Suspender Chatbot RAG & Assistente Analítico'),
+        ('suspend_tv_submissions', 'Suspender Novas Propostas de Mídia para TVs')
+    ]
+    with open(SECURITY_UTIL, "r", encoding="utf-8") as f:
+        sec_code = f.read()
+
+    for ctrl_key, ctrl_label in required_controls:
+        if ctrl_key not in sec_code:
+            p6_ok = False
+            score -= 5
+            deductions.append(f"Trava de sistema '{ctrl_key}' ausente no seed de security.js.")
+            print(f"  [FALHA] Trava '{ctrl_key}' não definida no seed de security.js.")
+        else:
+            print(f"  [OK] Trava canônica '{ctrl_key}' ({ctrl_label}) devidamente catalogada no seed.")
+
+    # 6.2. Verificação de Enforcing por Módulo
+    # Portal Access
+    if os.path.exists(WORKER_INDEX):
+        with open(WORKER_INDEX, "r", encoding="utf-8") as f:
+            w_code = f.read()
+        if "suspend_portal_access" in w_code and "!user.is_admin" in w_code:
+            print("  [OK] Trava 'suspend_portal_access' protege relatórios e raiz mantendo bypass de admin.")
+        else:
+            p6_ok = False
+            score -= 5
+            deductions.append("Trava 'suspend_portal_access' sem verificação adequada em worker/index.js.")
+            print("  [FALHA] 'suspend_portal_access' sem verificação adequada em worker/index.js.")
+
+    # Email Dispatch
+    if "getSystemControl(env, 'suspend_emails')" in sec_code:
+        print("  [OK] Trava 'suspend_emails' intercepta envios em sendEmail com log de suspensão.")
+    else:
+        p6_ok = False
+        score -= 5
+        deductions.append("Trava 'suspend_emails' sem verificação em sendEmail.")
+        print("  [FALHA] 'suspend_emails' sem verificação em sendEmail.")
+
+    # TV Submissions
+    tv_route = os.path.join(WORKER_DIR, "routes", "tv.js")
+    if os.path.exists(tv_route):
+        with open(tv_route, "r", encoding="utf-8") as f:
+            tv_code = f.read()
+        if "getSystemControl(env, 'suspend_tv_submissions')" in tv_code:
+            print("  [OK] Trava 'suspend_tv_submissions' bloqueia uploads e propostas na esteira de TV.")
+        else:
+            p6_ok = False
+            score -= 5
+            deductions.append("Trava 'suspend_tv_submissions' sem verificação em routes/tv.js.")
+            print("  [FALHA] 'suspend_tv_submissions' sem verificação em routes/tv.js.")
+
+    # Bot & RAG Suspension (Web & WhatsApp)
+    bot_route = os.path.join(WORKER_DIR, "routes", "bot.js")
+    if os.path.exists(bot_route):
+        with open(bot_route, "r", encoding="utf-8") as f:
+            bot_code = f.read()
+        if "suspend_whatsapp_bot" in bot_code and "reason: 'suspended'" in bot_code and "status = 503" in bot_code:
+            print("  [OK] Trava do Bot intercepta Web e WhatsApp retornando 503 enquanto permite testes de administrador.")
+        else:
+            p6_ok = False
+            score -= 5
+            deductions.append("Trava do Bot sem bloqueio estrito de Web e WhatsApp ou sem retorno 503.")
+            print("  [FALHA] Trava do Bot sem bloqueio estrito em routes/bot.js.")
+
+    # 6.3. API de Administração
+    if os.path.exists(ADMIN_ROUTE):
+        with open(ADMIN_ROUTE, "r", encoding="utf-8") as f:
+            adm_code = f.read()
+        if "/api/admin/system-controls" in adm_code and "UPDATE system_controls" in adm_code:
+            print("  [OK] API administrativa (/api/admin/system-controls) expõe leitura e gravação auditada com invalidate cache.")
+        else:
+            p6_ok = False
+            score -= 5
+            deductions.append("API /api/admin/system-controls ausente ou incompleta em routes/admin.js.")
+            print("  [FALHA] API /api/admin/system-controls ausente em routes/admin.js.")
+
+    # -------------------------------------------------------------
     # 7. PADRONIZAÇÃO DE CABEÇALHOS & HEADER-WIDGET (HIGH - 15 pts)
     # -------------------------------------------------------------
     print("\n[PILAR 7] Padronização Institucional de Cabeçalhos e Header-Widget...")

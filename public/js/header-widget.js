@@ -3904,12 +3904,20 @@
             reportId: data.targetReport || null,
             feedbackStatus: null
           });
+        } else if (res.status === 503) {
+          const errData = await res.json().catch(() => ({}));
+          messages.push({
+            id: 'susp_' + Date.now().toString(36),
+            sender: 'bot',
+            text: errData.answer || `⚠️ *Assistente RAG em Manutenção*\n\nO Assistente Analítico RAG está temporariamente em manutenção programada pela administração da Regional Norte. Por favor, tente novamente mais tarde.`,
+            time: botTime
+          });
         } else if (res.status === 403) {
           const errData = await res.json().catch(() => ({}));
           messages.push({
             id: 'err_' + Date.now().toString(36),
             sender: 'bot',
-            text: `⚠️ *Acesso Restrito ao Bot*\n\n${errData.error || 'Seu usuário precisa estar com status aprovado para realizar consultas analíticas no bot.'}`,
+            text: errData.answer || `⚠️ *Acesso Restrito ao Bot*\n\n${errData.error || 'Seu usuário precisa estar com status aprovado para realizar consultas analíticas no bot.'}`,
             time: botTime
           });
         } else {

@@ -448,15 +448,16 @@ export function invalidateSystemControlsCache() {
 // Helper: Consultar estado de uma trava global do sistema (com cache in-memory)
 export async function getSystemControl(env, key) {
   if (!env.DB) return false;
+  const effectiveKey = (key === 'suspend_bot') ? 'suspend_whatsapp_bot' : key;
   const now = Date.now();
-  const cached = _systemControlsCache.get(key);
+  const cached = _systemControlsCache.get(effectiveKey);
   if (cached && cached.expiresAt > now) {
     return cached.value;
   }
   try {
-    const row = await env.DB.prepare('SELECT value FROM system_controls WHERE key = ?').bind(key).first();
+    const row = await env.DB.prepare('SELECT value FROM system_controls WHERE key = ?').bind(effectiveKey).first();
     const val = row ? row.value === '1' : false;
-    _systemControlsCache.set(key, { value: val, expiresAt: now + 30000 });
+    _systemControlsCache.set(effectiveKey, { value: val, expiresAt: now + 30000 });
     return val;
   } catch (_) {
     return false;
@@ -763,9 +764,30 @@ export async function ensureAppSchema(env, force = false) {
       INSERT OR IGNORE INTO system_controls (key, value, label, description, updated_at) VALUES 
       ('suspend_emails', '0', 'Suspender Disparo de E-mails', 'Pausa temporariamente todos os e-mails automáticos enviados pela plataforma (notificações de cadastro, aprovações e comunicados).', datetime('now')),
       ('suspend_portal_access', '0', 'Impedir Acessos aos Relatórios & Ferramentas (Modo Manutenção)', 'Bloqueia temporariamente o acesso de colaboradores aos painéis e ferramentas com mensagem corporativa de manutenção programada. Administradores continuam com acesso total.', datetime('now')),
-      ('suspend_whatsapp_bot', '0', 'Suspender Integração com Bot WhatsApp', 'Pausa o fornecimento de contatos e bloqueia temporariamente as interações automatizadas do bot corporativo de WhatsApp.', datetime('now')),
+      ('suspend_whatsapp_bot', '0', 'Suspender Chatbot RAG & Assistente Analítico (Web e WhatsApp)', 'Pausa e bloqueia temporariamente o Assistente Analítico RAG no portal web e o Bot corporativo no WhatsApp com mensagem de manutenção programada. Administradores continuam com acesso para testes.', datetime('now')),
       ('suspend_tv_submissions', '0', 'Suspender Novas Propostas de Mídia para TVs', 'Pausa temporariamente a submissão de novas imagens e vídeos pelos colaboradores no painel de Divulgação Corporativa, mantendo a grade atual em exibição.', datetime('now'))
     `).run().catch(() => {});
+
+    // Garante estrutura atualizada de bot_feedback para calibração contínua e Few-Shot Learning
+    await env.DB.prepare(`
+      CREATE TABLE IF NOT EXISTS bot_feedback (
+        id TEXT PRIMARY KEY,
+        user_id TEXT,
+        user_name TEXT,
+        user_email TEXT,
+        message_id TEXT,
+        query TEXT NOT NULL,
+        response_text TEXT,
+        report_id TEXT,
+        rating TEXT NOT NULL,
+        comment TEXT,
+        is_approved_fewshot INTEGER DEFAULT 0,
+        curated_answer TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `).run().catch(() => {});
+    await env.DB.prepare("ALTER TABLE bot_feedback ADD COLUMN is_approved_fewshot INTEGER DEFAULT 0").run().catch(() => {});
+    await env.DB.prepare("ALTER TABLE bot_feedback ADD COLUMN curated_answer TEXT").run().catch(() => {});
 
     // 3. Garante tabelas de ferramentas e campos obrigatórios de cadastro
     await env.DB.prepare(`

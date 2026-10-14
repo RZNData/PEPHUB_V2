@@ -607,6 +607,10 @@ tbody tr:hover{background:#f7f9fb}
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           Travas & Controles <span class="tab-badge" id="activeControlsCount">0</span>
         </button>
+        <button type="button" class="sub-nav-btn" id="tabBotFeedbackBtn" onclick="showTab('bot-feedback')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="13" y2="13"/></svg>
+          Feedbacks do Chatbot RAG <span class="tab-badge" id="totalFeedbacksCount">0</span>
+        </button>
       </div>
 
       <!-- Sub-grupo 4: Comunicação & Cargas -->
@@ -962,6 +966,90 @@ tbody tr:hover{background:#f7f9fb}
           </thead>
           <tbody id="requiredFieldsTbody">
             <tr><td colspan="5" style="text-align:center;color:var(--ink3);padding:18px">Carregando campos obrigatórios…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABA: FEEDBACKS DO CHATBOT RAG & FEW-SHOT LEARNING -->
+  <div id="sectionBotFeedback" style="display:none">
+    <!-- Micro KPIs de Feedback -->
+    <div class="kpis" style="margin-bottom:14px">
+      <div class="kpi">
+        <div class="k">Total de Avaliações</div>
+        <div class="v" id="kpiTotalFeedbacks">0</div>
+        <div class="d">Avaliações enviadas por usuários</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Totalmente Corretas</div>
+        <div class="v" style="color:var(--green)" id="kpiCorrectFeedbacks">0</div>
+        <div class="d">Respostas 100% aderentes</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Parcialmente Corretas</div>
+        <div class="v" style="color:var(--amber)" id="kpiPartialFeedbacks">0</div>
+        <div class="d">Respostas com ressalvas</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Incorretas</div>
+        <div class="v" style="color:var(--red)" id="kpiIncorrectFeedbacks">0</div>
+        <div class="d">Apontadas para calibração</div>
+      </div>
+      <div class="kpi">
+        <div class="k">Gabaritos Few-Shot</div>
+        <div class="v" style="color:#7c3aed" id="kpiFewshotFeedbacks">0</div>
+        <div class="d">Padrões ouro homologados</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="sub-bar">
+        <div>
+          <strong style="font-size:13px;color:var(--ink)">Calibração Contínua do RAG & Homologação de Gabaritos (Few-Shot)</strong>
+          <div style="font-size:11.5px;color:var(--ink2);margin-top:2px">
+            Audite perguntas e respostas, verifique avaliações dos gestores e homologue respostas gabarito para treinamento em contexto da IA.
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <div class="date-presets" id="feedbackRatingFilters">
+            <button class="date-preset-btn active" data-rating="all" onclick="setFeedbackRatingFilter('all')">Todos</button>
+            <button class="date-preset-btn" data-rating="correct" onclick="setFeedbackRatingFilter('correct')">🟢 Corretas</button>
+            <button class="date-preset-btn" data-rating="partially_correct" onclick="setFeedbackRatingFilter('partially_correct')">🟡 Parciais</button>
+            <button class="date-preset-btn" data-rating="incorrect" onclick="setFeedbackRatingFilter('incorrect')">🔴 Incorretas</button>
+            <button class="date-preset-btn" data-rating="fewshot" onclick="setFeedbackRatingFilter('fewshot')">🌟 Gabaritos</button>
+          </div>
+          <select id="feedbackReportSelect" class="sub-filter-select" onchange="loadBotFeedbacks()">
+            <option value="">Todos os Relatórios</option>
+            <option value="FPD">FPD</option>
+            <option value="CHURN_SAFRA">Churn Safra</option>
+            <option value="CHURN_BL">Churn Banda Larga</option>
+            <option value="MARKET_SHARE_RESIDENCIAL">Market Share Residencial</option>
+            <option value="MARKET_SHARE_MOVEL">Market Share Móvel</option>
+            <option value="CREDITO">Aprovação de Crédito</option>
+            <option value="EVOLUCAO_CARTEIRA">Evolução de Carteira</option>
+          </select>
+          <button class="sub-filter-btn" onclick="loadBotFeedbacks()">Atualizar</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:130px">Data / Hora</th>
+              <th style="width:140px">Colaborador</th>
+              <th style="width:120px">Relatório</th>
+              <th style="min-width:180px">Pergunta</th>
+              <th style="min-width:220px">Resposta Gerada</th>
+              <th style="width:110px">Avaliação</th>
+              <th style="min-width:150px">Comentário</th>
+              <th style="width:110px">Gabarito</th>
+              <th style="width:100px;text-align:right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="botFeedbackTbody">
+            <tr><td colspan="9" style="text-align:center;color:var(--ink3);padding:24px">Carregando feedbacks analíticos…</td></tr>
           </tbody>
         </table>
       </div>
@@ -2036,6 +2124,32 @@ tbody tr:hover{background:#f7f9fb}
     <div class="modal-ft">
       <button class="sub-filter-btn modal-close" data-close="modalSimulateInbound">Cancelar</button>
       <button class="btn-primary" onclick="submitSimulateInbound()">Registrar Inbound</button>
+    </div>
+<!-- Modal: Homologar Gabarito (Few-Shot Learning) -->
+<div class="modal" id="modalCurateFeedback">
+  <div class="modal-box" style="max-width:640px">
+    <div class="modal-hd">
+      <h3 id="modalCurateFeedbackTitle">Homologar Gabarito (Few-Shot Learning)</h3>
+      <button class="modal-close" data-close="modalCurateFeedback">×</button>
+    </div>
+    <div class="modal-bd">
+      <input type="hidden" id="curateFeedbackId">
+      <div class="form-group">
+        <label class="form-label">Pergunta Original do Usuário</label>
+        <div id="curateQueryText" style="padding:8px 12px;background:#f8f9fa;border:1px solid var(--line);border-radius:3px;font-size:12px;color:var(--ink);font-weight:600"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="curateAnswerText">Resposta Homologada (Gabarito Oficial)</label>
+        <textarea id="curateAnswerText" class="form-textarea" style="height:150px;font-family:inherit;line-height:1.45" placeholder="Edite ou mantenha a resposta que servirá de padrão ouro para a IA..."></textarea>
+      </div>
+      <div style="font-size:11px;color:var(--ink3);line-height:1.4;background:#f8fafc;padding:8px 10px;border-radius:3px;border-left:3px solid #7c3aed">
+        🌟 <strong>Treinamento em Contexto:</strong> Ao homologar, esta resposta entra como exemplo "padrão ouro" nas próximas consultas analíticas do assistente, garantindo calibração automática com supervisão executiva.
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button type="button" class="sub-filter-btn modal-close" data-close="modalCurateFeedback">Cancelar</button>
+      <button type="button" class="btn-act danger" id="btnRevokeFewshot" style="display:none" onclick="submitCuratedFeedback(false)">Revogar Gabarito</button>
+      <button type="button" class="btn-primary" id="btnSaveFewshot" onclick="submitCuratedFeedback(true)">Homologar Gabarito</button>
     </div>
   </div>
 </div>

@@ -607,16 +607,17 @@ export async function handleAdminRoutes(request, env, url, pathname) {
         if (!key || (value !== '0' && value !== '1' && value !== 0 && value !== 1)) {
           return json({ error: 'Parâmetros inválidos para alteração de trava de sistema.' }, 400);
         }
+        const effectiveKey = (key === 'suspend_bot') ? 'suspend_whatsapp_bot' : key;
         const strVal = String(value);
         await env.DB.prepare(`
           UPDATE system_controls 
           SET value = ?, updated_at = datetime('now'), updated_by = ? 
           WHERE key = ?
-        `).bind(strVal, currentUser.nome_completo || currentUser.email_claro, key).run();
+        `).bind(strVal, currentUser.nome_completo || currentUser.email_claro, effectiveKey).run();
 
         invalidateSystemControlsCache();
-        await logAccess(env, request, currentUser, `ADMIN_SYSTEM_CONTROL:${key}:${strVal}`);
-        return json({ success: true, key, value: strVal });
+        await logAccess(env, request, currentUser, `ADMIN_SYSTEM_CONTROL:${effectiveKey}:${strVal}`);
+        return json({ success: true, key: effectiveKey, value: strVal });
       }
 
       // GET /api/admin/modules (Listagem completa das ferramentas e status - Otimizado sem N+1)
@@ -799,6 +800,69 @@ export async function handleAdminRoutes(request, env, url, pathname) {
         await env.DB.prepare('DELETE FROM required_profile_fields WHERE key = ?').bind(fieldKey).run();
         await logAccess(env, request, currentUser, `ADMIN_DELETE_PROFILE_FIELD:${fieldKey}`);
         return json({ success: true, key: fieldKey });
+      }
+
+      // GET /api/admin/bot-feedbacks (Listagem e auditoria de feedbacks do Chatbot & RAG)
+      if (pathname === '/api/admin/bot-feedbacks' && request.method === 'GET') {
+        const ratingFilter = (url.searchParams.get('rating') || '').trim();
+        const reportFilter = (url.searchParams.get('report') || '').trim();
+        const limit = Math.min(200, Math.max(1, parseInt(url.searchParams.get('limit') || '50', 10)));
+        const offset = Math.max(0, parseInt(url.searchParams.get('offset') || '0', 10));
+
+        let sql = 'SELECT id, user_id, user_name, user_email, message_id, query, response_text, report_id, rating, comment, is_approved_fewshot, curated_answer, created_at FROM bot_feedback WHERE 1=1';
+        const params = [];
+
+        if (ratingFilter === 'fewshot') {
+          sql += ' AND is_approved_fewshot = 1';
+        } else if (ratingFilter) {
+          sql += ' AND rating = ?';
+          params.push(ratingFilter);
+        }
+
+        if (reportFilter) {
+          sql += ' AND report_id = ?';
+          params.push(reportFilter);
+        }
+
+        sql += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+        params.push(limit, offset);
+
+        const rows = await env.DB.prepare(sql).bind(...params).all().catch(() => ({ results: [] }));
+
+        // Estatísticas consolidadas
+        const stats = await env.DB.prepare(`
+          SELECT 
+            COUNT(*) as total,
+            SUM(CASE WHEN rating = 'correct' THEN 1 ELSE 0 END) as total_correct,
+            SUM(CASE WHEN rating = 'partially_correct' THEN 1 ELSE 0 END) as total_partial,
+            SUM(CASE WHEN rating = 'incorrect' THEN 1 ELSE 0 END) as total_incorrect,
+            SUM(CASE WHEN is_approved_fewshot = 1 THEN 1 ELSE 0 END) as total_fewshot
+          FROM bot_feedback
+        `).first().catch(() => ({ total: 0, total_correct: 0, total_partial: 0, total_incorrect: 0, total_fewshot: 0 }));
+
+        return json({
+          feedbacks: rows.results || [],
+          stats: stats || { total: 0, total_correct: 0, total_partial: 0, total_incorrect: 0, total_fewshot: 0 }
+        });
+      }
+
+      // POST /api/admin/bot-feedbacks/approve (Homologa feedback como Gabarito Few-Shot para calibração)
+      if (pathname === '/api/admin/bot-feedbacks/approve' && request.method === 'POST') {
+        const body = await request.json().catch(() => ({}));
+        const { id, is_approved, curated_answer } = body;
+        if (!id) {
+          return json({ error: 'ID do feedback é obrigatório.' }, 400);
+        }
+
+        const approvedVal = is_approved ? 1 : 0;
+        await env.DB.prepare(`
+          UPDATE bot_feedback 
+          SET is_approved_fewshot = ?, curated_answer = ? 
+          WHERE id = ?
+        `).bind(approvedVal, curated_answer || null, id).run();
+
+        await logAccess(env, request, currentUser, `ADMIN_BOT_FEEDBACK_APPROVE:${id}:${approvedVal}`);
+        return json({ success: true, id, is_approved: approvedVal });
       }
 
   return null;

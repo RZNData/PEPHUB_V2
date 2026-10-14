@@ -78,9 +78,10 @@ export function normalizePhone(rawPhone) {
  * Verifica autorização do número remetente no D1
  */
 export async function verifyBotSender(env, rawPhone, sessionUser = null) {
+  const isSuspended = await getSystemControl(env, 'suspend_whatsapp_bot');
+
   // Se usuário autenticado da sessão web do PEP HUB
   if (sessionUser && sessionUser.status === 'aprovado') {
-    const isSuspended = await getSystemControl(env, 'suspend_whatsapp_bot');
     if (isSuspended && !sessionUser.is_admin) {
       return { allowed: false, phone: rawPhone, reason: 'suspended' };
     }
@@ -108,6 +109,9 @@ export async function verifyBotSender(env, rawPhone, sessionUser = null) {
     if (env.DB) {
       const u = await env.DB.prepare('SELECT id, nome_completo, area, is_admin, status FROM users WHERE id = ? AND status = "aprovado"').bind(uid).first().catch(() => null);
       if (u) {
+        if (isSuspended && !u.is_admin) {
+          return { allowed: false, phone: rawPhone, reason: 'suspended' };
+        }
         return {
           allowed: true,
           phone: rawPhone,
@@ -116,6 +120,7 @@ export async function verifyBotSender(env, rawPhone, sessionUser = null) {
         };
       }
     }
+    return { allowed: false, phone: rawPhone, reason: isSuspended ? 'suspended' : 'unauthorized_web_user' };
   }
 
   const cleanPhone = normalizePhone(rawPhone);
@@ -124,7 +129,6 @@ export async function verifyBotSender(env, rawPhone, sessionUser = null) {
   }
 
   // 1. Verifica suspensão administrativa global do bot
-  const isSuspended = await getSystemControl(env, 'suspend_whatsapp_bot');
   if (isSuspended) {
     return { allowed: false, phone: cleanPhone, reason: 'suspended' };
   }
@@ -877,6 +881,25 @@ DIRETRIZES FUNDAMENTAIS DE QUALIDADE E GOVERNANÇA:
    - ${isWeb ? 'CANAL WEB: NUNCA mencione #dados, #ajuda ou links wa.me.' : 'CANAL WHATSAPP: Mensagens compatíveis com leitura móvel.'}
    - Mantenha tom cordial, profissional e sênior.`;
 
+  // 8. Injeção de Gabaritos Homologados (Few-Shot Learning do PEP HUB)
+  let fewShotBlock = '';
+  if (env.DB) {
+    try {
+      const examples = await env.DB.prepare(`
+        SELECT query, COALESCE(curated_answer, response_text) as answer
+        FROM bot_feedback
+        WHERE is_approved_fewshot = 1
+        ORDER BY created_at DESC LIMIT 3
+      `).all();
+      if (examples?.results?.length > 0) {
+        fewShotBlock = '\n\n8. EXEMPLOS DE GABARITOS HOMOLOGADOS PELA ADMINISTRAÇÃO REGIONAL (PADRÃO OURO DE RESPOSTA):\n' +
+          examples.results.map((ex, i) => `[Gabarito Homologado #${i + 1}]\nPergunta: "${ex.query}"\nResposta Padrão:\n${ex.answer}`).join('\n\n');
+      }
+    } catch (_) {}
+  }
+
+  const finalInstruction = systemInstruction + fewShotBlock;
+
   const rowsSnippet = JSON.stringify((dbRows || []).slice(0, 25), null, 2);
   const prompt = `Pergunta Original do Usuário: "${query}"
 Relatório Alvo: ${targetReport?.name || targetReport?.title || 'Indicadores Regionais'}
@@ -888,7 +911,7 @@ ${rowsSnippet}
 
 Redija a resposta executiva final fundamentada exclusivamente nestes dados:`;
 
-  const answer = await callGemini(env, systemInstruction, prompt, 0.15);
+  const answer = await callGemini(env, finalInstruction, prompt, 0.15);
   if (answer && answer.trim()) {
     return answer.trim();
   }
@@ -1880,17 +1903,32 @@ export async function processBotQuery(env, phone, query, sessionUser = null, cha
     if (auth.reason === 'suspended') {
       return {
         success: false,
-        unauthorized: true,
-        answer: "Regional Norte · Pephub Data Bot\n\n*Ambiente Temporariamente Indisponível*\nO bot corporativo de dados está temporariamente suspenso pela administração da Regional Norte para consolidação de bases e manutenção.\n\nAcesse o portal corporativo: https://pephub.cloud/"
+        suspended: true,
+        unauthorized: false,
+        answer: isWeb
+          ? "⚠️ **Assistente Analítico RAG em Manutenção Programada**\n\nO Assistente RAG e o Chatbot corporativo foram temporariamente desativados pela Administração da Regional Norte para consolidação e recalibração de bases.\n\nPor favor, utilize os relatórios analíticos oficiais diretamente no catálogo do portal PEP HUB: https://pephub.cloud/"
+          : "Regional Norte · Pephub Data Bot\n\n*Ambiente Temporariamente Indisponível*\nO bot corporativo de dados está temporariamente suspenso pela administração da Regional Norte para consolidação de bases e manutenção.\n\nAcesse o portal corporativo: https://pephub.cloud/"
       };
     }
 
     return {
       success: false,
       unauthorized: true,
-      answer: `Regional Norte · Pephub Data Bot\n\n*Acesso Restrito:* O seu número (${phone}) não consta como cadastrado e aprovado na plataforma corporativa Pephub.\n\nPara ter acesso às consultas de churn, indicadores e bases operacionais da Regional Norte, realize seu cadastro corporativo no portal:\nhttps://pephub.cloud/login/\n\nApós a validação e homologação pelo gestor, seu acesso via WhatsApp será liberado automaticamente.`
+      answer: isWeb
+        ? "⚠️ **Acesso Restrito ao Assistente RAG**\n\nSeu usuário precisa estar com status aprovado na plataforma corporativa para realizar consultas analíticas no bot."
+        : `Regional Norte · Pephub Data Bot\n\n*Acesso Restrito:* O seu número (${phone}) não consta como cadastrado e aprovado na plataforma corporativa Pephub.\n\nPara ter acesso às consultas de churn, indicadores e bases operacionais da Regional Norte, realize seu cadastro corporativo no portal:\nhttps://pephub.cloud/login/\n\nApós a validação e homologação pelo gestor, seu acesso via WhatsApp será liberado automaticamente.`
     };
   }
+
+  const isSuspendedGlobal = await getSystemControl(env, 'suspend_whatsapp_bot');
+  const adminBypassActive = Boolean(isSuspendedGlobal && auth.user?.isAdmin);
+  const finalizeResult = (res) => {
+    if (adminBypassActive && res && res.answer && isWeb && !res.adminNoticeAdded) {
+      res.answer = "⚠️ *[Aviso de Administrador: O Assistente RAG está SUSPENSO no painel de Travas para colaboradores comuns. Liberado exclusivamente para sua credencial de Administrador.]*\n\n" + res.answer;
+      res.adminNoticeAdded = true;
+    }
+    return res;
+  };
 
   const cleanQuery = (query || '').replace(/^(#\?|＃\?)\s*/, '').trim();
   const cleanDigits = String(phone || '').startsWith('web_') ? String(phone || '') : String(phone || '').replace(/\D/g, '');
@@ -2578,7 +2616,7 @@ export async function processBotQuery(env, phone, query, sessionUser = null, cha
   }
 
   if (resolution.directAnswer) {
-    return {
+    return finalizeResult({
       success: true,
       answer: resolution.directAnswer,
       intent: 'ANALITICA',
@@ -2588,11 +2626,11 @@ export async function processBotQuery(env, phone, query, sessionUser = null, cha
       chips: resolution.chips,
       messageId: 'msg_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7),
       disclaimer: "⚠️ Respostas geradas com base no contexto D1 do PEP HUB. Supervisão humana recomendada."
-    };
+    });
   }
 
   const analyticalResult = await executeAnalyticalPipeline(env, resolution.effectiveQuery, phone, auth.scope, resolution.report, activeChannel);
-  return {
+  return finalizeResult({
     ...analyticalResult,
     intent,
     phone,
@@ -2601,7 +2639,7 @@ export async function processBotQuery(env, phone, query, sessionUser = null, cha
     chips: analyticalResult.chips || resolution.chips,
     disclaimer: analyticalResult.disclaimer || "⚠️ Respostas geradas com base no contexto D1 do PEP HUB. Supervisão humana recomendada.",
     messageId: 'msg_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7)
-  };
+  });
 }
 
 /**
@@ -2676,7 +2714,10 @@ export async function handleBotRoutes(request, env, url, pathname) {
       }
 
       const result = await processBotQuery(env, phone, query, sessionUser, channel);
-      return json(result, result.unauthorized ? 403 : 200);
+      let status = 200;
+      if (result.suspended) status = 503;
+      else if (result.unauthorized) status = 403;
+      return json(result, status);
     } catch (err) {
       console.error('[Bot Ask Route Error]', err);
       return json({ error: 'Erro interno ao processar requisição do bot.', details: err.message }, 500);
