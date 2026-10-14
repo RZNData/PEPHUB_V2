@@ -1571,6 +1571,125 @@
       color: #ffffff !important;
       border-color: #2a5d8f !important;
     }
+    .rag-report-nav-box {
+      margin-top: 10px !important;
+      padding-top: 8px !important;
+      border-top: 1px dashed #e2e8f0 !important;
+    }
+    .rag-report-link-btn {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      background: #f8fafc !important;
+      color: #8a0f18 !important;
+      border: 1px solid #fed7d7 !important;
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      padding: 6px 11px !important;
+      border-radius: 6px !important;
+      text-decoration: none !important;
+      transition: all .15s ease !important;
+      box-shadow: 0 1px 2px rgba(138, 15, 24, 0.05) !important;
+    }
+    .rag-report-link-btn:hover {
+      background: #8a0f18 !important;
+      color: #ffffff !important;
+      border-color: #8a0f18 !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 2px 5px rgba(138, 15, 24, 0.2) !important;
+    }
+    .rag-disclaimer-note {
+      margin-top: 8px !important;
+      font-size: 10px !important;
+      color: #64748b !important;
+      background: #f1f5f9 !important;
+      border-left: 3px solid #94a3b8 !important;
+      padding: 5px 8px !important;
+      border-radius: 0 4px 4px 0 !important;
+      line-height: 1.35 !important;
+    }
+    .rag-feedback-bar {
+      margin-top: 8px !important;
+      padding-top: 6px !important;
+      border-top: 1px solid #f1f5f9 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      flex-wrap: wrap !important;
+      gap: 6px !important;
+    }
+    .rag-fb-label {
+      font-size: 10.5px !important;
+      color: #64748b !important;
+      font-weight: 500 !important;
+    }
+    .rag-fb-actions {
+      display: inline-flex !important;
+      gap: 4px !important;
+      align-items: center !important;
+    }
+    .rag-fb-btn {
+      background: #ffffff !important;
+      border: 1px solid #cbd5e1 !important;
+      color: #334155 !important;
+      font-size: 10.5px !important;
+      padding: 2px 7px !important;
+      border-radius: 4px !important;
+      cursor: pointer !important;
+      transition: all .12s ease !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 3px !important;
+      font-family: inherit !important;
+    }
+    .rag-fb-btn:hover {
+      background: #f8fafc !important;
+      border-color: #94a3b8 !important;
+      transform: translateY(-1px) !important;
+    }
+    .rag-fb-detail-box {
+      margin-top: 4px !important;
+      display: flex !important;
+      gap: 4px !important;
+      width: 100% !important;
+    }
+    .rag-fb-input {
+      flex: 1 !important;
+      font-size: 11px !important;
+      padding: 4px 7px !important;
+      border: 1px solid #cbd5e1 !important;
+      border-radius: 4px !important;
+      outline: none !important;
+      font-family: inherit !important;
+      color: #1e293b !important;
+      background: #ffffff !important;
+    }
+    .rag-fb-input:focus {
+      border-color: #8a0f18 !important;
+    }
+    .rag-fb-submit-btn {
+      background: #1e293b !important;
+      color: #ffffff !important;
+      border: none !important;
+      font-size: 10.5px !important;
+      font-weight: 600 !important;
+      padding: 4px 8px !important;
+      border-radius: 4px !important;
+      cursor: pointer !important;
+      transition: background .12s !important;
+      font-family: inherit !important;
+    }
+    .rag-fb-submit-btn:hover {
+      background: #0f172a !important;
+    }
+    .rag-fb-thanks {
+      font-size: 10.5px !important;
+      color: #059669 !important;
+      font-weight: 600 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+    }
     .rag-typing-indicator {
       align-self: flex-start !important;
       display: flex !important;
@@ -3614,16 +3733,70 @@
 
     function renderMessages() {
       messagesArea.innerHTML = '';
-      messages.forEach(m => {
+      messages.forEach((m, idx) => {
         const bubble = document.createElement('div');
         bubble.className = `rag-bubble ${m.sender === 'user' ? 'rag-bubble-user' : 'rag-bubble-bot'}`;
 
         let contentHtml = `<div>${formatText(m.text)}</div>`;
 
+        // Botão para levar direto ao relatório oficial correspondente com filtros
+        if (m.sender === 'bot' && m.reportUrl && m.reportName) {
+          contentHtml += `
+            <div class="rag-report-nav-box">
+              <a href="${escapeHtml(m.reportUrl)}" class="rag-report-link-btn" target="_blank" rel="noopener">
+                📊 Abrir no Relatório Oficial (${escapeHtml(m.reportName)}) ➔
+              </a>
+            </div>
+          `;
+        }
+
+        // Chips contextuais de aprofundamento e próximos passos
         if (m.chips && Array.isArray(m.chips) && m.chips.length > 0) {
           contentHtml += `<div class="rag-chips-container">` +
             m.chips.map(c => `<button type="button" class="rag-chip" data-rag-cmd="${escapeHtml(c.query)}">${escapeHtml(c.label)}</button>`).join('') +
             `</div>`;
+        }
+
+        // Disclaimer analítico de contexto D1 e necessidade de supervisão
+        if (m.sender === 'bot' && m.disclaimer) {
+          contentHtml += `<div class="rag-disclaimer-note">${escapeHtml(m.disclaimer)}</div>`;
+        }
+
+        // Mecanismo de Feedback Analítico (Totalmente correta, Parcialmente correta, Incorreta)
+        if (m.sender === 'bot' && m.id) {
+          if (m.feedbackStatus) {
+            const labelMap = {
+              correct: 'Totalmente correta',
+              partially_correct: 'Parcialmente correta',
+              incorrect: 'Incorreta'
+            };
+            contentHtml += `
+              <div class="rag-feedback-bar">
+                <span class="rag-fb-thanks">✓ Feedback registrado (${escapeHtml(labelMap[m.feedbackStatus] || m.feedbackStatus)})</span>
+              </div>
+            `;
+          } else if (m.showFeedbackInput) {
+            contentHtml += `
+              <div class="rag-feedback-bar" data-msg-idx="${idx}">
+                <div class="rag-fb-detail-box">
+                  <input type="text" class="rag-fb-input" placeholder="O que faltou ou estava incorreto? (opcional)" data-msg-idx="${idx}" value="${escapeHtml(m.tempComment || '')}">
+                  <button type="button" class="rag-fb-submit-btn" data-fb-submit="${idx}">Enviar</button>
+                  <button type="button" class="rag-fb-cancel-btn" data-fb-cancel="${idx}" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:11px;padding:0 4px;">✕</button>
+                </div>
+              </div>
+            `;
+          } else {
+            contentHtml += `
+              <div class="rag-feedback-bar" data-msg-idx="${idx}">
+                <span class="rag-fb-label">Avalie esta resposta:</span>
+                <div class="rag-fb-actions">
+                  <button type="button" class="rag-fb-btn" data-fb-rate="correct" data-msg-idx="${idx}" title="Totalmente correta">🟢 Correta</button>
+                  <button type="button" class="rag-fb-btn" data-fb-rate="partially_correct" data-msg-idx="${idx}" title="Parcialmente correta">🟡 Parcial</button>
+                  <button type="button" class="rag-fb-btn" data-fb-rate="incorrect" data-msg-idx="${idx}" title="Incorreta">🔴 Incorreta</button>
+                </div>
+              </div>
+            `;
+          }
         }
 
         contentHtml += `<span class="rag-bubble-time">${escapeHtml(m.time || '')}</span>`;
@@ -3631,6 +3804,32 @@
         messagesArea.appendChild(bubble);
       });
       messagesArea.scrollTop = messagesArea.scrollHeight;
+    }
+
+    async function submitFeedback(msgIdx, rating, comment = '') {
+      const m = messages[msgIdx];
+      if (!m) return;
+      m.feedbackStatus = rating;
+      m.showFeedbackInput = false;
+      saveHistory(messages);
+      renderMessages();
+
+      try {
+        await fetch('/api/bot/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            rating,
+            comment,
+            messageId: m.id,
+            query: m.query || '',
+            responseText: m.text || '',
+            reportId: m.reportId || null
+          })
+        });
+      } catch (e) {
+        console.warn('[RAG Feedback dispatch error]', e);
+      }
     }
 
     function showTyping() {
@@ -3692,16 +3891,30 @@
         if (res.ok) {
           const data = await res.json().catch(() => ({}));
           const answer = data.answer || 'Não obtive resposta da base analítica.';
-          messages.push({ sender: 'bot', text: answer, time: botTime });
+          messages.push({
+            id: data.messageId || ('msg_' + Date.now().toString(36)),
+            sender: 'bot',
+            text: answer,
+            time: botTime,
+            chips: Array.isArray(data.chips) ? data.chips : [],
+            reportUrl: data.reportUrl || null,
+            reportName: data.reportName || null,
+            disclaimer: data.disclaimer || "⚠️ Respostas geradas com base no contexto D1 do PEP HUB. Supervisão humana recomendada.",
+            query: text,
+            reportId: data.targetReport || null,
+            feedbackStatus: null
+          });
         } else if (res.status === 403) {
           const errData = await res.json().catch(() => ({}));
           messages.push({
+            id: 'err_' + Date.now().toString(36),
             sender: 'bot',
             text: `⚠️ *Acesso Restrito ao Bot*\n\n${errData.error || 'Seu usuário precisa estar com status aprovado para realizar consultas analíticas no bot.'}`,
             time: botTime
           });
         } else {
           messages.push({
+            id: 'err_' + Date.now().toString(36),
             sender: 'bot',
             text: `⚠️ *Instabilidade Temporária*\n\nNão foi possível processar sua consulta analítica neste momento (código ${res.status}). Por favor, tente novamente em alguns instantes.`,
             time: botTime
@@ -3711,6 +3924,7 @@
         hideTyping();
         const botTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
         messages.push({
+          id: 'err_' + Date.now().toString(36),
           sender: 'bot',
           text: `⚠️ *Falha de Conexão*\n\nNão conseguimos nos comunicar com o servidor. Verifique sua conexão e tente novamente.`,
           time: botTime
@@ -3772,12 +3986,72 @@
       inputArea.style.height = Math.min(inputArea.scrollHeight, 84) + 'px';
     });
 
-    messagesArea.addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-rag-cmd]');
-      if (btn) {
-        const cmd = btn.getAttribute('data-rag-cmd');
+    // Event Delegation no chatbox: gerencia comandos [data-rag-cmd] (chips, presets e opções) e feedback
+    chatbox.addEventListener('click', (e) => {
+      // 1. Comando RAG (Chips, presets, atalhos [1], [2], etc.)
+      const cmdBtn = e.target.closest('[data-rag-cmd]');
+      if (cmdBtn) {
+        const cmd = cmdBtn.getAttribute('data-rag-cmd');
         if (cmd) {
+          renderPresetDrawer(null);
           handleSend(cmd);
+          return;
+        }
+      }
+
+      // 2. Feedback: botões de avaliação
+      const rateBtn = e.target.closest('[data-fb-rate]');
+      if (rateBtn) {
+        const rate = rateBtn.getAttribute('data-fb-rate');
+        const idx = parseInt(rateBtn.getAttribute('data-msg-idx'), 10);
+        if (!isNaN(idx) && messages[idx]) {
+          if (rate === 'correct') {
+            submitFeedback(idx, 'correct');
+          } else {
+            messages[idx].pendingRate = rate;
+            messages[idx].showFeedbackInput = true;
+            renderMessages();
+            const input = messagesArea.querySelector(`input[data-msg-idx="${idx}"]`);
+            if (input) input.focus();
+          }
+        }
+        return;
+      }
+
+      // 3. Submeter comentário de feedback
+      const submitBtn = e.target.closest('[data-fb-submit]');
+      if (submitBtn) {
+        const idx = parseInt(submitBtn.getAttribute('data-fb-submit'), 10);
+        if (!isNaN(idx) && messages[idx]) {
+          const input = messagesArea.querySelector(`input[data-msg-idx="${idx}"]`);
+          const comment = input ? input.value.trim() : '';
+          const rate = messages[idx].pendingRate || 'partially_correct';
+          submitFeedback(idx, rate, comment);
+        }
+        return;
+      }
+
+      // 4. Cancelar comentário de feedback
+      const cancelBtn = e.target.closest('[data-fb-cancel]');
+      if (cancelBtn) {
+        const idx = parseInt(cancelBtn.getAttribute('data-fb-cancel'), 10);
+        if (!isNaN(idx) && messages[idx]) {
+          messages[idx].showFeedbackInput = false;
+          renderMessages();
+        }
+        return;
+      }
+    });
+
+    // Enter no input de feedback para envio rápido
+    messagesArea.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.target.classList.contains('rag-fb-input')) {
+        e.preventDefault();
+        const idx = parseInt(e.target.getAttribute('data-msg-idx'), 10);
+        if (!isNaN(idx) && messages[idx]) {
+          const comment = e.target.value.trim();
+          const rate = messages[idx].pendingRate || 'partially_correct';
+          submitFeedback(idx, rate, comment);
         }
       }
     });

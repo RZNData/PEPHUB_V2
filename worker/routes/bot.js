@@ -6,7 +6,7 @@
  */
 
 import { json, SECURITY_HEADERS, getSystemControl, getSessionUser } from '../utils/security.js';
-import { buildSemanticCatalogPrompt, validateDimensionalCompatibility, SEMANTIC_TABLES } from '../semantic_catalog.js';
+import { buildSemanticCatalogPrompt, validateDimensionalCompatibility, SEMANTIC_TABLES, detectQualifiers, CLARO_CLUSTERS } from '../semantic_catalog.js';
 import {
   REPORT_REGISTRY,
   getAllReports,
@@ -428,21 +428,107 @@ export async function resolveTargetReport(env, query, phone, channel = 'whatsapp
     }
   }
 
-  // 2. Detecção explícita na pergunta por palavras-chave registradas
-  // Precedência de relatórios: FPD > SPEECH > MOTIVOS > CREDITO > MARKET_SHARE > CHURN_SAFRA > CHURN_BL
-  for (const key of ['FPD', 'SPEECH', 'MOTIVOS', 'CREDITO', 'MARKET_SHARE', 'CHURN_SAFRA', 'CHURN_BL']) {
-    const rep = REPORT_REGISTRY[key];
-    if (!rep) continue;
-    for (const pat of rep.keywords) {
-      if (pat.test(norm)) {
-        if (env.DB && cleanDigits) {
-          try {
-            await env.DB.prepare('DELETE FROM bot_pending_sessions WHERE phone = ?').bind(cleanDigits).run();
-          } catch (_) {}
+  // 2. Classificação Semântica Prioritária e Anti-Colisão
+  const normClean = norm.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const entities = extractQueryEntities(query);
+
+  const isChurnWord = /\b(churn|desconex(ao|oes|ões)|cancelament[oa]|desconexoes)\b/i.test(normClean);
+  const isSafraWord = /\b(safra(s)?|d120|np120|clawback|estorno|sobrevivencia)\b/i.test(normClean);
+  const isMktShareWord = /\b(market\s*share|marketshare|concorrencia|concorrência|participac(ao|ão)|net\s*adds?|netadds?|anatel|operadora(s)?|competitivas?|isps?|vivo|tim|oi|sky|surf)\b/i.test(normClean);
+  const isFpdWord = /\b(fpd|first\s*payment|cura|taxa_fpd|qualidade\s+d[ea]\s+venda)\b/i.test(normClean);
+  const isCreditoWord = /\b(credito|crédito|antifraude|aprovac|reprovac|politica\s+de\s+credito)\b/i.test(normClean);
+  const isSpeechWord = /\b(speech|transcric|ouvir|grava[çc][ãa]o|ouvir\s+chamada)\b/i.test(normClean) || /\bmotivos?\s+de\s+cancelamento\b/i.test(normClean);
+  const isMotivosWord = /\b(motivo(s)?\s+de\s+procura|taxa\s*os|orden(s)?\s+de\s+servi[cç]o|ordem\s+de\s+servi[cç]o|visita\s+tecnica|rechamada)\b/i.test(normClean);
+
+  let targetRep = null;
+  if (isSpeechWord) {
+    targetRep = REPORT_REGISTRY.SPEECH;
+  } else if (isMotivosWord) {
+    targetRep = REPORT_REGISTRY.MOTIVOS;
+  } else if (isChurnWord) {
+    targetRep = isSafraWord ? REPORT_REGISTRY.CHURN_SAFRA : REPORT_REGISTRY.CHURN_BL;
+  } else if (isSafraWord) {
+    targetRep = REPORT_REGISTRY.CHURN_SAFRA;
+  } else if (isFpdWord) {
+    targetRep = REPORT_REGISTRY.FPD;
+  } else if (isCreditoWord) {
+    targetRep = REPORT_REGISTRY.CREDITO;
+  } else if (isMktShareWord) {
+    targetRep = REPORT_REGISTRY.MARKET_SHARE;
+  }
+
+  // Fallback secundário por palavras-chave com precedência segura (Market Share por último)
+  if (!targetRep) {
+    for (const key of ['FPD', 'SPEECH', 'MOTIVOS', 'CREDITO', 'CHURN_SAFRA', 'CHURN_BL', 'MARKET_SHARE']) {
+      const rep = REPORT_REGISTRY[key];
+      if (!rep) continue;
+      for (const pat of rep.keywords) {
+        if (pat.test(norm)) {
+          targetRep = rep;
+          break;
         }
-        return { report: rep, effectiveQuery: query, disambiguated: false };
       }
+      if (targetRep) break;
     }
+  }
+
+  if (targetRep) {
+    if (env.DB && cleanDigits) {
+      try {
+        await env.DB.prepare('DELETE FROM bot_pending_sessions WHERE phone = ?').bind(cleanDigits).run();
+      } catch (_) {}
+    }
+
+    // Guarda Dimensional 1: Canal solicitado em Churn Safra
+    if (targetRep.id === 'CHURN_SAFRA' && entities.isChannelQuery && !entities.isParceiroQuery) {
+      const directAnswer = `📉 *Análise de Sobrevivência · Churn Safra D120*\n\n` +
+        `🧭 *Cenário da Análise:*\n` +
+        `• 🏷️ *Produto / Serviço:* Banda Larga Residencial (Churn Safra · Sobrevivência D120)\n` +
+        `• 🏛️ *Fonte dos Dados:* Base Oficial de Sobrevivência e Estornos Claro (D1)\n\n` +
+        `🚫 *Incompatibilidade Dimensional:* A base oficial corporativa de **Churn Safra D120** é consolidada exclusivamente nos níveis **Regional**, **Cidade** e **Parceiro Comercial** (Top Connect, All Rede, Star Link, etc.). **Não há segregação por canal de venda** (PAP, Lojas, Televendas) nesta base de estornos.\n\n` +
+        `💡 *Onde consultar canais de venda ofensores:*\n` +
+        `• **FPD 60:** Possui visão completa de canais (Porta a Porta, Lojas, Televendas, Agente Autorizado) e vendedores individuais.\n` +
+        `• **Aprovação de Crédito:** Apresenta a taxa de aprovação e recusas por canal e PDV.\n\n` +
+        `Selecione uma ação rápida abaixo para consultar os canais ofensores:`;
+      return {
+        report: targetRep,
+        directAnswer,
+        reportUrl: '/fpd-residencial/',
+        reportName: 'FPD Residencial (Canais)',
+        chips: [
+          { label: '🚪 Ver Canais em FPD', query: 'quais os canais ofensores em FPD?' },
+          { label: '🛡️ Ver Canais em Crédito', query: 'quais canais têm pior aprovação de crédito?' },
+          { label: '🤝 Ver Parceiros em Churn Safra', query: 'quais os piores parceiros em Churn Safra?' }
+        ],
+        disambiguated: false
+      };
+    }
+
+    // Guarda Dimensional 2: Canal solicitado em Churn Banda Larga
+    if ((targetRep.id === 'CHURN_BL' || targetRep.id === 'CHURN_PME') && entities.isChannelQuery && !entities.isParceiroQuery) {
+      const directAnswer = `📉 *Painel de Desconexões · Churn Banda Larga*\n\n` +
+        `🧭 *Cenário da Análise:*\n` +
+        `• 🏷️ *Produto / Serviço:* Banda Larga Fixa (Cancelamentos Mensais)\n` +
+        `• 🏛️ *Fonte dos Dados:* Base Oficial de Desconexões e RxO Claro (D1)\n\n` +
+        `🚫 *Incompatibilidade Dimensional:* A base de **Churn Banda Larga Mensal** possui acompanhamento executivo aberto apenas por **Cidade** e **Regional Norte** (não possui segregação por canal de venda na apuração mensal).\n\n` +
+        `💡 *Onde consultar canais de venda ofensores:*\n` +
+        `• **FPD 60:** Qualidade de vendas por canal (PAP, Lojas, Televendas).\n` +
+        `• **Aprovação de Crédito:** Desempenho de entrada por canal.\n\n` +
+        `Selecione uma ação rápida abaixo:`;
+      return {
+        report: targetRep,
+        directAnswer,
+        reportUrl: '/fpd-residencial/',
+        reportName: 'FPD Residencial (Canais)',
+        chips: [
+          { label: '🚪 Ver Canais em FPD', query: 'qual o FPD por canal de venda?' },
+          { label: '📍 Ranking de Cidades no Churn BL', query: 'ranking de cidades com pior churn banda larga' }
+        ],
+        disambiguated: false
+      };
+    }
+
+    return { report: targetRep, effectiveQuery: query, disambiguated: false };
   }
 
   // 3. Consulta ambígua: salva na memória persistente D1
@@ -455,7 +541,6 @@ export async function resolveTargetReport(env, query, phone, channel = 'whatsapp
   }
 
   // Postura Questionadora Proativa: se detectar entidade (cidade, canal, DDD ou parceiro) sem métrica
-  const entities = extractQueryEntities(query);
   const detectedLabel = entities.matchedCity || entities.matchedDdd?.label || entities.matchedChannel || (entities.isChannelQuery ? 'Canais de Venda' : null) || entities.matchedPartner || (entities.isParceiroQuery ? 'Parceiros Comerciais' : null);
 
   if (detectedLabel) {
@@ -949,7 +1034,8 @@ export function synthesizeCognitiveAnswerDeterministic(query, dbRows, targetRepo
 
   // 3. Market Share & Concorrência
   if (targetReport?.id === 'MARKET_SHARE') {
-    const isBandaLarga = dbRows[0]?.produto === 'BANDA_LARGA' || /\b(banda\s*larga|fixa|scm|residencial|fibra|gpon)\b/i.test(qNorm);
+    const qualifiers = detectQualifiers(query);
+    const isBandaLarga = dbRows[0]?.produto === 'BANDA_LARGA' || /\b(banda\s*larga|fixa|scm|residencial|fibra|gpon)\b/i.test(qNorm) || qualifiers.isAreaCabeada;
     const is5G = dbRows[0]?.segmento === '5G' || /\b5g\b/i.test(qNorm);
     const marketTotalAcessos = dbRows.reduce((acc, r) => acc + getValNum(r, ['total_acessos', 'acessos']), 0);
     const claroRow = dbRows.find(r => String(r.operadora || '').toLowerCase().includes('claro')) || dbRows[0];
@@ -975,6 +1061,22 @@ export function synthesizeCognitiveAnswerDeterministic(query, dbRows, targetRepo
     out += `• 📍 *Abrangência Geográfica:* *${cidadeLabel}*\n`;
     out += `• 🏛️ *Fonte dos Dados:* ${fonteLabel}\n`;
     out += `• ℹ️ *Premissas:* ${premissaLabel}\n\n`;
+
+    if (qualifiers.isAreaCabeada) {
+      out += `ℹ️ *Nota Regulatória sobre Área Cabeada:*\nA base oficial pública da Anatel apura o Market Share sobre o mercado total do município/regional no serviço SCM (Banda Larga Fixa). O recorte restrito a *"Área Cabeada"* (Homes Passed / rede passada HFC/FTTH) é uma métrica interna de engenharia e rede não pública na Anatel. Apresentando os dados oficiais consolidados do mercado total de Banda Larga Fixa Residencial:\n\n`;
+    }
+
+    if (qualifiers.isGrandesMercados) {
+      out += `🏛️ *Visão de Grandes Mercados (GMs - Belém, Manaus, São Luís):*\n` +
+        `• *Belém/PA:* Claro líder com *33.88%* de share em Banda Larga (+131 Net Adds) e *44.14%* em Móvel (+4.704 Net Adds)\n` +
+        `• *Manaus/AM:* Claro líder com *32.19%* de share em Banda Larga (-362 Net Adds) e forte presença móvel\n` +
+        `• *São Luís/MA:* Claro vice-líder consolidada com *18.45%* de share em Banda Larga\n\n`;
+    }
+
+    if (qualifiers.isMercadosDesenvolvimento) {
+      out += `🏛️ *Visão de Mercados em Desenvolvimento (MEDs):*\n` +
+        `Nos polos *Macapá/AP, Boa Vista/RR, Santarém/PA, Marabá/PA e Imperatriz/MA*, os provedores locais (Competitivas/ISPs) concentram a maior fatia de fibra óptica no interior, com a Claro operando como alternativa premium nas capitais e polos regionais.\n\n`;
+    }
 
     const claroShare = getValNum(claroRow, ['market_share_pct', 'market_share_recente', 'share_pct']);
     const claroAcessos = getValNum(claroRow, ['total_acessos', 'acessos']);
@@ -1403,6 +1505,91 @@ O relatório analítico de FPD detalhado por faixas de risco e cura de 60 dias �
 }
 
 /**
+ * Constrói Metadados Ricos (URL parametrizada para o relatório oficial, chips de aprofundamento)
+ */
+export function buildRichMetadataForReport(targetReport, query, dbRows) {
+  const norm = (query || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const entities = extractQueryEntities(query);
+  const city = entities?.matchedCity || (dbRows && dbRows[0]?.cidade && dbRows[0].cidade !== 'Regional Norte' ? dbRows[0].cidade : null);
+  const repId = targetReport?.id;
+  let reportUrl = '/';
+  let reportName = targetReport?.name || 'Relatório Oficial';
+  let chips = [];
+
+  if (repId === 'MARKET_SHARE') {
+    const isBandaLarga = dbRows?.[0]?.produto === 'BANDA_LARGA' || entities?.isBandaLargaQuery || /\b(banda\s*larga|residencial|fixa|scm)\b/i.test(norm);
+    if (isBandaLarga) {
+      reportName = city ? `Market Share Residencial (${city})` : 'Market Share Residencial Regional';
+      reportUrl = city ? `/market-share-residencial/?cidade=${encodeURIComponent(city)}` : '/market-share-residencial/';
+      chips = [
+        { label: city ? `📱 Ver Móvel em ${city}` : '📱 Ver Móvel Regional', query: city ? `qual o market share móvel em ${city}?` : 'qual o market share móvel na Regional Norte?' },
+        { label: '🗺️ Comparar Regional Norte', query: 'qual o market share residencial da Regional Norte?' },
+        { label: '📈 Ver Saldo de Net Adds', query: city ? `qual o saldo de net adds de banda larga em ${city}?` : 'qual o saldo de net adds de banda larga na Regional Norte?' }
+      ];
+    } else {
+      reportName = city ? `Market Share Móvel (${city})` : 'Market Share Móvel Regional';
+      reportUrl = city ? `/market-share-movel/?cidade=${encodeURIComponent(city)}&segmento=POS_PAGO_SEM_M2M` : '/market-share-movel/';
+      chips = [
+        { label: city ? `🌐 Ver Banda Larga em ${city}` : '🌐 Ver Banda Larga Regional', query: city ? `qual o market share de banda larga em ${city}?` : 'qual o market share de banda larga na Regional Norte?' },
+        { label: '📶 Penetração do 5G', query: city ? `qual o market share 5G em ${city}?` : 'qual a penetração de 5G na Regional Norte?' },
+        { label: '📈 Ranking de Net Adds', query: 'quem lidera as adições líquidas de pós-pago na Regional?' }
+      ];
+    }
+  } else if (repId === 'CHURN_BL' || repId === 'CHURN_PME') {
+    reportName = city ? `Churn Banda Larga (${city})` : 'Churn Banda Larga Regional';
+    reportUrl = city ? `/churn-bl/?cidade=${encodeURIComponent(city)}` : '/churn-bl/';
+    chips = [
+      { label: city ? `🏢 Ver PME em ${city}` : '🏢 Ver Churn PME', query: city ? `qual a taxa de churn PME em ${city}?` : 'qual a taxa de churn no segmento PME?' },
+      { label: '📍 Ranking de Cidades', query: 'ranking de cidades com pior churn banda larga' },
+      { label: '📊 Orçado vs Real (RxO)', query: 'qual o desvio de churn real contra o orçado?' },
+      { label: city ? `🌱 Ver Churn Safra em ${city}` : '🌱 Ver Churn Safra D120', query: city ? `qual o churn safra em ${city}?` : 'qual a taxa de churn safra D120 Regional?' }
+    ];
+  } else if (repId === 'CHURN_SAFRA') {
+    reportName = city ? `Churn Safra D120 (${city})` : 'Churn Safra D120 Regional';
+    reportUrl = city ? `/churn/?cidade=${encodeURIComponent(city)}&safra=mai%2F26` : '/churn/?safra=mai%2F26&visao=PARCEIRO';
+    chips = [
+      { label: '🤝 Piores Parceiros D120', query: 'quais os piores parceiros em Churn Safra?' },
+      { label: '🏙️ Ranking Cidades Safra', query: 'ranking de cidades com pior churn safra' },
+      { label: '🌱 Safras em Aberto', query: 'como estão as safras em aberto?' },
+      { label: '💳 Ver Canais em FPD', query: 'quais os canais de venda com pior FPD?' }
+    ];
+  } else if (repId === 'FPD') {
+    reportName = city ? `FPD Residencial (${city})` : 'FPD Residencial Regional';
+    reportUrl = city ? `/fpd-residencial/?cidade=${encodeURIComponent(city)}&safra=mai%2F26` : '/fpd-residencial/?safra=mai%2F26';
+    chips = [
+      { label: '🚪 FPD por Canal (PAP/Lojas)', query: 'qual o FPD por canal de venda?' },
+      { label: '📍 Ranking Cidades FPD', query: 'ranking de cidades com pior FPD 60' },
+      { label: '💊 Taxa de Cura (30d ➔ 60d)', query: 'qual a taxa de cura da última safra?' },
+      { label: '👔 Vendedores Ofensores', query: 'quais os vendedores com maior taxa de FPD 60?' }
+    ];
+  } else if (repId === 'CREDITO') {
+    reportName = city ? `Aprovação de Crédito (${city})` : 'Aprovação de Crédito Regional';
+    reportUrl = city ? `/aprovacao-credito/?cidade=${encodeURIComponent(city)}` : '/aprovacao-credito/';
+    chips = [
+      { label: '⚠️ Cidades com Mais Antifraude', query: 'quais cidades tiveram mais recusa antifraude?' },
+      { label: '🚪 Aprovação por Canal', query: 'qual o canal com menor aprovação de crédito?' },
+      { label: '🛡️ Volume de Alto Risco', query: 'qual o percentual de contratos em alto risco?' }
+    ];
+  } else if (repId === 'SPEECH') {
+    reportName = 'Speech Analytics';
+    reportUrl = '/speech/';
+    chips = [
+      { label: '🗣️ Top Motivos de Cancelamento', query: 'quais os principais motivos de cancelamento no Speech?' },
+      { label: '💰 Motivo "Acha Caro"', query: 'qual o percentual do motivo acha caro no Speech?' }
+    ];
+  } else if (repId === 'MOTIVOS') {
+    reportName = 'Motivos de Procura & OS';
+    reportUrl = '/motivos-os/';
+    chips = [
+      { label: '🔧 Motivos com Mais OS Técnica', query: 'quais motivos de procura geram mais visita técnica?' },
+      { label: '🏙️ Taxa de OS por Cidade', query: 'qual a taxa de OS técnica em Belém e Manaus?' }
+    ];
+  }
+
+  return { reportUrl, reportName, chips };
+}
+
+/**
  * Execução Text-to-SQL Segura no D1 com Escopo Rígido de Relatório
  */
 async function executeAnalyticalPipeline(env, query, userPhone, userScope, targetReport, channel = 'whatsapp') {
@@ -1453,12 +1640,18 @@ async function executeAnalyticalPipeline(env, query, userPhone, userScope, targe
     answer = formatAnalyticalAnswer(dbRows, query, targetReport);
   }
 
+  const richMeta = buildRichMetadataForReport(targetReport, query, dbRows);
+
   return {
     success: true,
     sql: safeSql,
     answer,
     rowsCount: dbRows.length,
     targetReport: targetReport.id,
+    reportUrl: richMeta.reportUrl,
+    reportName: richMeta.reportName,
+    chips: richMeta.chips,
+    disclaimer: "⚠️ Respostas geradas com base no contexto D1 do PEP HUB. Supervisão humana recomendada."
   };
 }
 
@@ -2389,7 +2582,12 @@ export async function processBotQuery(env, phone, query, sessionUser = null, cha
       success: true,
       answer: resolution.directAnswer,
       intent: 'ANALITICA',
-      phone
+      phone,
+      reportUrl: resolution.reportUrl,
+      reportName: resolution.reportName,
+      chips: resolution.chips,
+      messageId: 'msg_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7),
+      disclaimer: "⚠️ Respostas geradas com base no contexto D1 do PEP HUB. Supervisão humana recomendada."
     };
   }
 
@@ -2398,6 +2596,11 @@ export async function processBotQuery(env, phone, query, sessionUser = null, cha
     ...analyticalResult,
     intent,
     phone,
+    reportUrl: analyticalResult.reportUrl || resolution.reportUrl,
+    reportName: analyticalResult.reportName || resolution.reportName,
+    chips: analyticalResult.chips || resolution.chips,
+    disclaimer: analyticalResult.disclaimer || "⚠️ Respostas geradas com base no contexto D1 do PEP HUB. Supervisão humana recomendada.",
+    messageId: 'msg_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7)
   };
 }
 
@@ -2477,6 +2680,49 @@ export async function handleBotRoutes(request, env, url, pathname) {
     } catch (err) {
       console.error('[Bot Ask Route Error]', err);
       return json({ error: 'Erro interno ao processar requisição do bot.', details: err.message }, 500);
+    }
+  }
+
+  // 3. Endpoint de Feedback do RAG/Chatbot: POST /api/bot/feedback
+  if (pathname === '/api/bot/feedback') {
+    if (request.method !== 'POST') {
+      return json({ error: 'Método não permitido. Use POST.' }, 405);
+    }
+
+    try {
+      let sessionUser = null;
+      try {
+        sessionUser = await getSessionUser(request, env);
+      } catch (_) {}
+
+      const body = await request.json().catch(() => ({}));
+      const rating = body.rating || 'correct'; // 'correct', 'partially_correct', 'incorrect'
+      const query = (body.query || '').trim();
+      const responseText = (body.responseText || body.answer || '').trim();
+      const reportId = body.reportId || null;
+      const comment = (body.comment || body.feedback || '').trim();
+      const messageId = body.messageId || null;
+      const id = 'fb_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
+
+      if (!query && !messageId) {
+        return json({ error: 'Parâmetro obrigatório ausente: informe query ou messageId.' }, 400);
+      }
+
+      const userId = sessionUser?.id || (sessionUser?.matricula ? String(sessionUser.matricula) : null);
+      const userName = sessionUser?.nome_completo || 'Colaborador';
+      const userEmail = sessionUser?.email || null;
+
+      if (env.DB) {
+        await env.DB.prepare(`
+          INSERT INTO bot_feedback (id, user_id, user_name, user_email, message_id, query, response_text, report_id, rating, comment, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        `).bind(id, userId, userName, userEmail, messageId, query, responseText, reportId, rating, comment).run();
+      }
+
+      return json({ success: true, id, message: 'Feedback analítico registrado com sucesso no D1.' });
+    } catch (err) {
+      console.error('[Bot Feedback Route Error]', err);
+      return json({ error: 'Erro ao gravar feedback.', details: err.message }, 500);
     }
   }
 

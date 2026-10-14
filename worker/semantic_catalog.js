@@ -216,6 +216,26 @@ export function getTablesSupportingDimension(dimension) {
 }
 
 /**
+ * Clusters Oficiais da Claro Regional Norte
+ */
+export const CLARO_CLUSTERS = {
+  GRANDES_MERCADOS: ['Belém', 'Manaus', 'São Luís'],
+  MERCADOS_DESENVOLVIMENTO: ['Macapá', 'Boa Vista', 'Santarém', 'Marabá', 'Imperatriz', 'Ananindeua']
+};
+
+/**
+ * Detecta qualificadores especiais e recortes de rede
+ */
+export function detectQualifiers(query) {
+  const norm = (query || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return {
+    isAreaCabeada: /\b(area\s+cabeada|rede\s+cabeada|hfc|cobertura\s+cabeada|cabeada|cabeado|homes\s*passed|hp)\b/i.test(norm),
+    isGrandesMercados: /\b(grandes?\s+mercados?|gms?)\b/i.test(norm),
+    isMercadosDesenvolvimento: /\b(mercados?\s+em\s+desenvolvimento|meds?)\b/i.test(norm)
+  };
+}
+
+/**
  * Retorna o bloco de contexto semântico detalhado para injeção no prompt do gerador Text-to-SQL
  */
 export function buildSemanticCatalogPrompt() {
@@ -234,11 +254,10 @@ MANDATÓRIO: Respeite estritamente as dimensões disponíveis em cada tabela. NU
 2. TABELA fato_churn_safra (Relatório Churn Safra D120):
    - ATENÇÃO CRÍTICA: Esta tabela NÃO possui a coluna 'canal'!
    - Dimensão 'entidade_nome':
-     * Quando visao = 'PARCEIRO', entidade_nome é o PARCEIRO COMERCIAL (ex: 'Top Connect', 'All Rede', 'Star Link'). NÃO É CANAL!
+     * Quando visao = 'PARCEIRO', entidade_nome é o PARCEIRO COMERCIAL (ex: 'Top Connect', 'All Rede', 'Star Link'). NUNCA CHAME PARCEIRO DE CANAL!
      * Quando visao = 'CIDADE', entidade_nome é a CIDADE (ex: 'Belém', 'Manaus').
    - SE O USUÁRIO PERGUNTAR POR CANAL EM CHURN SAFRA:
-     Você DEVE retornar os parceiros ofensores e instruir o sintetizador a avisar ao usuário que a base consolida por Parceiro e Cidade, sem visão de canal.
-     SELECT safra, visao, entidade_nome, instalacoes, churn_d120, taxa_d120, np120, taxa_np120 FROM fato_churn_safra WHERE visao = 'PARCEIRO' AND status_safra = 'MADURA' ORDER BY safra_ord DESC, taxa_d120 DESC LIMIT 5;
+     A base não possui canais. Explique que Churn Safra é apurado por Parceiro e por Cidade, sem visão de canal, e sugira consultar FPD ou Crédito. NUNCA devolva parceiros comerciais fingindo que são canais!
 
 3. TABELA fato_aprovacao_credito (Relatório Crédito & Antifraude):
    - Dimensões disponíveis: canal ('Porta a Porta', 'Canais Presenciais', 'Lojas', 'Televendas'), pdv_ou_parceiro, cidade, mes_referencia.
@@ -248,10 +267,10 @@ MANDATÓRIO: Respeite estritamente as dimensões disponíveis em cada tabela. NU
 
 4. TABELA fato_indicadores_mensais (Relatório Churn Banda Larga):
    - Dimensões disponíveis: cidade ('Regional Norte' ou 14 cidades), segmento ('Banda Larga Total', 'Banda Larga PME'), tipo_visao ('TOTAL', 'VOLUNTARIO', 'INVOLUNTARIO').
-   - ATENÇÃO: NÃO possui canal, parceiro nem vendedor!
+   - ATENÇÃO: NÃO possui canal, parceiro nem vendedor! Se perguntado por churn de banda larga, o relatório correto é Churn BL (fato_indicadores_mensais), JAMAIS Market Share!
 
 5. TABELA fato_market_share (Relatório Market Share Anatel):
    - Dimensões disponíveis: operadora ('Claro', 'Vivo', 'TIM', etc.), produto ('BANDA_LARGA', 'MOVEL'), segmento ('RESIDENCIAL', 'POS_PAGO_SEM_M2M', '5G'), cidade, ddd.
-   - ATENÇÃO: Se a pergunta for sobre Banda Larga/Residencial, filtre produto = 'BANDA_LARGA' AND segmento = 'RESIDENCIAL'.
+   - ATENÇÃO: Se a pergunta for sobre Banda Larga/Residencial, filtre produto = 'BANDA_LARGA' AND segmento = 'RESIDENCIAL'. Se for sobre 'área cabeada', informe a nota explicativa de que a Anatel apura o total do serviço SCM municipal.
 `;
 }

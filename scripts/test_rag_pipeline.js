@@ -105,8 +105,15 @@ assert(!menuDddWeb.includes('wa.me') && !menuDddWeb.includes('#?'), "Menu de Lis
 const footerWeb = buildCardFooterLinks(repFpd, {}, 'web_user', 'web');
 assert(!footerWeb.includes('wa.me') && !footerWeb.includes('#?'), "Rodapé de cards Web não contém wa.me nem #?");
 
-console.log("\n============================================================================");
-console.log(`  RESULTADO: ${passed} testes passaram, ${failed} falharam.`);
-console.log("============================================================================");
+// 5. Bateria de 22 Cenários Cognitivos Humanos (rag-auditor)
+console.log("\n5. Bateria de Testes Cognitivos de Alta Variabilidade (22 Cenários):");
+import('./test_rag_20_scenarios.js').then(async (scen) => {
+  const scenRes = await scen.run20CognitiveTests();
+  assert(scenRes.failed === 0, `Todos os ${scenRes.total} cenários cognitivos foram aprovados com 100% de precisão`);
 
-process.exit(failed === 0 ? 0 : 1);
+  console.log("\n============================================================================");
+  console.log(`  RESULTADO CONSOLIDADO: ${passed} testes passaram, ${failed} falharam.`);
+  console.log("============================================================================");
+
+  process.exit(failed === 0 ? 0 : 1);
+});

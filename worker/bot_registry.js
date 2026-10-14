@@ -232,11 +232,10 @@ export const REPORT_REGISTRY = {
       /\bpós\s*pago\b/i,
       /\bsem\s*m2m\b/i,
       /\b5g\b/i,
-      /\bbanda\s*larga\b/i,
-      /\bresidencial\b/i,
-      /\bscm\b/i,
-      /\bfibra\b/i,
-      /\bgpon\b/i
+      /\boperadoras?\b/i,
+      /\bmarket\s+share\s+(residencial|banda\s*larga|fixa)\b/i,
+      /\bshare\s+(residencial|banda\s*larga|fixa)\b/i,
+      /\bparticipac(ao|ão)\s*(em\s+)?(banda\s*larga|residencial)\b/i
     ],
     rules: {
       defaultOperadora: 'Claro'
@@ -631,6 +630,12 @@ export function extractQueryEntities(query) {
   const isParceiroQuery = /\b(parceiro|parceiros|pdv|pdvs|empresa|empresas)\b/i.test(qNorm) || Boolean(matchedPartner);
   const isVendedorQuery = /\b(vendedor|vendedores|vendedora|vendedoras|consultor|consultores|equipe)\b/i.test(qNorm);
   const isOfensorQuery = /\b(ofensor|ofensores|pior|piores|sangria|critico|criticos)\b/i.test(qNorm);
+  const isAreaCabeada = /\b(area\s+cabeada|rede\s+cabeada|hfc|cobertura\s+cabeada|cabeada|cabeado|homes\s*passed|hp)\b/i.test(qNorm);
+  const isGrandesMercados = /\b(grandes?\s+mercados?|gms?)\b/i.test(qNorm);
+  const isMercadosDesenvolvimento = /\b(mercados?\s+em\s+desenvolvimento|meds?)\b/i.test(qNorm);
+  const isMovelQuery = /\b(movel|móvel|celular|smp|pos\s*pago|pós\s*pago|5g)\b/i.test(qNorm);
+  const isBandaLargaQuery = /\b(banda\s*larga|residencial|scm|fibra|gpon|fixa)\b/i.test(qNorm);
+  const isPmeQuery = /\b(pme|empresarial|pj|pequenas?\s+e\s+medias?)\b/i.test(qNorm);
 
   return {
     matchedCity,
@@ -645,7 +650,13 @@ export function extractQueryEntities(query) {
     isChannelQuery,
     isParceiroQuery,
     isVendedorQuery,
-    isOfensorQuery
+    isOfensorQuery,
+    isAreaCabeada,
+    isGrandesMercados,
+    isMercadosDesenvolvimento,
+    isMovelQuery,
+    isBandaLargaQuery,
+    isPmeQuery
   };
 }
 
@@ -657,18 +668,14 @@ export function buildDeterministicAnalyticalSQL(query, targetReport, userScope) 
   if (!query || !targetReport) return null;
   const qNorm = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-  // Se a pergunta contiver termos analíticos de raciocínio, agregação ou filtros complexos:
-  // DELEGAR IMEDIATAMENTE AO GEMINI (LLM Reasoning Agent), sem forçar templates rígidos!
+  // Apenas delega ao Gemini consultas temporais complexas livres (ex: médias móveis históricas de 6 meses)
   const complexPatterns = [
-    /\b(vendedor|vendedores|vendedora|vendedoras|consultor|consultores)\b/i,
     /\b(m[eé]dia|m[eé]dias|6\s*meses|seis\s*meses|ultimos?\s*6|últimos?\s*6)\b/i,
-    /\b(concorr[eê]ncia|concorrentes?|versus|vs|comparar|comparativo)\b/i,
-    /\b(or[çc]amento|or[çc]ado|rxo|ytd|ytd26|ytd25|acumulado)\b/i,
-    /\b(considere|mais\s+de|menos\s+de|corte|m[ií]nimo|maior\s+que|menor\s+que)\b/i
+    /\b(considere|mais\s+de|menos\s+de|corte\s+de|minimo\s+de)\s+\d+\b/i
   ];
   for (const pat of complexPatterns) {
     if (pat.test(query)) {
-      return null; // Delega ao LLM!
+      return null;
     }
   }
 
@@ -686,13 +693,20 @@ export function buildDeterministicAnalyticalSQL(query, targetReport, userScope) 
     isChannelQuery,
     isParceiroQuery,
     isVendedorQuery,
-    isOfensorQuery
+    isOfensorQuery,
+    isPmeQuery
   } = slots;
 
   // 4. Regras por Relatório-Alvo
   if (targetReport.id === 'FPD') {
     if (isLatestPeriod && !isParceiroQuery && !matchedPartner && !matchedCity && !matchedChannel && !isRanking) {
       return `SELECT DISTINCT safra, safra_ord FROM fato_fpd ORDER BY safra_ord DESC LIMIT 1`;
+    }
+    // Vendedor no FPD
+    if (isVendedorQuery) {
+      const channelClause = matchedChannel ? `AND canal LIKE '%${matchedChannel}%'` : '';
+      const cityClause = matchedCity ? `AND cidade = '${matchedCity}'` : '';
+      return `SELECT vendedor, parceiro, canal, safra, instalacoes, fpd60, taxa_fpd60, fpd30, taxa_fpd30 FROM fato_fpd WHERE vendedor IS NOT NULL ${channelClause} ${cityClause} ORDER BY taxa_fpd60 DESC LIMIT 5`;
     }
     // Parceiro no FPD
     if (isParceiroQuery || matchedPartner) {
@@ -702,8 +716,8 @@ export function buildDeterministicAnalyticalSQL(query, targetReport, userScope) 
       const dir = isBest ? 'ASC' : 'DESC';
       return `SELECT parceiro, safra, SUM(instalacoes) as total_instalacoes, SUM(instalacoes) as total_inst, SUM(instalacoes) as instalacoes, SUM(fpd60) as total_fpd60, SUM(fpd60) as fpd60, ROUND(100.0 * SUM(fpd60)/SUM(instalacoes), 2) as taxa_fpd60, ROUND(100.0 * SUM(fpd60)/SUM(instalacoes), 2) as taxa_fpd60_consolidada, ROUND(100.0 * SUM(fpd30)/SUM(instalacoes), 2) as taxa_fpd30, ROUND(100.0 * SUM(fpd30)/SUM(instalacoes), 2) as taxa_fpd30_consolidada FROM fato_fpd WHERE parceiro IS NOT NULL GROUP BY parceiro, safra HAVING total_inst >= 20 ORDER BY safra_ord DESC, taxa_fpd60_consolidada ${dir} LIMIT 5`;
     }
-    // Canal no FPD (ou Vendedor -> resolvido em Canal)
-    if (isChannelQuery || matchedChannel || (isVendedorQuery && !matchedCity && !matchedPartner)) {
+    // Canal no FPD
+    if (isChannelQuery || matchedChannel) {
       if (matchedChannel) {
         return `SELECT safra, cidade, canal, instalacoes, fpd60, taxa_fpd60, fpd30, taxa_fpd30, cura, taxa_cura, faixa_risco FROM fato_fpd WHERE safra = (SELECT safra FROM fato_fpd ORDER BY safra_ord DESC LIMIT 1) AND canal LIKE '%${matchedChannel}%' ORDER BY instalacoes DESC LIMIT 5`;
       }
@@ -724,10 +738,8 @@ export function buildDeterministicAnalyticalSQL(query, targetReport, userScope) 
   }
 
   if (targetReport.id === 'CHURN_SAFRA') {
-    // PROTEÇÃO SEMÂNTICA: A base fato_churn_safra NÃO possui canais de venda!
-    // Se o usuário perguntou sobre canal, não retornar parceiros como se fossem canais.
     if (isChannelQuery && !isParceiroQuery) {
-      return null; // Delega ao LLM para prestar esclarecimento semântico transparente
+      return null;
     }
     if (isLatestPeriod && !isParceiroQuery && !matchedPartner && !matchedCity && !isRanking) {
       return `SELECT DISTINCT safra, safra_ord FROM fato_churn_safra ORDER BY safra_ord DESC LIMIT 1`;
@@ -751,20 +763,36 @@ export function buildDeterministicAnalyticalSQL(query, targetReport, userScope) 
   }
 
   if (targetReport.id === 'CHURN_BL' || targetReport.id === 'CHURN_PME') {
-    const segmento = targetReport.id === 'CHURN_PME' ? 'Banda Larga PME' : 'Banda Larga Total';
-    const visao = isVoluntary ? 'VOLUNTARIO' : (isInvoluntary ? 'INVOLUNTARIO' : 'TOTAL');
+    const segmento = (targetReport.id === 'CHURN_PME' || isPmeQuery || /\bpme\b/i.test(qNorm)) ? 'Banda Larga PME' : 'Banda Larga Total';
+    const isVol = isVoluntary || /\b(voluntari[oa]|voluntarios)\b/i.test(qNorm);
+    const isInvol = isInvoluntary || /\b(involuntari[oa]|involuntarios|inadimplencia)\b/i.test(qNorm);
+    const isVsVisao = /\b(versus|vs|comparar|vis[aã]o|visoes)\b/i.test(qNorm) || (isVol && isInvol);
+    const isRxoOrMeta = /\b(or[çc]amento|or[çc]ado|rxo|meta|meta\s*orcada)\b/i.test(qNorm);
 
+    if (isVsVisao) {
+      return `SELECT mes_referencia, segmento, tipo_visao, cidade, base_real, vol_real, vol_orc, rxo_delta, taxa_real, taxa_orc, taxa_delta_pp FROM fato_indicadores_mensais WHERE segmento = '${segmento}' AND tipo_visao IN ('VOLUNTARIO', 'INVOLUNTARIO') ORDER BY id DESC LIMIT 2`;
+    }
+    if (isRxoOrMeta) {
+      return `SELECT mes_referencia, segmento, tipo_visao, cidade, base_real, vol_real, vol_orc, rxo_delta, taxa_real, taxa_orc, taxa_delta_pp, ytd_real, ytd_orc FROM fato_indicadores_mensais WHERE segmento = '${segmento}' AND tipo_visao = 'TOTAL' AND cidade = 'Regional Norte' ORDER BY id DESC LIMIT 1`;
+    }
     if (matchedCity) {
+      const visao = isVol ? 'VOLUNTARIO' : (isInvol ? 'INVOLUNTARIO' : 'TOTAL');
       return `SELECT mes_referencia, segmento, tipo_visao, cidade, base_real, vol_real, vol_orc, rxo_delta, taxa_real, taxa_orc, taxa_delta_pp, ytd_real, ytd_orc, mom_pct FROM fato_indicadores_mensais WHERE segmento = '${segmento}' AND tipo_visao = '${visao}' AND cidade = '${matchedCity}' ORDER BY id DESC LIMIT 1`;
     }
     if (isRanking) {
+      const visao = isVol ? 'VOLUNTARIO' : (isInvol ? 'INVOLUNTARIO' : 'TOTAL');
       return `SELECT cidade, base_real, vol_real, vol_orc, taxa_real, taxa_orc, taxa_delta_pp FROM fato_indicadores_mensais WHERE segmento = '${segmento}' AND tipo_visao = '${visao}' AND cidade != 'Regional Norte' ORDER BY taxa_real DESC LIMIT 5`;
     }
     // Consolidado regional Churn BL
+    const visao = isVol ? 'VOLUNTARIO' : (isInvol ? 'INVOLUNTARIO' : 'TOTAL');
     return `SELECT mes_referencia, segmento, tipo_visao, cidade, base_real, vol_real, vol_orc, rxo_delta, taxa_real, taxa_orc, taxa_delta_pp, ytd_real, ytd_orc, mom_pct FROM fato_indicadores_mensais WHERE segmento = '${segmento}' AND tipo_visao = '${visao}' AND cidade = 'Regional Norte' ORDER BY id DESC LIMIT 1`;
   }
 
   if (targetReport.id === 'CREDITO') {
+    const isAntifraudeRank = /\b(antifraude|fraude|recusa|recusas)\b/i.test(qNorm) && (isRanking || /\b(cidade|cidades)\b/i.test(qNorm));
+    if (isAntifraudeRank) {
+      return `SELECT cidade, SUM(consultas) as total_consultas, SUM(aprovados) as total_aprovados, ROUND(100.0 * SUM(aprovados) / SUM(consultas), 1) as taxa_aprovacao_consolidada, SUM(recusas_antifraude) as recusas_antifraude FROM fato_aprovacao_credito GROUP BY cidade ORDER BY recusas_antifraude DESC LIMIT 5`;
+    }
     if (isChannelQuery && !matchedPartner) {
       const dir = isBest ? 'DESC' : 'ASC';
       return `SELECT canal, mes_referencia, SUM(consultas) as total_consultas, SUM(aprovados) as total_aprovados, ROUND(100.0 * SUM(aprovados)/SUM(consultas), 1) as taxa_aprovacao FROM fato_aprovacao_credito WHERE canal IS NOT NULL GROUP BY canal, mes_referencia ORDER BY mes_referencia DESC, taxa_aprovacao ${dir} LIMIT 5`;

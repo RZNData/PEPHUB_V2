@@ -151,71 +151,89 @@ def run_rag_audit():
         tests.append(("[X ]", "T06 - Text-to-SQL Determinístico Seguro e Anti-Injeção", 0))
 
     # -------------------------------------------------------------
-    # TESTE 7: Abas e Gaveta de Perguntas Predefinidas por Relatório no Chatbot
+    # TESTE 7: Abas e Gaveta de Perguntas Predefinidas + Botão Relatório no Chatbot
     # -------------------------------------------------------------
     t7_pass = (
         "ragPresetBar" in header_widget_code or "rag-preset-bar" in header_widget_code
     ) and (
         "ragPresetDrawer" in header_widget_code or "rag-preset-drawer" in header_widget_code
     ) and (
+        "rag-report-link-btn" in header_widget_code
+    ) and (
         "PRESET_QUESTIONS" in header_widget_code
     )
     if t7_pass:
-        tests.append(("[OK]", "T07 - Abas e Gaveta de Perguntas Predefinidas por Relatório no Chatbot", 10))
+        tests.append(("[OK]", "T07 - Abas, Gaveta de Perguntas e Botão de Navegação ao Relatório Oficial", 10))
     else:
         score -= 10
-        deductions.append("T07: Falta interface de abas/gaveta de perguntas predefinidas no header-widget.js.")
-        tests.append(("[X ]", "T07 - Abas e Gaveta de Perguntas Predefinidas por Relatório no Chatbot", 0))
+        deductions.append("T07: Falta interface de abas/gaveta de perguntas predefinidas ou botão para relatório oficial.")
+        tests.append(("[X ]", "T07 - Abas, Gaveta de Perguntas e Botão de Navegação ao Relatório Oficial", 0))
 
     # -------------------------------------------------------------
-    # TESTE 8: Envio Nativo de channel: 'web' no Chatbot Frontend
+    # TESTE 8: Metadados Ricos (reportUrl, Chips, Disclaimer) e Envio Web
     # -------------------------------------------------------------
     t8_pass = (
-        "channel: 'web'" in header_widget_code or 'channel: "web"' in header_widget_code
+        "buildRichMetadataForReport" in bot_routes_code
     ) and (
-        "/api/bot/ask" in header_widget_code
+        "rag-disclaimer-note" in header_widget_code
+    ) and (
+        "rag-feedback-bar" in header_widget_code
+    ) and (
+        "channel: 'web'" in header_widget_code or 'channel: "web"' in header_widget_code
     )
     if t8_pass:
-        tests.append(("[OK]", "T08 - Envio Transparente do Canal Web sem Prefixo #? no Chatbot", 10))
+        tests.append(("[OK]", "T08 - Metadados Ricos, Disclaimer Analítico e Barra de Feedback no Chatbot", 10))
     else:
         score -= 10
-        deductions.append("T08: Chatbot web não está enviando explicitamente channel: 'web'.")
-        tests.append(("[X ]", "T08 - Envio Transparente do Canal Web sem Prefixo #? no Chatbot", 0))
+        deductions.append("T08: Metadados ricos, disclaimer de supervisão ou barra de feedback ausentes.")
+        tests.append(("[X ]", "T08 - Metadados Ricos, Disclaimer Analítico e Barra de Feedback no Chatbot", 0))
 
     # -------------------------------------------------------------
-    # TESTE 9: RAG Conceitual e Regras Oficiais de Negócio (FPD 30 vs 60, Cura, Safra Madura)
+    # TESTE 9: Bateria de No Mínimo 20 Perguntas Cognitivas Humanas (Aberturas, Profundidade, Cruzamentos)
     # -------------------------------------------------------------
-    t9_pass = (
-        "executeConceptualPipeline" in bot_routes_code
-    ) and (
-        "formatCorporateGlossaryDirect" in bot_routes_code
-    ) and (
-        "FPD 30" in bot_routes_code or "D120" in bot_routes_code
-    )
+    import subprocess
+    scenarios_script = os.path.join(WORKSPACE_DIR, "scripts", "test_rag_20_scenarios.js")
+    t9_pass = False
+    if os.path.exists(scenarios_script):
+        try:
+            res_scen = subprocess.run(
+                ["node", scenarios_script],
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="ignore",
+                timeout=30
+            )
+            t9_pass = res_scen.returncode == 0 and "22/22" in (res_scen.stdout or "")
+        except Exception as e:
+            deductions.append(f"T09: Erro ao executar scripts/test_rag_20_scenarios.js: {e}")
     if t9_pass:
-        tests.append(("[OK]", "T09 - Glossário Corporativo e Regras de Negócio Oficiais", 10))
+        tests.append(("[OK]", "T09 - Bateria Cognitiva de 22 Cenários Humanos (Aberturas, Profundidade, Cruzamentos)", 10))
     else:
         score -= 10
-        deductions.append("T09: Regras conceituais ou pipeline de glossário inconsistente.")
-        tests.append(("[X ]", "T09 - Glossário Corporativo e Regras de Negócio Oficiais", 0))
+        deductions.append("T09: Bateria cognitiva de 20+ cenários humanos falhou ou não atingiu 100%.")
+        tests.append(("[X ]", "T09 - Bateria Cognitiva de 22 Cenários Humanos (Aberturas, Profundidade, Cruzamentos)", 0))
 
     # -------------------------------------------------------------
-    # TESTE 10: Documentação da Skill em .agents/skills/rag-auditor/SKILL.md
+    # TESTE 10: Tabela bot_feedback no D1, Rota de Feedback e Documentação SKILL.md
     # -------------------------------------------------------------
+    schema_code = _read(os.path.join(WORKSPACE_DIR, "schema.sql"))
     skill_md = _read(os.path.join(WORKSPACE_DIR, ".agents", "skills", "rag-auditor", "SKILL.md"))
     t10_pass = (
+        "bot_feedback" in schema_code
+    ) and (
+        "/api/bot/feedback" in bot_routes_code
+    ) and (
         "name: rag-auditor" in skill_md
     ) and (
-        "7 Pilares Universais de Governança" in skill_md or "Pilares" in skill_md
-    ) and (
-        "Tolerância Zero a Alucinações" in skill_md
+        "Bateria de Testes Cognitivos" in skill_md or "20 Cenários" in skill_md
     )
     if t10_pass:
-        tests.append(("[OK]", "T10 - Conformidade da Skill .agents/skills/rag-auditor/SKILL.md", 10))
+        tests.append(("[OK]", "T10 - Loop de Calibração Contínua (bot_feedback) e Governança da Skill", 10))
     else:
         score -= 10
-        deductions.append("T10: Documentação da skill rag-auditor ausente ou incompleta.")
-        tests.append(("[X ]", "T10 - Conformidade da Skill .agents/skills/rag-auditor/SKILL.md", 0))
+        deductions.append("T10: Tabela bot_feedback, endpoint /api/bot/feedback ou documentação da skill ausente.")
+        tests.append(("[X ]", "T10 - Loop de Calibração Contínua (bot_feedback) e Governança da Skill", 0))
 
     # Exibição dos resultados
     print("\n  Checklist de Governança Analítica:")

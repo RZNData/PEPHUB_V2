@@ -379,3 +379,25 @@ CREATE INDEX IF NOT EXISTS idx_email_logs_status ON email_logs(status);
 CREATE INDEX IF NOT EXISTS idx_email_logs_direction ON email_logs(direction);
 CREATE INDEX IF NOT EXISTS idx_email_logs_created ON email_logs(created_at DESC);
 
+-- =====================================================================
+-- 9. MECANISMO DE FEEDBACK CONTÍNUO DO CHATBOT & RAG
+-- =====================================================================
+CREATE TABLE IF NOT EXISTS bot_feedback (
+    id TEXT PRIMARY KEY,
+    user_id TEXT,
+    user_name TEXT,
+    user_email TEXT,
+    message_id TEXT,
+    query TEXT NOT NULL,
+    response_text TEXT,
+    report_id TEXT,
+    rating TEXT NOT NULL,                      -- 'correct', 'partially_correct', 'incorrect'
+    comment TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_bot_feedback_rating ON bot_feedback(rating);
+CREATE INDEX IF NOT EXISTS idx_bot_feedback_report ON bot_feedback(report_id);
+CREATE INDEX IF NOT EXISTS idx_bot_feedback_created ON bot_feedback(created_at DESC);
+
+
