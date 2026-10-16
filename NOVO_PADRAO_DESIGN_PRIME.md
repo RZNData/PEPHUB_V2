@@ -83,10 +83,47 @@ A folha de estilos unificada fica localizada em [public/css/pephub-prime.css](fi
 
 ---
 
-## 4. Como Visualizar no Navegador
+## 4. Reorganização do Painel & Arquitetura Corporativa Atual (v4.5)
 
-O servidor de preview já está rodando localmente:
+Para elevar a experiência a um padrão corporativo contemporâneo (estilo Linear, Snowflake Workspaces, Stripe Dashboard e Datadog), a organização do painel foi redesenhada em 4 pilares:
+
+### 4.1 Header Executivo Unificado com Busca Global (`⌘K`)
+- **Busca em Tempo Real Integrada**: Caixa de pesquisa de alta sensibilidade no centro da moldura superior, permitindo localização instantânea de relatórios por nome, indicador, metodologia ou palavra-chave (ex: "FPD", "Churn", "Anatel", "Net Adds").
+- **Atalho de Teclado Corporativo**: Foco automático ao pressionar `⌘K` (Mac) ou `Ctrl+K` / `/` (Windows/Linux) e limpeza rápida com `ESC`.
+- **Telemetria HUD e Perfil Integrado**: Status de sincronização da borda Cloudflare D1 (`D1 Core Online`), latência de 14ms e menu de usuário corporativo.
+
+### 4.2 Cockpit Executivo & Visão Consolidada
+Substitui o antigo bloco de texto estático por um **Cockpit Estratégico de Métricas** em duas colunas:
+1. **Contexto Operacional**: Identificação da Regional Norte (AM · PA · MA · AP · RR), escopo analítico e badge de sincronia D1 Edge.
+2. **Matriz de 4 KPIs Estratégicos**:
+   - `348.866` Instalações Safras (Set/25 – Set/26)
+   - `26,48%` Taxa FPD 60 Safra Foco
+   - `+43.087` Net Adds Móvel (Líder Brasil)
+   - `37,04%` Market Share SMP (Top 1 RNO)
+
+### 4.3 Dock Interativo de Categorias em Pílulas
+Dock flutuante com contadores dinâmicos para troca instantânea de segmento:
+- **Todos os Relatórios (14)**: Visão consolidada de todo o ecossistema.
+- **Móvel & Safras (4)**: Churn Safra, Evolução de Carteira, Panorama MS, MS Móvel 5G.
+- **Banda Larga Fixa (3)**: Churn BL Total, Churn BL PME, MS Residencial.
+- **Qualidade & Risco FPD (3)**: Panorama FPD, FPD Executivo, Aprovação de Crédito PF.
+- **PeP Tools & Suporte (4)**: Podcast Deep Dive, Gerador de Aniversário, Auxiliar de PPT, Divulgação TVs.
+
+### 4.4 Anatomia do Card Corporativo Contemporâneo
+Cada cartão agora possui arquitetura visual em 4 camadas estruturadas:
+1. **Friso Superior de Acento de Categoria**: Linha de 3px colorida (Ruby para Móvel, Azul Royal para Fixa, Esmeralda para Qualidade/FPD e Violeta para Tools).
+2. **Eyebrow de Domínio & Status**: Selo da categoria à esquerda e cápsula de maturidade/status oficial à direita.
+3. **Título com Tipografia Display & Subtítulo de Metodologia**: Nome do relatório em fonte *Outfit* (`700`) e kicker descritivo em *Plus Jakarta Sans* (`500`).
+4. **Matriz de Dados 2x2 em Slate 50**: Células com rótulo em maiúsculas (`#64748b`) e números com fonte mono/tabular de alto contraste (`#0f172a`).
+5. **Tags Semânticas & Botão de Ação com Arrow Glide**: Pílulas coloridas para janelas metodológicas e botão de acesso com micro-interação da seta (`→`) deslizando 4px no hover.
+
+---
+
+## 5. Como Visualizar no Navegador
+
+O servidor de preview já está rodando localmente na branch `test/nova-identidade-visual`:
 - 🏠 **Portal Principal:** [http://localhost:8787/](http://localhost:8787/)
 - ⚙️ **Central Administrativa:** [http://localhost:8787/admin/](http://localhost:8787/admin/)
 - 📊 **Painel Churn Safra:** [http://localhost:8787/churn/](http://localhost:8787/churn/)
 - 🔐 **Tela de Login:** [http://localhost:8787/login/](http://localhost:8787/login/)
+

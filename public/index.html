@@ -176,6 +176,19 @@ header{background:#fff;border-bottom:1px solid var(--line)}
       </svg>
     </div>
     <h1><b>Pephub</b> <span>Portal de Churn & Qualidade · Regional Norte</span></h1>
+
+    <!-- Busca Global Integrada no Header -->
+    <div class="header-search">
+      <span class="search-ico">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+      </span>
+      <input type="text" id="globalSearchInput" placeholder="Buscar painel, métrica ou indicador (FPD, Churn, Safra, Anatel)..." autocomplete="off" spellcheck="false">
+      <span class="search-kbd">⌘K</span>
+    </div>
+
     <div class="hd-actions" id="userWidget" style="margin-left:auto;display:flex;align-items:center;gap:10px">
       <button class="drawer-btn hlp" data-h="risco" style="display:none">?</button>
       <button id="btnPwaInstallHeader" onclick="triggerPwaInstall()" style="display:none;background:#c0191f;color:#fff;border:1px solid rgba(255,255,255,.4);padding:6px 13px;border-radius:3px;font-size:11.5px;font-weight:700;cursor:pointer;align-items:center;gap:6px;transition:all .15s" title="Instalar aplicativo no dispositivo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Instalar App</button>
@@ -198,27 +211,82 @@ header{background:#fff;border-bottom:1px solid var(--line)}
 
 <div class="wrap">
 
-  <div class="intro">
-    <div class="intro-text">
-      <h2>Portal Regional de Inteligência Operacional</h2>
-      <p>Plataforma analítica executiva para monitoramento de churn móvel e fixo, qualidade de vendas (FPD) e governança da Regional Norte.</p>
+  <!-- COCKPIT EXECUTIVO & HERO REGIONAL -->
+  <div class="executive-cockpit">
+    <div class="cockpit-content">
+      <div class="cockpit-eyebrow">
+        <span class="cockpit-badge"><span class="telemetry-beacon"></span> CLARO REGIONAL NORTE</span>
+        <span class="cockpit-scope">AM · PA · MA · AP · RR</span>
+        <span class="cockpit-div">•</span>
+        <span class="cockpit-time">D1 Edge Synced</span>
+      </div>
+      <h2 class="cockpit-title">Centro de Inteligência Operacional & Governança</h2>
+      <p class="cockpit-desc">Monitoramento executivo e multidimensional de churn móvel e fixo, qualidade de instalações (FPD), dinâmica de mercado e conformidade analítica.</p>
     </div>
-    <div class="intro-badges">
-      <span class="telemetry-pill"><span class="telemetry-beacon"></span> Base Safra Atualizada</span>
-      <span class="telemetry-pill">D1 Edge Synced</span>
-      <span class="telemetry-pill">Zero-Trust Active</span>
+    <div class="cockpit-metrics">
+      <div class="cockpit-stat">
+        <div class="stat-num">348.866</div>
+        <div class="stat-lbl">Instalações Safras (D120)</div>
+      </div>
+      <div class="cockpit-stat">
+        <div class="stat-num">26,48%</div>
+        <div class="stat-lbl">Taxa FPD 60 Safra Foco</div>
+      </div>
+      <div class="cockpit-stat">
+        <div class="stat-num">+43.087</div>
+        <div class="stat-lbl">Net Adds Móvel (Top 1 BR)</div>
+      </div>
+      <div class="cockpit-stat">
+        <div class="stat-num">37,04%</div>
+        <div class="stat-lbl">Market Share SMP (Líder)</div>
+      </div>
     </div>
   </div>
 
-  <div class="section-title" id="paineis">Painéis e Indicadores Analíticos</div>
+  <!-- BARRA DE NAVEGAÇÃO EM CATEGORIAS E RESUMO DO CATÁLOGO -->
+  <div class="catalog-filter-bar">
+    <div class="filter-pills-group" id="filterPillsGroup">
+      <button class="filter-pill active" data-filter="all">
+        <span>Todos os Relatórios</span>
+        <span class="filter-count">14</span>
+      </button>
+      <button class="filter-pill" data-filter="movel">
+        <span>Móvel & Safras</span>
+        <span class="filter-count">4</span>
+      </button>
+      <button class="filter-pill" data-filter="fixa">
+        <span>Banda Larga Fixa</span>
+        <span class="filter-count">3</span>
+      </button>
+      <button class="filter-pill" data-filter="qualidade">
+        <span>Qualidade & Risco FPD</span>
+        <span class="filter-count">3</span>
+      </button>
+      <button class="filter-pill" data-filter="tools">
+        <span>PeP Tools & Suporte</span>
+        <span class="filter-count">4</span>
+      </button>
+    </div>
+    <div class="filter-summary">
+      Exibindo <strong id="catalogVisibleCount">14</strong> de 14 módulos corporativos
+    </div>
+  </div>
 
-  <div class="cards">
+  <div class="section-title" id="paineis">Módulos & Relatórios Oficiais</div>
+
+  <div class="cards" id="catalogCardsGrid">
 
     <!-- Card 1: Churn Safra -->
-    <div class="card" style="border-top: 3px solid var(--red);">
+    <div class="card" data-category="movel" data-keywords="churn safra d30 d60 d90 d120 d150 parceiro responsabilidade nunca pagou instalacoes maturidade sobrevivencia">
+      <div class="card-eyebrow">
+        <span class="card-domain-badge">Móvel & Safras</span>
+        <span class="card-tag active">Ativo · D120</span>
+      </div>
       <div class="card-header">
-        <h3 class="card-title">Churn Safra — Regional Norte</h3>
-        <span class="card-tag active">Ativo</span>
+        <div class="card-header-left">
+          <h3 class="card-title">Churn Safra — Regional Norte</h3>
+          <span class="card-subtitle">Desconexão Precoce por Contrato · Janelas D30 a D150</span>
+        </div>
       </div>
       <div class="card-body">
         <p class="card-desc">Análise de desconexão precoce de instalações nas janelas D30 a D150. Acompanhamento rigoroso da responsabilidade do parceiro (janela oficial D120), curva de maturação, inadimplência inicial (Nunca Pagou), mapa de calor e ranking hierárquico comercial.</p>
@@ -236,16 +304,21 @@ header{background:#fff;border-bottom:1px solid var(--line)}
         </div>
       </div>
       <div class="card-footer">
-        <a href="./churn/" class="btn-primary">Acessar Painel Online →</a>
-        
+        <a href="./churn/" class="btn-primary">Acessar Painel Online <span class="arrow-glide">→</span></a>
       </div>
     </div>
 
     <!-- Card 2: Panorama FPD -->
-    <div class="card" style="border-top: 3px solid var(--red);">
+    <div class="card" data-category="qualidade" data-keywords="fpd panorama primeira fatura onboarding 60 30 parceiro vendedor praca canal risco adimplencia">
+      <div class="card-eyebrow">
+        <span class="card-domain-badge">Qualidade & Risco FPD</span>
+        <span class="card-tag active">Ativo · FPD 60</span>
+      </div>
       <div class="card-header">
-        <h3 class="card-title">Panorama FPD — Regional Norte</h3>
-        <span class="card-tag active">Ativo</span>
+        <div class="card-header-left">
+          <h3 class="card-title">Panorama FPD — Regional Norte</h3>
+          <span class="card-subtitle">1ª Fatura · Marco Oficial FPD 60 Claro & FPD 30 Onboarding</span>
+        </div>
       </div>
       <div class="card-body">
         <p class="card-desc">Diagnóstico analítico completo de adimplência na 1ª fatura (marco oficial FPD 60 Claro e FPD 30 Onboarding). Aberturas multidimensionais por Parceiro credenciado, Safra de venda, Vendedor, Praça IBGE, Canal de Venda e Faixas de Risco de Crédito. Visão geoespacial interativa com densidade urbana, mapa de calor e laço livre.</p>
@@ -263,15 +336,21 @@ header{background:#fff;border-bottom:1px solid var(--line)}
         </div>
       </div>
       <div class="card-footer">
-        <a href="./fpd/" class="btn-primary">Acessar Painel Online →</a>
+        <a href="./fpd/" class="btn-primary">Acessar Painel Online <span class="arrow-glide">→</span></a>
       </div>
     </div>
 
     <!-- Card 2B: FPD Executivo -->
-    <div class="card" style="border-top: 3px solid var(--red);">
+    <div class="card" data-category="qualidade" data-keywords="fpd executivo residencial fixa benchmark brasil canais praca cidades gaps vendas">
+      <div class="card-eyebrow">
+        <span class="card-domain-badge">Qualidade & Risco FPD</span>
+        <span class="card-tag oficial">Oficial Jun/26</span>
+      </div>
       <div class="card-header">
-        <h3 class="card-title">FPD Executivo (Residencial)</h3>
-        <span class="card-tag active">Oficial</span>
+        <div class="card-header-left">
+          <h3 class="card-title">FPD Executivo (Residencial)</h3>
+          <span class="card-subtitle">Relatório Executivo Oficial de FPD 60 · Confronto com Benchmark Brasil</span>
+        </div>
       </div>
       <div class="card-body">
         <p class="card-desc">Relatório Executivo Oficial de FPD 60 da Fixa. Confronto direto entre Regional Norte e Benchmark Brasil por Canal de Venda (Presencial vs Remoto), Praças/Cidades (Grandes Mercados e Mercados em Desenvolvimento) e Parceiros com filtros dependentes e reatividade instantânea.</p>
@@ -289,15 +368,21 @@ header{background:#fff;border-bottom:1px solid var(--line)}
         </div>
       </div>
       <div class="card-footer">
-        <a href="/fpd-residencial/" class="btn-primary">Acessar Painel Online →</a>
+        <a href="/fpd-residencial/" class="btn-primary">Acessar Painel Online <span class="arrow-glide">→</span></a>
       </div>
     </div>
 
     <!-- Card 3: Churn Banda Larga Total -->
-    <div class="card" style="border-top: 3px solid var(--red);">
+    <div class="card" data-category="fixa" data-keywords="churn banda larga total fixa tendencias t1 t2 t3 t4 mom yoy orcamento rxo desconexoes praca">
+      <div class="card-eyebrow">
+        <span class="card-domain-badge">Banda Larga Fixa</span>
+        <span class="card-tag active">Ativo · T4</span>
+      </div>
       <div class="card-header">
-        <h3 class="card-title">Painel Churn Banda Larga Total</h3>
-        <span class="card-tag active">Ativo</span>
+        <div class="card-header-left">
+          <h3 class="card-title">Painel Churn Banda Larga Total</h3>
+          <span class="card-subtitle">Acompanhamento Horizontal & 4 Tendências Semanais (T1 a T4)</span>
+        </div>
       </div>
       <div class="card-body">
         <p class="card-desc">Acompanhamento horizontal das desconexões da banda larga na Regional Norte. Confronto das 4 Tendências semanais (T1 a T4), comparativos de fechamento com Mês Anterior (MoM), Ano Anterior (YoY), Desafio/Orçamento e YTD.</p>
@@ -315,16 +400,21 @@ header{background:#fff;border-bottom:1px solid var(--line)}
         </div>
       </div>
       <div class="card-footer">
-        <a href="/churn-bl-total/" class="btn-primary">Acessar Painel Online →</a>
-        
+        <a href="/churn-bl-total/" class="btn-primary">Acessar Painel Online <span class="arrow-glide">→</span></a>
       </div>
     </div>
 
     <!-- Card 4: Churn Banda Larga PME -->
-    <div class="card" style="border-top: 3px solid var(--red);">
+    <div class="card" data-category="fixa" data-keywords="churn banda larga pme b2b empresarial corporativo retencao metas semanais praca">
+      <div class="card-eyebrow">
+        <span class="card-domain-badge">Banda Larga Fixa</span>
+        <span class="card-tag active">Ativo · PME</span>
+      </div>
       <div class="card-header">
-        <h3 class="card-title">Painel Churn Banda Larga PME</h3>
-        <span class="card-tag active">Ativo</span>
+        <div class="card-header-left">
+          <h3 class="card-title">Painel Churn Banda Larga PME</h3>
+          <span class="card-subtitle">Segmento Empresarial & B2B · Projeções Semanais e Retenção</span>
+        </div>
       </div>
       <div class="card-body">
         <p class="card-desc">Visão especializada de churn para o segmento empresarial (PME / B2B). Projeções semanais de fechamento (T1 a T4), comparativo com metas orçadas, evolução da taxa de churn (%) por praça e histórico de retenção.</p>
@@ -342,19 +432,21 @@ header{background:#fff;border-bottom:1px solid var(--line)}
         </div>
       </div>
       <div class="card-footer">
-        <a href="/churn-bl-pme/" class="btn-primary">Acessar Painel Online →</a>
-        
+        <a href="/churn-bl-pme/" class="btn-primary">Acessar Painel Online <span class="arrow-glide">→</span></a>
       </div>
     </div>
 
     <!-- Card 4B: Evolução de Carteira Móvel & B2B -->
-    <div class="card" style="border-top: 3px solid #0f766e;">
-      <div class="card-header">
-        <div>
-          <h3 class="card-title">Evolução de Carteira — Móvel & B2B</h3>
-          <span style="font-size:11px;color:var(--ink3)">Planejamento Comercial & MIS · Regional Norte vs Brasil</span>
-        </div>
+    <div class="card" data-category="movel" data-keywords="evolucao carteira movel b2b gross fakes migracao net adds consumo top 1 brasil waterfall p&l">
+      <div class="card-eyebrow">
+        <span class="card-domain-badge">Móvel & Safras</span>
         <span class="card-tag active">Novo! Out/26</span>
+      </div>
+      <div class="card-header">
+        <div class="card-header-left">
+          <h3 class="card-title">Evolução de Carteira — Móvel & B2B</h3>
+          <span class="card-subtitle">Planejamento Comercial & MIS · Regional Norte vs Brasil</span>
+        </div>
       </div>
       <div class="card-body">
         <p class="card-desc">Diagnóstico analítico e executivo oficial da dinâmica de carteira: Gross Bruto, Descontos & Fakes, Churn Involuntário (Risco & FPD), Churn Voluntário, Matriz De-Para de Migrações e Adições Líquidas (Net Adds). A Regional Norte lidera o Net Adds de Consumo em todo o Brasil (+36.385 adições líquidas).</p>
@@ -372,18 +464,21 @@ header{background:#fff;border-bottom:1px solid var(--line)}
         </div>
       </div>
       <div class="card-footer">
-        <a href="/evolucao-carteira/" class="btn-primary">Acessar Relatório Oficial →</a>
+        <a href="/evolucao-carteira/" class="btn-primary">Acessar Relatório Oficial <span class="arrow-glide">→</span></a>
       </div>
     </div>
 
     <!-- Card 5: Panorama Market Share Móvel e Residencial -->
-    <div class="card" style="border-top: 3px solid var(--red);">
+    <div class="card" data-category="movel" data-keywords="panorama market share anatel movel residencial isps lideranca net adds saldo convergencia">
+      <div class="card-eyebrow">
+        <span class="card-domain-badge">Móvel & Safras</span>
+        <span class="card-tag active">Novo! Jul/26</span>
+      </div>
       <div class="card-header">
-        <div>
+        <div class="card-header-left">
           <h3 class="card-title">Panorama Market Share — Móvel & Residencial</h3>
-          <span style="font-size:11px;color:var(--ink3)">Regional Norte · Share Claro vs Concorrentes & ISPs</span>
+          <span class="card-subtitle">Share Claro vs Concorrentes, ISPs e Liderança Municipal</span>
         </div>
-        <span class="card-tag active">Novo! Jul/2026</span>
       </div>
       <div class="card-body">
         <p class="card-desc">Panorama executivo e estratégico do share de mercado da Claro e das competidoras (Vivo, TIM, Brisanet, ISPs regionais). Acompanhamento de net adds, evolução de base, saldo do líder, provedores individualizados, mapas de liderança municipal e comparadores de convergência móvel × fixa na Regional Norte.</p>
@@ -401,9 +496,9 @@ header{background:#fff;border-bottom:1px solid var(--line)}
         </div>
       </div>
       <div class="card-footer" style="flex-wrap:wrap;gap:8px;">
-        <a href="/panorama-market-share/" class="btn-primary">Acessar Panorama Online →</a>
-        <a href="/market-share-residencial/" class="btn-secondary" title="Relatório Oficial de Market Share Residencial e Banda Larga">MS Residencial (Oficial) →</a>
-        <a href="/market-share-movel/" class="btn-secondary" title="Relatório Oficial de Market Share Móvel e 5G">MS Móvel & 5G (Oficial) →</a>
+        <a href="/panorama-market-share/" class="btn-primary">Acessar Panorama Online <span class="arrow-glide">→</span></a>
+        <a href="/market-share-residencial/" class="btn-secondary" title="Relatório Oficial de Market Share Residencial e Banda Larga">MS Residencial →</a>
+        <a href="/market-share-movel/" class="btn-secondary" title="Relatório Oficial de Market Share Móvel e 5G">MS Móvel & 5G →</a>
         <a href="/pep-tools/market-share/" class="btn-secondary" title="Abrir ferramenta de suporte a apresentações Auxiliar de PPT">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
           Auxiliar de PPT
@@ -412,13 +507,16 @@ header{background:#fff;border-bottom:1px solid var(--line)}
     </div>
 
     <!-- Card 6: Taxa de Aprovação Residencial PF -->
-    <div class="card" style="border-top: 3px solid var(--red);">
+    <div class="card" data-category="qualidade" data-keywords="aprovacao credito residencial pf risco fraudes limiares pdv canais cidade">
+      <div class="card-eyebrow">
+        <span class="card-domain-badge">Qualidade & Risco FPD</span>
+        <span class="card-tag active">Novo! Ago/26</span>
+      </div>
       <div class="card-header">
-        <div>
+        <div class="card-header-left">
           <h3 class="card-title">Taxa de Aprovação de Crédito PF — Residencial</h3>
-          <span style="font-size:11px;color:var(--ink3)">Cidade e PDV · Risco, Fraudes e Limiares de Entrada</span>
+          <span class="card-subtitle">Limiares de Entrada, Risco de Inadimplência e Ranking de PDVs</span>
         </div>
-        <span class="card-tag active">Novo! Ago/2026</span>
       </div>
       <div class="card-body">
         <p class="card-desc">Painel executivo de direcionamento para política de concessão de crédito residencial pessoa física. Análise de limiares de aprovação de entrada de clientes, curvas de risco de inadimplência, fraudes, ranking por canais e pontos de venda (PDVs), e árvore de carteirização da Regional Norte.</p>
@@ -436,7 +534,7 @@ header{background:#fff;border-bottom:1px solid var(--line)}
         </div>
       </div>
       <div class="card-footer">
-        <a href="/aprovacao-credito/" class="btn-primary">Acessar Painel de Crédito →</a>
+        <a href="/aprovacao-credito/" class="btn-primary">Acessar Painel de Crédito <span class="arrow-glide">→</span></a>
         <a href="/aprovacao-credito/#tab4" class="btn-secondary" title="Ver ranking detalhado de PDVs e ofensores de aprovação">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           Ranking PDVs
@@ -444,14 +542,17 @@ header{background:#fff;border-bottom:1px solid var(--line)}
       </div>
     </div>
 
-    <!-- Card: Market Share Residencial (Oficial) -->
-    <div class="card" style="border-top: 3px solid var(--red);">
+    <!-- Card 7: Market Share Residencial (Oficial) -->
+    <div class="card" data-category="fixa" data-keywords="market share residencial banda larga fixa fibra anatel ddd municipios polo top 10 isps entrega oficial">
+      <div class="card-eyebrow">
+        <span class="card-domain-badge">Banda Larga Fixa</span>
+        <span class="card-tag oficial">Oficial Ago/26</span>
+      </div>
       <div class="card-header">
-        <div>
+        <div class="card-header-left">
           <h3 class="card-title">Market Share Residencial — Relatório Oficial</h3>
-          <span style="font-size:11px;color:var(--ink3)">Banda Larga Fixa & Fibra · Posição Executiva de Entrega</span>
+          <span class="card-subtitle">Banda Larga Fixa & Fibra · Posição Executiva de Entrega Anatel</span>
         </div>
-        <span class="card-tag active">Oficial Ago/26</span>
       </div>
       <div class="card-body">
         <p class="card-desc">Relatório oficial executivo de entrega da banda larga fixa e fibra na Regional Norte. Acompanhamento rigoroso de base de clientes, market share e net adds com aberturas consolidadas por DDD, municípios polo e ranking detalhado dos 10 maiores ISPs regionais.</p>
@@ -469,18 +570,21 @@ header{background:#fff;border-bottom:1px solid var(--line)}
         </div>
       </div>
       <div class="card-footer">
-        <a href="/market-share-residencial/" class="btn-primary">Acessar Relatório Oficial →</a>
+        <a href="/market-share-residencial/" class="btn-primary">Acessar Relatório Oficial <span class="arrow-glide">→</span></a>
       </div>
     </div>
 
-    <!-- Card: Market Share Móvel & 5G (Oficial) -->
-    <div class="card" style="border-top: 3px solid var(--red);">
-      <div class="card-header">
-        <div>
-          <h3 class="card-title">Market Share Móvel & 5G — Relatório Oficial</h3>
-          <span style="font-size:11px;color:var(--ink3)">Telefonia Móvel SMP & Adoção 5G · Liderança Regional</span>
-        </div>
+    <!-- Card 8: Market Share Móvel & 5G (Oficial) -->
+    <div class="card" data-category="movel" data-keywords="market share movel 5g celular smp lideranca anatel rno ddd clientes">
+      <div class="card-eyebrow">
+        <span class="card-domain-badge">Móvel & Safras</span>
         <span class="card-tag active">Líder RNO Ago/26</span>
+      </div>
+      <div class="card-header">
+        <div class="card-header-left">
+          <h3 class="card-title">Market Share Móvel & 5G — Relatório Oficial</h3>
+          <span class="card-subtitle">Telefonia SMP & Penetração 5G · Liderança Regional 37,04%</span>
+        </div>
       </div>
       <div class="card-body">
         <p class="card-desc">Relatório executivo consolidado de telefonia celular na Regional Norte. A Claro lidera o mercado regional com 37,04% de participação e +27.120 adições líquidas no mês. Inclui acompanhamento especializado da migração e penetração da tecnologia 5G por DDD.</p>
@@ -498,18 +602,21 @@ header{background:#fff;border-bottom:1px solid var(--line)}
         </div>
       </div>
       <div class="card-footer">
-        <a href="/market-share-movel/" class="btn-primary">Acessar Relatório Oficial →</a>
+        <a href="/market-share-movel/" class="btn-primary">Acessar Relatório Oficial <span class="arrow-glide">→</span></a>
       </div>
     </div>
 
-    <!-- Card 7: Podcast Deep Dive (Google NotebookLM Style) -->
-    <div class="card" style="border-top: 3px solid var(--red);">
-      <div class="card-header">
-        <div>
-          <h3 class="card-title">Podcast Deep Dive — PEP HUB</h3>
-          <span style="font-size:11px;color:var(--ink3)">Visão Executiva, Arquitetura e Decisões de Engenharia</span>
-        </div>
+    <!-- Card 9: Podcast Deep Dive -->
+    <div class="card" data-category="tools" data-keywords="podcast audio deep dive carol lucas arquitetura engenharia offline first rag d1">
+      <div class="card-eyebrow">
+        <span class="card-domain-badge">PeP Tools & Suporte</span>
         <span class="card-tag active">Áudio Overview</span>
+      </div>
+      <div class="card-header">
+        <div class="card-header-left">
+          <h3 class="card-title">Podcast Deep Dive — PEP HUB</h3>
+          <span class="card-subtitle">Áudio Overview Estratégico · Arquitetura D1, Edge e RAG</span>
+        </div>
       </div>
       <div class="card-body">
         <p class="card-desc">Bate-papo executivo e técnico entre a Carol (Inovação & Negócios) e o Lucas (Engenharia de Software) detalhando do zero por que a arquitetura do Pephub é superior às soluções tradicionais: offline-first, edge computing, segurança e inteligência com RAG.</p>
@@ -527,28 +634,24 @@ header{background:#fff;border-bottom:1px solid var(--line)}
         </div>
       </div>
       <div class="card-footer">
-        <a href="/podcast/" class="btn-primary">Ouvir Podcast Online →</a>
+        <a href="/podcast/" class="btn-primary">Ouvir Podcast Online <span class="arrow-glide">→</span></a>
         <a href="/podcast/pephub_deepdive_podcast.mp3" download="pephub_podcast.mp3" class="btn-secondary" title="Baixar arquivo MP3 completo">
           ⬇ Baixar MP3
         </a>
       </div>
     </div>
 
-  </div>
-
-  <!-- SEÇÃO PEP TOOLS -->
-  <div class="section-title" id="pep-tools" style="margin-top:36px">PeP Tools · Soluções de Suporte & Produtividade Operacional</div>
-
-  <div class="cards">
-
-    <!-- Card: Gerador de Cards de Aniversário -->
-    <div class="card" style="border-top: 3px solid var(--red);">
-      <div class="card-header">
-        <div>
-          <h3 class="card-title">Gerador de Card de Aniversário — TV 16:9</h3>
-          <span style="font-size:11px;color:var(--ink3)">Auxiliar de Produção Visual para Telas da Regional</span>
-        </div>
+    <!-- Card 10: Gerador de Cards de Aniversário -->
+    <div class="card" data-category="tools" data-keywords="aniversario gerador card tv 16:9 widescreen fotos homenagem pep tools curadoria">
+      <div class="card-eyebrow">
+        <span class="card-domain-badge">PeP Tools & Suporte</span>
         <span class="card-tag active">Novo! PeP Tool</span>
+      </div>
+      <div class="card-header">
+        <div class="card-header-left">
+          <h3 class="card-title">Gerador de Card de Aniversário — TV 16:9</h3>
+          <span class="card-subtitle">Produção Visual Instantânea para Telas da Regional (1080p)</span>
+        </div>
       </div>
       <div class="card-body">
         <p class="card-desc">Ferramenta dedicada para criação instantânea de homenagens e cards de aniversário para os colaboradores da Regional Norte. Permite upload de foto com enquadramento fino, data, nome estilizado e mensagem personalizada com arraste livre, gerando a imagem em resolução oficial Full HD (1920x1080p 16:9) pronta para transmissão.</p>
@@ -568,7 +671,7 @@ header{background:#fff;border-bottom:1px solid var(--line)}
       <div class="card-footer">
         <a href="/pep-tools/aniversario/" class="btn-primary">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          Criar Card de Aniversário →
+          Criar Card de Aniversário <span class="arrow-glide">→</span>
         </a>
         <a href="/pep-tools/divulgacao/" class="btn-secondary" title="Acessar painel de envio de mídias para as TVs">
           Enviar para TV
@@ -576,14 +679,17 @@ header{background:#fff;border-bottom:1px solid var(--line)}
       </div>
     </div>
 
-    <!-- Card: Auxiliar de PPT (Antigo Market Share Studio) -->
-    <div class="card" style="border-top: 3px solid var(--red);">
-      <div class="card-header">
-        <div>
-          <h3 class="card-title">Auxiliar de PPT — Estúdio de Infográficos & Apresentações</h3>
-          <span style="font-size:11px;color:var(--ink3)">Estúdio de Criação de Gráficos, Matrizes e Slides para Apresentações Executivas</span>
-        </div>
+    <!-- Card 11: Auxiliar de PPT -->
+    <div class="card" data-category="tools" data-keywords="auxiliar ppt powerpoint estúdio infograficos graficos matrizes slides apresentacoes excel xlsx svg png">
+      <div class="card-eyebrow">
+        <span class="card-domain-badge">PeP Tools & Suporte</span>
         <span class="card-tag active">Novo! PeP Tool</span>
+      </div>
+      <div class="card-header">
+        <div class="card-header-left">
+          <h3 class="card-title">Auxiliar de PPT — Estúdio de Infográficos & Apresentações</h3>
+          <span class="card-subtitle">Gráficos de Telecom, Matrizes e Slides Executivos com Excel (.xlsx)</span>
+        </div>
       </div>
       <div class="card-body">
         <p class="card-desc">Assistente executivo completo para concepção de infográficos, gráficos de share, matrizes comparativas e organogramas prontos para PowerPoint e reuniões executivas. Suporta importação direta de arquivos Excel (XLSX), visualização em tempo real e exportação em SVG vetorial e PNG de alta resolução.</p>
@@ -603,7 +709,7 @@ header{background:#fff;border-bottom:1px solid var(--line)}
       <div class="card-footer">
         <a href="/pep-tools/market-share/" class="btn-primary">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-          Abrir Auxiliar de PPT →
+          Abrir Auxiliar de PPT <span class="arrow-glide">→</span>
         </a>
         <a href="/pep-tools/divulgacao/" class="btn-secondary" title="Usar imagem em slide nas TVs">
           Usar em Slide de TV
@@ -611,14 +717,17 @@ header{background:#fff;border-bottom:1px solid var(--line)}
       </div>
     </div>
 
-    <!-- Card: Divulgação Corporativa -->
-    <div class="card" style="border-top: 3px solid var(--red);">
+    <!-- Card 12: Divulgação Corporativa -->
+    <div class="card" data-category="tools" data-keywords="divulgacao corporativa tvs regional central curadoria transmissao player 16:9 widescreen 1080p">
+      <div class="card-eyebrow">
+        <span class="card-domain-badge">PeP Tools & Suporte</span>
+        <span class="card-tag active">Ativo · TVs PeP</span>
+      </div>
       <div class="card-header">
-        <div>
+        <div class="card-header-left">
           <h3 class="card-title">Divulgação Corporativa — TVs da Regional</h3>
-          <span style="font-size:11px;color:var(--ink3)">Central de Cadastro, Curadoria & Transmissão</span>
+          <span class="card-subtitle">Central de Cadastro, Curadoria, Validação & Transmissão TV Full HD</span>
         </div>
-        <span class="card-tag active">Ativo</span>
       </div>
       <div class="card-body">
         <p class="card-desc">Plataforma estratégica de cadastro, validação técnica e curadoria das mídias veiculadas nas TVs corporativas da Regional Norte. Exclusivo para imagens e vídeos em formato Widescreen 16:9 em alta resolução (mínimo 1920x1080p), com captura facilitada por colagem direta (Ctrl+V) ou upload de arquivos. Possui fluxo de aprovação com aviso por e-mail, gestão de delegação de curadores, suspensão instantânea de mídias e player widescreen fullscreen com contador circular de tempo.</p>
@@ -638,7 +747,7 @@ header{background:#fff;border-bottom:1px solid var(--line)}
       <div class="card-footer">
         <a href="/pep-tools/divulgacao/" class="btn-primary">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-          Acessar Divulgação Corporativa →
+          Acessar Divulgação <span class="arrow-glide">→</span>
         </a>
         <a href="/tv" target="_blank" class="btn-secondary" title="Abrir o Player Fullscreen de exibição nas TVs da Regional">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><polygon points="10 11 15 14 10 17"/><line x1="8" y1="3" x2="16" y2="3"/></svg>
@@ -647,10 +756,24 @@ header{background:#fff;border-bottom:1px solid var(--line)}
       </div>
     </div>
 
+    <!-- Estado Vazio para Busca sem Resultados -->
+    <div class="empty-catalog-state" id="emptyCatalogState" style="display:none">
+      <div class="empty-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+          <line x1="8" y1="11" x2="14" y2="11"/>
+        </svg>
+      </div>
+      <h3>Nenhum relatório ou módulo encontrado</h3>
+      <p>Não encontramos nenhum painel correspondente ao termo pesquisado ou à categoria selecionada.</p>
+      <button type="button" class="btn-clear-search" onclick="clearCatalogSearch()">Limpar Busca & Filtros</button>
+    </div>
+
   </div>
 
   <div class="footer-notes">
-    <strong>Diretrizes de Compartilhamento & Uso Operacional:</strong> Os relatórios hospedados no Pephub são concebidos com arquitetura <em>zero-dependency</em>. Cada módulo pode ser utilizado online na nuvem ou baixado em arquivo único para distribuição direta via e-mail corporativo. A data de posição e os parâmetros metodológicos respeitam o critério de maturidade individual por contrato (janela oficial de 120 dias).
+    <strong>Diretrizes de Compartilhamento & Uso Corporativo:</strong> Os relatórios hospedados no Pephub são concebidos com arquitetura <em>zero-dependency</em>. Cada módulo pode ser utilizado online na nuvem ou baixado em arquivo único para distribuição direta via e-mail corporativo. A data de posição e os parâmetros metodológicos respeitam o critério de maturidade individual por contrato (janela oficial de 120 dias).
   </div>
 
 </div>
@@ -1096,6 +1219,81 @@ async function checkUser() {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') loadPermissions();
   });
+
+  // Sistema Interativo de Busca em Tempo Real e Filtro por Categoria do Catálogo
+  function initCatalogFiltersAndSearch() {
+    const searchInput = document.getElementById('globalSearchInput');
+    const filterPills = document.querySelectorAll('.filter-pill');
+    const cards = document.querySelectorAll('.cards .card');
+    const summaryCount = document.getElementById('catalogVisibleCount');
+    const emptyState = document.getElementById('emptyCatalogState');
+    let currentFilter = 'all';
+
+    function updateCatalog() {
+      const q = (searchInput ? searchInput.value : '').trim().toLowerCase();
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const cat = card.dataset.category || '';
+        const keywords = (card.dataset.keywords || '').toLowerCase();
+        const text = (card.textContent || '').toLowerCase();
+
+        const matchCat = (currentFilter === 'all') || (cat === currentFilter);
+        const matchSearch = !q || keywords.includes(q) || text.includes(q);
+
+        if (matchCat && matchSearch) {
+          card.classList.remove('is-hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('is-hidden');
+        }
+      });
+
+      if (summaryCount) summaryCount.textContent = visibleCount;
+      if (emptyState) {
+        emptyState.style.display = (visibleCount === 0) ? 'block' : 'none';
+      }
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', updateCatalog);
+      document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+          e.preventDefault();
+          searchInput.focus();
+          searchInput.select();
+        } else if (e.key === 'Escape' && document.activeElement === searchInput) {
+          searchInput.value = '';
+          updateCatalog();
+          searchInput.blur();
+        }
+      });
+    }
+
+    filterPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        filterPills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        currentFilter = pill.dataset.filter || 'all';
+        updateCatalog();
+      });
+    });
+
+    window.clearCatalogSearch = function() {
+      if (searchInput) searchInput.value = '';
+      currentFilter = 'all';
+      filterPills.forEach(p => p.classList.toggle('active', p.dataset.filter === 'all'));
+      updateCatalog();
+      if (searchInput) searchInput.focus();
+    };
+
+    updateCatalog();
+  }
+
+  document.addEventListener('DOMContentLoaded', initCatalogFiltersAndSearch);
+  if (document.readyState !== 'loading') {
+    initCatalogFiltersAndSearch();
+  }
 
   const HELP = { risco: 'Direcionamento de risco e aprovação' };
 </script>
