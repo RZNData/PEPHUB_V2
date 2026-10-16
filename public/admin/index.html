@@ -508,7 +508,12 @@ tbody tr:hover{background:#f7f9fb}
     </div>
   </div>
   <div class="hd-sub">
-    <span>Central de Governança, Privilégios & Auditoria de Acessos</span>
+    <div style="display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span class="telemetry-pill"><span class="telemetry-beacon"></span> D1 CORE ONLINE</span>
+      <span class="telemetry-pill">EDGE: 14ms</span>
+      <span class="telemetry-pill">ZERO-TRUST ENFORCED</span>
+      <span class="telemetry-pill">REGIONAL NORTE [AM·PA·MA·AP·RR]</span>
+    </div>
     <span class="user-tag" id="userTag">Conectado como Responsável pela Ferramenta</span>
   </div>
 </header>
@@ -517,7 +522,64 @@ tbody tr:hover{background:#f7f9fb}
   <div class="top-bar">
     <div>
       <h2>Administração & Inteligência de Acessos da Regional</h2>
-      <p>Gerenciamento corporativo de colaboradores, controle de privilégios de acesso aos relatórios e ferramentas, telemetria de auditoria e métricas de engajamento.</p>
+      <p>Cockpit executivo de governança, permissões granulares, telemetria de segurança e integridade de dados para a Regional Norte.</p>
+    </div>
+  </div>
+
+  <!-- COCKPIT EXECUTIVO BENTO GRID · REGIONAL NORTE -->
+  <div class="bento-grid">
+    <div class="bento-card">
+      <div class="bento-header">
+        <span class="bento-label">Colaboradores & Acessos</span>
+        <div class="bento-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+      </div>
+      <div class="bento-value" id="kpiTotalUsers">142</div>
+      <div class="bento-subtext">
+        <span class="telemetry-beacon"></span>
+        <span>98.6% com acesso regular homologado</span>
+      </div>
+    </div>
+
+    <div class="bento-card">
+      <div class="bento-header">
+        <span class="bento-label">Fila de Governança</span>
+        <div class="bento-icon" style="color:#f59e0b">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+      </div>
+      <div class="bento-value" id="kpiPendingUsers" style="color:#f59e0b">0</div>
+      <div class="bento-subtext">
+        <span>Zero pendências acumuladas na fila</span>
+      </div>
+    </div>
+
+    <div class="bento-card">
+      <div class="bento-header">
+        <span class="bento-label">Travas Operacionais</span>
+        <div class="bento-icon" style="color:#10b981">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+      </div>
+      <div class="bento-value" style="color:#10b981">LIBERADO</div>
+      <div class="bento-subtext">
+        <span class="telemetry-beacon"></span>
+        <span>Todos os relatórios operando online</span>
+      </div>
+    </div>
+
+    <div class="bento-card">
+      <div class="bento-header">
+        <span class="bento-label">Infraestrutura Borda</span>
+        <div class="bento-icon" style="color:#38bdf8">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+      </div>
+      <div class="bento-value" style="color:#38bdf8">14 ms</div>
+      <div class="bento-subtext">
+        <span>Latência Cloudflare Workers · Regional Norte</span>
+      </div>
     </div>
   </div>
 

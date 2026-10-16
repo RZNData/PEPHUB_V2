@@ -1,86 +1,91 @@
 /**
- * PEP HUB PRIME — Design System & Identidade Visual Executiva v3.0
- * Padrão Corporativo Moderno, Limpo e Arquitetural para a Regional Norte
+ * PEP HUB PRIME / NEXUS v4.0 — Executive Dark Operational Platform
+ * Design Corporativo Visionário, Disruptivo e de Alta Fidelidade
+ * Regional Norte: AM · PA · MA · AP · RR
  *
- * Princípios de Design:
- *   1. Claridade Executiva: Paleta neutra Slate com acentos Obsidian & Ruby da Claro.
- *   2. Tipografia Precisa: Alinhamento tabular-nums, tracking refinado, legibilidade impecável.
- *   3. Superfícies em Camadas: Elevações sutis, cantos ergonômicos (8px/12px) e bordas suaves.
- *   4. Zero Ruído Visual: Elimina gradientes estridentes, contrastes forçados e bordas duras.
- *   5. Consistência Total: Replicado em Relatórios, Admin, Portal, Login e Ferramentas.
+ * Arquitetura de Design:
+ *   - Canvas: Deep Obsidian & Carbon Dark Mode (#06080e / #0d121f / #131b2e)
+ *   - Volumetria: Iluminação atmosférica radial (Ruby Glow #e11d480f)
+ *   - Tipografia: Google Fonts Outfit (Display) + Plus Jakarta Sans (UI) + JetBrains Mono (Métricas)
+ *   - Superfícies: Vidro jateado translúcido com specular highlight (backdrop-filter: blur(20px))
+ *   - Componentes: Bento Grid modular, Segmented Island Controls, Telemetria HUD em tempo real
  */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
   /* ==========================================================================
-     TOKENS DO DESIGN SYSTEM PEP HUB PRIME
+     TOKENS DO DESIGN SYSTEM PEP HUB NEXUS (DARK EXECUTIVE)
      ========================================================================== */
   
-  /* Superfícies & Fundo */
-  --prime-bg: #f8fafc;              /* Slate 50 - Fundo principal claro e repousante */
-  --prime-surface: #ffffff;         /* Superfície pura dos painéis e cartões */
-  --prime-surface-subtle: #f1f5f9;  /* Slate 100 - Cabeçalhos de tabelas e áreas secundárias */
-  --prime-surface-hover: #f8fafc;   /* Slate 50 - Hover suave */
-  --prime-surface-active: #e2e8f0;  /* Slate 200 - Pressionado / ativo */
+  /* Canvas & Superfícies */
+  --prime-bg: #06080e;
+  --prime-bg-elevated: #0a0e18;
+  --prime-surface: #0d121f;
+  --prime-surface-subtle: #121929;
+  --prime-surface-glass: rgba(13, 18, 31, 0.78);
+  --prime-surface-hover: #151d30;
+  --prime-surface-active: #1a243b;
 
-  /* Bordas & Divisores */
-  --prime-border: #e2e8f0;          /* Slate 200 - Bordas principais */
-  --prime-border-subtle: #f1f5f9;   /* Slate 100 - Divisórias internas */
-  --prime-border-hover: #cbd5e1;    /* Slate 300 - Bordas em hover */
-  --prime-border-strong: #94a3b8;   /* Slate 400 - Bordas em foco/ativas */
+  /* Bordas Lâmina & Brilhos */
+  --prime-border: rgba(255, 255, 255, 0.08);
+  --prime-border-subtle: rgba(255, 255, 255, 0.05);
+  --prime-border-hover: rgba(225, 29, 72, 0.4);
+  --prime-border-active: #e11d48;
+  --prime-border-strong: rgba(255, 255, 255, 0.16);
 
   /* Tipografia & Tinta */
-  --prime-ink-primary: #0f172a;     /* Slate 900 - Máximo contraste legível */
-  --prime-ink-secondary: #475569;   /* Slate 600 - Subtítulos e metadados */
-  --prime-ink-muted: #94a3b8;       /* Slate 400 - Discretos, notas e rótulos secundários */
-  --prime-ink-inverse: #ffffff;     /* Branco para textos sobre fundos escuros */
+  --prime-ink-primary: #f8fafc;
+  --prime-ink-secondary: #94a3b8;
+  --prime-ink-muted: #64748b;
+  --prime-ink-inverse: #06080e;
 
-  /* Identidade Corporativa Claro Prime */
-  --prime-brand: #e11d48;           /* Claro Ruby / Rose 600 */
-  --prime-brand-hover: #be123c;     /* Rose 700 */
-  --prime-brand-dark: #9f1239;      /* Rose 800 */
-  --prime-brand-light: #ffe4e6;     /* Rose 100 */
-  --prime-brand-glow: rgba(225, 29, 72, 0.16);
+  /* Identidade Corporativa Claro Ruby / Crimson */
+  --prime-brand: #e11d48;
+  --prime-brand-hover: #f43f5e;
+  --prime-brand-dark: #be123c;
+  --prime-brand-glow: rgba(225, 29, 72, 0.3);
+  --prime-brand-subtle: rgba(225, 29, 72, 0.12);
 
-  /* Cabeçalho Obsidian & Ruby */
-  --prime-hd-bg: linear-gradient(135deg, #0b0f19 0%, #151120 40%, #270c14 85%, #350812 100%);
-  --prime-hd-accent: linear-gradient(90deg, #e11d48 0%, #fb7185 50%, #f43f5e 100%);
-  --prime-hd-sub-bg: #090d16;
+  /* Semânticas Analíticas Neon Suave */
+  --prime-green: #10b981;
+  --prime-green-bg: rgba(16, 185, 129, 0.12);
+  --prime-green-border: rgba(16, 185, 129, 0.3);
 
-  /* Cores Semânticas Analíticas */
-  --prime-green: #059669;           /* Sucesso, Retenção, Meta Atingida */
-  --prime-green-bg: #ecfdf5;
-  --prime-green-border: #a7f3d0;
+  --prime-red: #f43f5e;
+  --prime-red-bg: rgba(244, 63, 94, 0.12);
+  --prime-red-border: rgba(244, 63, 94, 0.3);
 
-  --prime-red: #e11d48;             /* Churn, Alertas Críticos, Cancelamento */
-  --prime-red-bg: #fff1f2;
-  --prime-red-border: #fecdd3;
+  --prime-amber: #f59e0b;
+  --prime-amber-bg: rgba(245, 158, 11, 0.12);
+  --prime-amber-border: rgba(245, 158, 11, 0.3);
 
-  --prime-amber: #d97706;           /* Atenção, Parcial, Safra em Foco */
-  --prime-amber-bg: #fffbeb;
-  --prime-amber-border: #fde68a;
+  --prime-blue: #38bdf8;
+  --prime-blue-bg: rgba(56, 189, 248, 0.12);
+  --prime-blue-border: rgba(56, 189, 248, 0.3);
 
-  --prime-blue: #2563eb;            /* Links, Seleções, Contratos Ativos */
-  --prime-blue-bg: #eff6ff;
-  --prime-blue-border: #bfdbfe;
+  --prime-purple: #a855f7;
+  --prime-purple-bg: rgba(168, 85, 247, 0.12);
+  --prime-purple-border: rgba(168, 85, 247, 0.3);
 
-  --prime-purple: #7c3aed;          /* Inadimplência sem pagamento (NP) */
-  --prime-purple-bg: #f5f3ff;
-  --prime-purple-border: #ddd6fe;
-
-  /* Sombras Modernas em Camadas */
-  --prime-shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
-  --prime-shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
-  --prime-shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
-  --prime-shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.06), 0 4px 6px -4px rgba(15, 23, 42, 0.02);
-  --prime-shadow-modal: 0 25px 50px -12px rgba(15, 23, 42, 0.28);
+  /* Sombras Profundas & Iluminações */
+  --prime-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --prime-shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.6);
+  --prime-shadow-lg: 0 16px 40px -8px rgba(0, 0, 0, 0.7);
+  --prime-shadow-glow: 0 0 25px rgba(225, 29, 72, 0.25);
 
   /* Raios de Arredondamento */
-  --prime-radius-sm: 4px;
-  --prime-radius-md: 8px;
-  --prime-radius-lg: 12px;
+  --prime-radius-sm: 6px;
+  --prime-radius-md: 10px;
+  --prime-radius-lg: 14px;
   --prime-radius-pill: 9999px;
 
-  /* Sobrescrevendo variáveis legadas */
+  /* Fontes do Sistema */
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Mapeamento de Compatibilidade Universal com Telas Legadas */
   --bg: var(--prime-bg) !important;
   --panel: var(--prime-surface) !important;
   --ink: var(--prime-ink-primary) !important;
@@ -88,9 +93,9 @@
   --ink3: var(--prime-ink-muted) !important;
   --line: var(--prime-border) !important;
   --line2: var(--prime-border-subtle) !important;
-  --nav: var(--prime-hd-sub-bg) !important;
-  --nav2: #1e293b !important;
-  --red: var(--prime-red) !important;
+  --nav: var(--prime-bg-elevated) !important;
+  --nav2: #141c2e !important;
+  --red: var(--prime-brand) !important;
   --green: var(--prime-green) !important;
   --amber: var(--prime-amber) !important;
   --blue: var(--prime-blue) !important;
@@ -98,17 +103,32 @@
 }
 
 /* ==========================================================================
-   1. RESET GLOBAL & TIPOGRAFIA EXECUTIVA
+   RESET & FUNDAÇÃO GLOBAL DARK CANVAS
    ========================================================================== */
-body {
-  background-color: var(--prime-bg) !important;
-  color: var(--prime-ink-primary) !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
-  -webkit-font-smoothing: antialiased !important;
-  -moz-osx-font-smoothing: grayscale !important;
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
-/* Scrollbar refinada */
+body {
+  background-color: var(--prime-bg) !important;
+  background-image: 
+    radial-gradient(circle at 50% -50px, rgba(225, 29, 72, 0.12) 0%, transparent 65%),
+    radial-gradient(circle at 100% 40%, rgba(56, 189, 248, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 0% 80%, rgba(168, 85, 247, 0.04) 0%, transparent 50%) !important;
+  background-attachment: fixed !important;
+  color: var(--prime-ink-primary) !important;
+  font-family: var(--font-body) !important;
+  font-size: 13.5px !important;
+  line-height: 1.55 !important;
+  letter-spacing: -0.01em !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  margin: 0 !important;
+  min-height: 100vh !important;
+}
+
+/* Scrollbar Futurista */
 ::-webkit-scrollbar {
   width: 7px;
   height: 7px;
@@ -117,681 +137,725 @@ body {
   background: var(--prime-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: rgba(255, 255, 255, 0.14);
   border-radius: var(--prime-radius-pill);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--prime-brand);
 }
 
 /* ==========================================================================
-   2. CABEÇALHO OBSIDIAN & RUBY PRIME
+   HEADER FROSTED GLASS BAR & TELEMETRIA COCKPIT
    ========================================================================== */
+
 header {
-  border-bottom: 1px solid rgba(15, 23, 42, 0.12) !important;
-  position: relative !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  background: transparent !important;
+  border-bottom: none !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1000 !important;
 }
 
-header::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--prime-hd-accent);
-  z-index: 10;
-}
-
+/* Barra Principal Flutuante */
 .hd-bar {
-  background: var(--prime-hd-bg) !important;
-  padding: 14px 28px !important;
+  background: rgba(10, 14, 24, 0.88) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border-bottom: 1px solid var(--prime-border) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5) !important;
+  padding: 12px 28px !important;
   display: flex !important;
   align-items: center !important;
   gap: 16px !important;
+  transition: all 0.25s ease !important;
 }
 
-.hd-bar h1 {
-  color: #ffffff !important;
-  font-weight: 400 !important;
-  letter-spacing: -0.02em !important;
-  font-size: 24px !important;
+/* Ícone / Emblema da Marca */
+.hd-ico {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(225, 29, 72, 0.4) !important;
+  background: linear-gradient(135deg, rgba(225, 29, 72, 0.2) 0%, rgba(13, 18, 31, 0.9) 100%) !important;
+  box-shadow: 0 0 16px rgba(225, 29, 72, 0.25) !important;
   display: flex !important;
-  align-items: baseline !important;
-  gap: 10px !important;
-  flex-wrap: wrap !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.hd-ico svg {
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.6)) !important;
+}
+
+/* Tipografia de Título do Header */
+.hd-bar h1 {
+  font-family: var(--font-display) !important;
+  font-size: 20px !important;
+  font-weight: 500 !important;
+  color: var(--prime-ink-primary) !important;
+  letter-spacing: -0.02em !important;
   margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 
 .hd-bar h1 b {
   font-weight: 800 !important;
   letter-spacing: -0.03em !important;
-  color: #ffffff !important;
-  background: linear-gradient(180deg, #ffffff 40%, #e2e8f0 100%) !important;
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
 }
 
 .hd-bar h1 span {
-  font-weight: 300 !important;
-  font-size: 20px !important;
-  color: #cbd5e1 !important;
-  opacity: 0.9 !important;
+  font-family: var(--font-body) !important;
+  font-size: 13.5px !important;
+  font-weight: 400 !important;
+  color: var(--prime-ink-secondary) !important;
+  border-left: 1px solid var(--prime-border) !important;
+  padding-left: 10px !important;
 }
 
-.hd-ico {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 1.5px solid rgba(255, 255, 255, 0.28) !important;
-  backdrop-filter: blur(4px) !important;
-  -webkit-backdrop-filter: blur(4px) !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25) !important;
-  border-radius: 50% !important;
-}
-
-.hd-sub {
-  background: var(--prime-hd-sub-bg) !important;
-  color: #94a3b8 !important;
-  padding: 8px 28px !important;
-  font-size: 11.5px !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-  flex-wrap: wrap !important;
-}
-
-.hd-sub b {
-  color: #f1f5f9 !important;
-  font-weight: 600 !important;
-}
-
-.hd-sub .dot {
-  background: #475569 !important;
-  width: 4px !important;
-  height: 4px !important;
-  border-radius: 50% !important;
-}
-
-/* Botões do Cabeçalho */
-.hd-btn, a.hd-btn, button.hd-btn, .btn-nav-catalog, a.btn-nav-catalog {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.22) !important;
-  color: #f8fafc !important;
-  border-radius: var(--prime-radius-md) !important;
+/* Botões do Header */
+.hd-btn {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--prime-ink-primary) !important;
+  border: 1px solid var(--prime-border) !important;
   padding: 6px 14px !important;
+  border-radius: var(--prime-radius-sm) !important;
+  font-family: var(--font-body) !important;
+  font-size: 12px !important;
   font-weight: 600 !important;
-  font-size: 11.5px !important;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  backdrop-filter: blur(4px) !important;
   text-decoration: none !important;
   display: inline-flex !important;
   align-items: center !important;
   gap: 6px !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
-
-.hd-btn:hover, a.hd-btn:hover, button.hd-btn:hover, .btn-nav-catalog:hover, a.btn-nav-catalog:hover {
-  background: rgba(255, 255, 255, 0.18) !important;
-  border-color: rgba(255, 255, 255, 0.45) !important;
+.hd-btn:hover {
+  background: rgba(225, 29, 72, 0.15) !important;
+  border-color: rgba(225, 29, 72, 0.5) !important;
   color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(225, 29, 72, 0.25) !important;
   transform: translateY(-1px) !important;
 }
 
-/* ==========================================================================
-   3. SUPERFÍCIES, CARTÕES & PAINÉIS ANALÍTICOS
-   ========================================================================== */
-.panel {
-  background: var(--prime-surface) !important;
-  border: 1px solid var(--prime-border) !important;
-  border-radius: var(--prime-radius-md) !important;
-  box-shadow: var(--prime-shadow-sm) !important;
-  margin-bottom: 20px !important;
-  overflow: hidden !important;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease !important;
-}
-
-.panel:hover {
-  box-shadow: var(--prime-shadow-md) !important;
-  border-color: var(--prime-border-hover) !important;
-}
-
-.panel > h2 {
-  background: var(--prime-surface) !important;
-  border-bottom: 1px solid var(--prime-border) !important;
-  padding: 12px 18px !important;
-  font-size: 12.5px !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.02em !important;
-  color: var(--prime-ink-primary) !important;
-  text-transform: uppercase !important;
+/* Sub-Barra de Telemetria Operacional */
+.hd-sub {
+  background: rgba(6, 8, 14, 0.95) !important;
+  border-bottom: 1px solid var(--prime-border-subtle) !important;
+  color: var(--prime-ink-secondary) !important;
+  font-size: 11.5px !important;
+  font-family: var(--font-mono) !important;
+  padding: 6px 28px !important;
   display: flex !important;
   align-items: center !important;
-  justify-content: space-between !important;
-  margin: 0 !important;
+  gap: 16px !important;
 }
-
-.panel > h2 .note {
-  color: var(--prime-ink-muted) !important;
-  font-weight: 400 !important;
-  font-size: 11px !important;
-  text-transform: none !important;
+.hd-sub b {
+  color: var(--prime-ink-primary) !important;
 }
-
-.pbody {
-  padding: 18px 20px !important;
-}
-
-/* Botão de ajuda contextual (?) */
-.hlp {
-  width: 20px !important;
-  height: 20px !important;
-  border-radius: 50% !important;
-  border: 1px solid var(--prime-border-hover) !important;
-  background: var(--prime-surface-subtle) !important;
+.hd-sub .user-tag {
+  margin-left: auto !important;
   color: var(--prime-ink-secondary) !important;
-  font-size: 11px !important;
-  font-weight: 700 !important;
   display: inline-flex !important;
   align-items: center !important;
-  justify-content: center !important;
-  cursor: pointer !important;
-  transition: all 0.15s ease !important;
+  gap: 6px !important;
 }
 
-.hlp:hover {
-  background: var(--prime-brand) !important;
-  color: #ffffff !important;
-  border-color: var(--prime-brand) !important;
-  transform: scale(1.08) !important;
+/* Telemetry Badge */
+.telemetry-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--prime-border);
+  padding: 3px 8px;
+  border-radius: var(--prime-radius-pill);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--prime-ink-secondary);
+}
+.telemetry-beacon {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulse-beacon 2s infinite;
+}
+@keyframes pulse-beacon {
+  0% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); opacity: 0.8; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 
 /* ==========================================================================
-   4. DASHBOARD EXECUTIVO: KPI CARDS
+   CONTAINER WRAP & HERO COCKPIT BENTO GRID
    ========================================================================== */
-.kpis {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
-  gap: 12px !important;
-  border: none !important;
-  margin-bottom: 20px !important;
+
+.wrap {
+  padding: 24px 28px 60px !important;
+  max-width: 1600px !important;
+  margin: 0 auto !important;
 }
 
-.kpi {
-  background: var(--prime-surface) !important;
-  border: 1px solid var(--prime-border) !important;
-  border-radius: var(--prime-radius-md) !important;
-  padding: 14px 18px !important;
-  box-shadow: var(--prime-shadow-xs) !important;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+/* Barra Superior de Título */
+.top-bar {
   display: flex !important;
-  flex-direction: column !important;
+  align-items: center !important;
   justify-content: space-between !important;
+  gap: 20px !important;
+  margin-bottom: 22px !important;
+  padding-bottom: 16px !important;
+  border-bottom: 1px solid var(--prime-border-subtle) !important;
 }
-
-.kpi:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: var(--prime-shadow-md) !important;
-  border-color: var(--prime-border-hover) !important;
-}
-
-.kpi .k {
-  font-size: 11px !important;
+.top-bar h2 {
+  font-family: var(--font-display) !important;
+  font-size: 22px !important;
   font-weight: 700 !important;
+  color: #ffffff !important;
+  letter-spacing: -0.02em !important;
+  margin: 0 !important;
+}
+.top-bar p {
   color: var(--prime-ink-secondary) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.04em !important;
+  font-size: 13px !important;
+  margin: 4px 0 0 !important;
 }
 
-.kpi .v {
-  font-size: 26px !important;
-  font-weight: 800 !important;
-  color: var(--prime-ink-primary) !important;
-  letter-spacing: -0.03em !important;
-  margin-top: 6px !important;
-  font-variant-numeric: tabular-nums !important;
+/* ==========================================================================
+   BENTO GRID EXECUTIVA (COCKPIT DE MÉTRICAS)
+   ========================================================================== */
+
+.bento-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 16px !important;
+  margin-bottom: 24px !important;
+}
+@media (max-width: 1200px) {
+  .bento-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 640px) {
+  .bento-grid { grid-template-columns: 1fr !important; }
 }
 
-.kpi .d {
+.bento-card {
+  background: var(--prime-surface-glass) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid var(--prime-border) !important;
+  border-radius: var(--prime-radius-lg) !important;
+  padding: 18px 20px !important;
+  box-shadow: var(--prime-shadow-md) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.bento-card::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, transparent, rgba(225, 29, 72, 0.4), transparent) !important;
+  opacity: 0 !important;
+  transition: opacity 0.3s ease !important;
+}
+.bento-card:hover {
+  border-color: var(--prime-border-hover) !important;
+  box-shadow: 0 12px 30px -5px rgba(225, 29, 72, 0.15), var(--prime-shadow-lg) !important;
+  transform: translateY(-2px) !important;
+}
+.bento-card:hover::before {
+  opacity: 1 !important;
+}
+
+.bento-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 12px !important;
+}
+.bento-label {
+  font-family: var(--font-body) !important;
   font-size: 11.5px !important;
-  color: var(--prime-ink-muted) !important;
-  margin-top: 6px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  color: var(--prime-ink-secondary) !important;
+}
+.bento-icon {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid var(--prime-border) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: var(--prime-brand) !important;
+}
+
+.bento-value {
+  font-family: var(--font-mono) !important;
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1.1 !important;
+  margin-bottom: 8px !important;
+}
+.bento-subtext {
+  font-size: 12px !important;
+  color: var(--prime-ink-secondary) !important;
   display: flex !important;
   align-items: center !important;
   gap: 6px !important;
-  flex-wrap: wrap !important;
-}
-
-/* Micro-pills de tendência analítica */
-.kpi .tag-pos, .kpi .pc.pos, .badge-trend-pos {
-  background: var(--prime-green-bg) !important;
-  color: var(--prime-green) !important;
-  border: 1px solid var(--prime-green-border) !important;
-  border-radius: var(--prime-radius-pill) !important;
-  padding: 2px 8px !important;
-  font-size: 10px !important;
-  font-weight: 700 !important;
-}
-
-.kpi .tag-neg, .kpi .pc.neg, .badge-trend-neg {
-  background: var(--prime-red-bg) !important;
-  color: var(--prime-red) !important;
-  border: 1px solid var(--prime-red-border) !important;
-  border-radius: var(--prime-radius-pill) !important;
-  padding: 2px 8px !important;
-  font-size: 10px !important;
-  font-weight: 700 !important;
-}
-
-.kpi .pc {
-  background: var(--prime-amber-bg) !important;
-  color: var(--prime-amber) !important;
-  border: 1px solid var(--prime-amber-border) !important;
-  border-radius: var(--prime-radius-pill) !important;
-  padding: 2px 8px !important;
-  font-size: 10px !important;
-  font-weight: 700 !important;
 }
 
 /* ==========================================================================
-   5. TABELAS ANALÍTICAS EXECUTIVAS
+   SEGMENTED CONTROL ISLAND — 7 PILARES DE GOVERNANÇA (ADMIN)
    ========================================================================== */
+
+.nav-pillars-wrap {
+  background: var(--prime-surface-glass) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid var(--prime-border) !important;
+  border-radius: var(--prime-radius-lg) !important;
+  box-shadow: var(--prime-shadow-md) !important;
+  margin-bottom: 24px !important;
+  overflow: hidden !important;
+}
+
+.pillars-bar {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  background: rgba(8, 11, 20, 0.6) !important;
+  border-bottom: 1px solid var(--prime-border-subtle) !important;
+  gap: 1px !important;
+}
+@media (max-width: 1024px) {
+  .pillars-bar { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 600px) {
+  .pillars-bar { grid-template-columns: 1fr !important; }
+}
+
+.pillar-tab {
+  border: none !important;
+  background: transparent !important;
+  padding: 14px 18px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  border-right: 1px solid var(--prime-border-subtle) !important;
+  border-bottom: 3px solid transparent !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  text-align: left !important;
+  user-select: none !important;
+}
+.pillar-tab:last-child {
+  border-right: none !important;
+}
+.pillar-tab:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+.pillar-tab.active {
+  background: rgba(225, 29, 72, 0.08) !important;
+  border-bottom-color: var(--prime-brand) !important;
+}
+
+.pillar-icon-box {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 9px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid var(--prime-border) !important;
+  color: var(--prime-ink-secondary) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  transition: all 0.2s ease !important;
+}
+.pillar-tab:hover .pillar-icon-box {
+  border-color: rgba(225, 29, 72, 0.4) !important;
+  color: var(--prime-brand-hover) !important;
+}
+.pillar-tab.active .pillar-icon-box {
+  background: var(--prime-brand) !important;
+  border-color: var(--prime-brand) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 16px rgba(225, 29, 72, 0.4) !important;
+}
+
+.pillar-title {
+  font-family: var(--font-display) !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  color: var(--prime-ink-primary) !important;
+  letter-spacing: -0.01em !important;
+}
+.pillar-tab.active .pillar-title {
+  color: #ffffff !important;
+}
+.pillar-desc {
+  font-size: 11px !important;
+  color: var(--prime-ink-muted) !important;
+  margin-top: 2px !important;
+}
+.pillar-tab.active .pillar-desc {
+  color: var(--prime-ink-secondary) !important;
+}
+
+/* Sub-Barra Contextual */
+.sub-nav-bar {
+  padding: 10px 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  background: rgba(10, 14, 24, 0.7) !important;
+  min-height: 52px !important;
+  border-top: 1px solid var(--prime-border-subtle) !important;
+}
+
+.sub-nav-btn {
+  border: 1px solid var(--prime-border) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: var(--prime-ink-secondary) !important;
+  padding: 6px 14px !important;
+  border-radius: var(--prime-radius-sm) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+.sub-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+.sub-nav-btn.active {
+  background: var(--prime-brand) !important;
+  border-color: var(--prime-brand) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 14px rgba(225, 29, 72, 0.35) !important;
+}
+
+/* ==========================================================================
+   PAINÉIS DE CONTEÚDO, CARDS & CAIXAS
+   ========================================================================== */
+
+.panel, .card, .content-box, .tab-pane, .tab-content {
+  background: var(--prime-surface-glass) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid var(--prime-border) !important;
+  border-radius: var(--prime-radius-lg) !important;
+  box-shadow: var(--prime-shadow-md) !important;
+  color: var(--prime-ink-primary) !important;
+}
+
+/* Card Header */
+.panel-hd, .card-header, .sec-title {
+  padding: 16px 20px !important;
+  border-bottom: 1px solid var(--prime-border-subtle) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+}
+.panel-hd h3, .card-header h3, .sec-title h3 {
+  font-family: var(--font-display) !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  margin: 0 !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* ==========================================================================
+   DATA GRID MODERNO (TABELAS DE ALTA DENSIDADE EXECUTIVA)
+   ========================================================================== */
+
 table {
   width: 100% !important;
   border-collapse: separate !important;
   border-spacing: 0 !important;
-  font-size: 12px !important;
+  margin: 0 !important;
   font-variant-numeric: tabular-nums !important;
+  font-feature-settings: 'tnum' 1 !important;
 }
 
-th {
-  background: var(--prime-surface-subtle) !important;
+thead th {
+  background: rgba(8, 11, 20, 0.95) !important;
   color: var(--prime-ink-secondary) !important;
-  font-weight: 700 !important;
+  font-family: var(--font-body) !important;
   font-size: 11px !important;
+  font-weight: 700 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  padding: 10px 12px !important;
+  letter-spacing: 0.08em !important;
+  padding: 12px 16px !important;
   border-bottom: 1px solid var(--prime-border) !important;
   border-top: none !important;
+  text-align: left !important;
+  white-space: nowrap !important;
   position: sticky !important;
   top: 0 !important;
-  z-index: 5 !important;
+  z-index: 10 !important;
 }
 
-td {
-  padding: 9px 12px !important;
+tbody td {
+  padding: 13px 16px !important;
   border-bottom: 1px solid var(--prime-border-subtle) !important;
+  border-top: none !important;
   color: var(--prime-ink-primary) !important;
-  transition: background 0.1s ease !important;
+  font-size: 13px !important;
+  background: transparent !important;
+  transition: background 0.15s ease !important;
 }
 
 tbody tr:hover td {
-  background: rgba(241, 245, 249, 0.8) !important;
+  background: rgba(225, 29, 72, 0.03) !important;
 }
 
-tfoot td {
-  background: var(--prime-surface-subtle) !important;
+tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+/* Alinhamentos Numéricos Rígidos */
+th.num, td.num, th[align="right"], td[align="right"] {
+  text-align: right !important;
+  font-family: var(--font-mono) !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+/* Linha de Subtotal / Total */
+tr.subtotal td, tr.total td, tr.grp-total td {
+  background: rgba(14, 19, 31, 0.95) !important;
   font-weight: 700 !important;
-  border-top: 2px solid var(--prime-border) !important;
-  color: var(--prime-ink-primary) !important;
-}
-
-.scroll, .tbl-wrap {
-  border: 1px solid var(--prime-border) !important;
-  border-radius: var(--prime-radius-md) !important;
-  background: var(--prime-surface) !important;
-  box-shadow: var(--prime-shadow-xs) !important;
-  overflow: auto !important;
+  border-top: 1px solid var(--prime-border) !important;
+  border-bottom: 1px solid var(--prime-border) !important;
+  color: #ffffff !important;
 }
 
 /* ==========================================================================
-   6. GAVETA DE FILTROS & CHIPS DINÂMICOS
+   INPUTS, SELECTS, TEXTAREAS & BOTÕES MODERNOS
    ========================================================================== */
-.drawer {
-  background: var(--prime-surface) !important;
-  border: 1px solid var(--prime-border) !important;
-  border-radius: var(--prime-radius-md) !important;
-  box-shadow: var(--prime-shadow-sm) !important;
-  margin-bottom: 18px !important;
-  overflow: hidden !important;
-}
 
-.drawer-btn {
-  background: var(--prime-surface-subtle) !important;
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="number"],
+input[type="date"],
+select,
+textarea,
+.form-input,
+.form-select,
+.form-textarea {
+  background: rgba(8, 11, 20, 0.8) !important;
   border: 1px solid var(--prime-border) !important;
-  border-radius: var(--prime-radius-md) !important;
+  border-radius: var(--prime-radius-sm) !important;
   color: var(--prime-ink-primary) !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  padding: 8px 16px !important;
-  cursor: pointer !important;
-  transition: all 0.15s ease !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-}
-
-.drawer-btn:hover {
-  background: #ffffff !important;
-  border-color: var(--prime-border-hover) !important;
-  box-shadow: var(--prime-shadow-xs) !important;
-}
-
-.chips {
-  display: flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  flex-wrap: wrap !important;
-  padding: 8px 0 !important;
-}
-
-.chip {
-  background: var(--prime-surface) !important;
-  border: 1px solid var(--prime-border) !important;
-  color: var(--prime-ink-primary) !important;
-  border-radius: var(--prime-radius-pill) !important;
-  padding: 3px 10px !important;
-  font-size: 11px !important;
-  font-weight: 600 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  box-shadow: var(--prime-shadow-xs) !important;
-}
-
-.chip button, .chip .rm {
-  background: transparent !important;
-  border: none !important;
-  color: var(--prime-ink-muted) !important;
-  cursor: pointer !important;
-  font-weight: 700 !important;
-  padding: 0 2px !important;
+  padding: 9px 13px !important;
+  font-family: var(--font-body) !important;
   font-size: 13px !important;
-  line-height: 1 !important;
-}
-
-.chip button:hover, .chip .rm:hover {
-  color: var(--prime-brand) !important;
-}
-
-.filter-box {
-  background: var(--prime-surface) !important;
-  border: 1px solid var(--prime-border) !important;
-  border-radius: var(--prime-radius-md) !important;
-  padding: 10px 12px !important;
-}
-
-.filter-box h3 {
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  color: var(--prime-ink-secondary) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.04em !important;
-  margin: 0 0 8px 0 !important;
-}
-
-/* ==========================================================================
-   7. CONTROLES DE INTERFACE, BOTÕES E TABS
-   ========================================================================== */
-/* Segmented Controls (Tabs como Pill Container) */
-.tabs, .date-presets {
-  display: inline-flex !important;
-  align-items: center !important;
-  background: var(--prime-surface-subtle) !important;
-  padding: 3px !important;
-  border-radius: var(--prime-radius-md) !important;
-  border: 1px solid var(--prime-border) !important;
-  gap: 2px !important;
-}
-
-.tab, .btn-date-preset {
-  border: none !important;
-  background: transparent !important;
-  color: var(--prime-ink-secondary) !important;
-  padding: 6px 14px !important;
-  border-radius: 6px !important;
-  font-size: 11.5px !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  transition: all 0.15s ease !important;
-}
-
-.tab:hover, .btn-date-preset:hover {
-  color: var(--prime-ink-primary) !important;
-}
-
-.tab.on, .btn-date-preset.active {
-  background: #ffffff !important;
-  color: var(--prime-ink-primary) !important;
-  font-weight: 700 !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
-}
-
-/* Botões Corporativos */
-button.btn-primary, .btn-primary, .btn-act.primary {
-  background: var(--prime-brand) !important;
-  color: #ffffff !important;
-  border: none !important;
-  border-radius: var(--prime-radius-md) !important;
-  padding: 8px 16px !important;
-  font-size: 12px !important;
-  font-weight: 700 !important;
-  cursor: pointer !important;
-  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  box-shadow: 0 1px 2px rgba(225, 29, 72, 0.25) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  text-decoration: none !important;
-}
-
-button.btn-primary:hover, .btn-primary:hover, .btn-act.primary:hover {
-  background: var(--prime-brand-hover) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 4px 12px var(--prime-brand-glow) !important;
-}
-
-button.btn-secondary, .btn-secondary, .btn-act {
-  background: #ffffff !important;
-  color: var(--prime-ink-primary) !important;
-  border: 1px solid var(--prime-border) !important;
-  border-radius: var(--prime-radius-md) !important;
-  padding: 7px 14px !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  transition: all 0.15s ease !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  text-decoration: none !important;
-}
-
-button.btn-secondary:hover, .btn-secondary:hover, .btn-act:hover {
-  background: var(--prime-surface-subtle) !important;
-  border-color: var(--prime-border-hover) !important;
-}
-
-/* Inputs, Selects & Textareas */
-input[type="text"], input[type="email"], input[type="password"], input[type="date"], select, textarea, .form-input, .form-select {
-  border: 1px solid var(--prime-border) !important;
-  border-radius: var(--prime-radius-md) !important;
-  padding: 8px 12px !important;
-  font-size: 12.5px !important;
-  color: var(--prime-ink-primary) !important;
-  background: #ffffff !important;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
-}
-
-input:focus, select:focus, textarea:focus, .form-input:focus, .form-select:focus {
   outline: none !important;
+  transition: all 0.2s ease !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+input:focus, select:focus, textarea:focus,
+.form-input:focus, .form-select:focus, .form-textarea:focus {
   border-color: var(--prime-brand) !important;
-  box-shadow: 0 0 0 3px var(--prime-brand-glow) !important;
+  box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.25), inset 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Botões Primários Executivos */
+button.btn-primary, .btn-primary {
+  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  padding: 8px 18px !important;
+  border-radius: var(--prime-radius-sm) !important;
+  font-family: var(--font-body) !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.35) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+}
+button.btn-primary:hover, .btn-primary:hover {
+  background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%) !important;
+  box-shadow: 0 6px 20px rgba(225, 29, 72, 0.5) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Botões Secundários */
+button.btn-secondary, .btn-secondary {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--prime-ink-primary) !important;
+  border: 1px solid var(--prime-border) !important;
+  padding: 8px 16px !important;
+  border-radius: var(--prime-radius-sm) !important;
+  font-family: var(--font-body) !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+button.btn-secondary:hover, .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.09) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
 }
 
 /* ==========================================================================
-   8. JANELAS MODAIS (PRIME MODALS)
+   BADGES & CHIPS LUMINOSOS
    ========================================================================== */
-.modal, .ph-modal-backdrop {
-  background: rgba(15, 23, 42, 0.6) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
+
+.badge, .tag, .pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 3px 9px !important;
+  border-radius: var(--prime-radius-pill) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  white-space: nowrap !important;
 }
 
-.modal-box, .ph-modal-dialog {
-  border-radius: var(--prime-radius-lg) !important;
-  box-shadow: var(--prime-shadow-modal) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+.badge.ok, .badge.aprovado, .badge.ativo {
+  background: var(--prime-green-bg) !important;
+  color: var(--prime-green) !important;
+  border: 1px solid var(--prime-green-border) !important;
+}
+
+.badge.warn, .badge.pendente, .badge.warning {
+  background: var(--prime-amber-bg) !important;
+  color: var(--prime-amber) !important;
+  border: 1px solid var(--prime-amber-border) !important;
+}
+
+.badge.danger, .badge.bloqueado, .badge.negado, .badge.rejeitado {
+  background: var(--prime-red-bg) !important;
+  color: var(--prime-red) !important;
+  border: 1px solid var(--prime-red-border) !important;
+}
+
+.badge.info, .badge.admin {
+  background: var(--prime-blue-bg) !important;
+  color: var(--prime-blue) !important;
+  border: 1px solid var(--prime-blue-border) !important;
+}
+
+/* ==========================================================================
+   MODAIS FROSTED GLASS OVERLAY
+   ========================================================================== */
+
+.modal {
+  background: rgba(4, 6, 12, 0.82) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+}
+
+.modal-box {
   background: var(--prime-surface) !important;
-  overflow: hidden !important;
+  border: 1px solid var(--prime-border-strong) !important;
+  border-radius: var(--prime-radius-lg) !important;
+  box-shadow: var(--prime-shadow-glow), 0 25px 60px rgba(0, 0, 0, 0.8) !important;
+  color: var(--prime-ink-primary) !important;
 }
 
-.modal-hd, .ph-modal-header {
-  background: var(--prime-hd-bg) !important;
-  padding: 16px 24px !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+.modal-hd {
+  padding: 16px 22px !important;
+  border-bottom: 1px solid var(--prime-border-subtle) !important;
+  background: rgba(8, 11, 20, 0.5) !important;
+}
+.modal-bd {
+  padding: 22px !important;
+}
+.modal-ft {
+  padding: 14px 22px !important;
+  border-top: 1px solid var(--prime-border-subtle) !important;
+  background: rgba(8, 11, 20, 0.5) !important;
 }
 
-.modal-hd h3, .modal-hd b, .ph-modal-header-text b {
+/* ==========================================================================
+   AUTH PAGES FROSTED OBSIDIAN OVERRIDES (/login, /register, etc.)
+   ========================================================================== */
+body.auth-split-body {
+  background: #06080e !important;
+  color: #f8fafc !important;
+}
+.auth-stage {
+  background: #090d16 !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+.auth-aside {
+  background: #06080e !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+.aside-pillar {
+  background: rgba(13, 18, 31, 0.75) !important;
+  backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #f8fafc !important;
+}
+.aside-pillar:hover {
+  background: rgba(225, 29, 72, 0.08) !important;
+  border-color: rgba(225, 29, 72, 0.4) !important;
+}
+.aside-pillar-body strong {
   color: #ffffff !important;
-  font-size: 16px !important;
+}
+.aside-pillar-body p {
+  color: #94a3b8 !important;
+}
+.form-title {
+  color: #ffffff !important;
+}
+.form-sub {
+  color: #94a3b8 !important;
+}
+.form-label {
+  color: #cbd5e1 !important;
+}
+.stage-top-meta .env-pill {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #94a3b8 !important;
+}
+.aside-footer {
+  border-top-color: rgba(255, 255, 255, 0.08) !important;
+}
+.aside-badge-secure {
+  background: rgba(13, 18, 31, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #94a3b8 !important;
+}
+
+/* ==========================================================================
+   NOTAS, DELTAS & REGRA DE OURO
+   ========================================================================== */
+
+.pp-delta {
+  font-family: var(--font-mono) !important;
   font-weight: 700 !important;
   letter-spacing: -0.02em !important;
 }
-
-.modal-hd small, .ph-modal-header-text small {
-  color: #fb7185 !important;
-  font-size: 10.5px !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.08em !important;
-  text-transform: uppercase !important;
-}
-
-.modal-ft, .ph-modal-actions {
-  background: var(--prime-surface-subtle) !important;
-  border-top: 1px solid var(--prime-border) !important;
-  padding: 14px 24px !important;
-}
-
-/* ==========================================================================
-   9. TOOLTIPS FLUTUANTES & GRÁFICOS SVG
-   ========================================================================== */
-.gtip {
-  background: #0f172a !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  border-radius: var(--prime-radius-md) !important;
-  padding: 10px 14px !important;
-  box-shadow: var(--prime-shadow-lg) !important;
-  font-size: 11.5px !important;
-  font-variant-numeric: tabular-nums !important;
-  backdrop-filter: blur(6px) !important;
-  -webkit-backdrop-filter: blur(6px) !important;
-  z-index: 100 !important;
-}
-
-.gtip b {
-  color: #fb7185 !important;
-  font-size: 12px !important;
-}
-
-/* ==========================================================================
-   10. CATÁLOGO / PORTAL PRINCIPAL
-   ========================================================================== */
-.card {
-  background: var(--prime-surface) !important;
-  border: 1px solid var(--prime-border) !important;
-  border-radius: var(--prime-radius-lg) !important;
-  box-shadow: var(--prime-shadow-sm) !important;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  overflow: hidden !important;
-}
-
-.card:hover {
-  transform: translateY(-3px) !important;
-  box-shadow: var(--prime-shadow-lg) !important;
-  border-color: var(--prime-border-hover) !important;
-}
-
-.card-header {
-  border-bottom: 1px solid var(--prime-border-subtle) !important;
-  padding: 16px 20px !important;
-}
-
-.card-body {
-  padding: 18px 20px !important;
-}
-
-.card-footer {
-  background: var(--prime-surface-subtle) !important;
-  border-top: 1px solid var(--prime-border-subtle) !important;
-  padding: 12px 20px !important;
-}
-
-.intro {
-  background: var(--prime-surface) !important;
-  border: 1px solid var(--prime-border) !important;
-  border-radius: var(--prime-radius-md) !important;
-  box-shadow: var(--prime-shadow-sm) !important;
-}
-
-.ibadge {
-  background: var(--prime-surface-subtle) !important;
-  border: 1px solid var(--prime-border) !important;
-  border-radius: var(--prime-radius-sm) !important;
-  color: var(--prime-ink-secondary) !important;
-}
-
-/* ==========================================================================
-   11. PAINEL ADMINISTRATIVO & PILARES DE NAVEGAÇÃO
-   ========================================================================== */
-.nav-pillars-wrap {
-  background: var(--prime-surface) !important;
-  border: 1px solid var(--prime-border) !important;
-  border-radius: var(--prime-radius-md) !important;
-  box-shadow: var(--prime-shadow-xs) !important;
-}
-
-.nav-pillar-btn {
-  color: var(--prime-ink-secondary) !important;
-  border-radius: var(--prime-radius-md) !important;
-  transition: all 0.15s ease !important;
-}
-
-.nav-pillar-btn:hover {
-  background: var(--prime-surface-subtle) !important;
-  color: var(--prime-ink-primary) !important;
-}
-
-.nav-pillar-btn.active {
-  background: var(--prime-hd-bg) !important;
-  color: #ffffff !important;
-  box-shadow: var(--prime-shadow-sm) !important;
-}
-
-.stat-badge {
-  border-radius: var(--prime-radius-pill) !important;
-  font-weight: 700 !important;
-}
-
-/* ==========================================================================
-   12. TELAS DE AUTENTICAÇÃO (LOGIN, CADASTRO, RECUPERAÇÃO)
-   ========================================================================== */
-.auth-aside {
-  background: linear-gradient(135deg, #090d16 0%, #151120 50%, #270c14 100%) !important;
-}
-
-.auth-aside-aurora i:first-child {
-  background: radial-gradient(circle, rgba(225, 29, 72, 0.3) 0%, transparent 70%) !important;
-}
-
-.auth-card {
-  background: var(--prime-surface) !important;
-  border: 1px solid var(--prime-border) !important;
-  border-radius: var(--prime-radius-lg) !important;
-  box-shadow: var(--prime-shadow-md) !important;
-}
-
-.auth-card:hover {
-  border-color: var(--prime-border-hover) !important;
+.pp-unit {
+  font-size: 0.85em !important;
+  font-weight: 500 !important;
+  text-transform: lowercase !important;
 }
