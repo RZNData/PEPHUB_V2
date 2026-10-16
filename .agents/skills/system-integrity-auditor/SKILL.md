@@ -84,6 +84,12 @@ python scripts/system_integrity_agent.py
 - **Indicação de Conexão em Tempo Real**: Tanto na aba de Colaboradores quanto no Panorama / Stats, os usuários exibem tags dinâmicas `🟢 Online` ou `⚪ Offline`.
 - **Zero Flicker**: Leitura síncrona do cache local de módulos em `sessionStorage` ao carregar o catálogo de relatórios, com suporte a `normalizeModuleId` em todos os nós da aplicação.
 
+### 11. Governança de Lista Única (Single Source of Truth) & Usabilidade de Modais
+- **Lista Única Canônica**: O banco de dados Cloudflare D1 (`system_modules`) e o catálogo mestre de 14 ferramentas oficiais (`DEFAULT_SYSTEM_MODULES` em `worker/utils/security.js`) são a única fonte da verdade da plataforma.
+- **Reatividade em Toda a Cadeia**: Qualquer ferramenta atualizada, excluída, pausada, suspensa ou adicionada alimenta e atualiza em tempo real toda a cadeia de locais onde aparece (Privilégios, Gestão de Ferramentas, Broadcast, Notificações, Delegações, Configurações do Usuário e Bot). Ao mutar um módulo, a central administrativa executa imediatamente `await loadModules(); loadUsers();`.
+- **Zero Identificadores Legados**: Proibição de uso de IDs com underscore (`churn_safra`, `fpd_residencial`, etc.) no frontend e endpoints ativos.
+- **Viewport Clamping dos Modais (Nunca Corta Botão Fechar)**: Todas as janelas modais da seção Admin, Perfil e Configurações possuem contenção estrita de altura (`max-height: calc(100vh - 40px)` ou `calc(100vh - 48px)`), cabeçalho e rodapé protegidos com `flex-shrink: 0`, rolagem exclusiva no corpo (`overflow-y: auto; overscroll-behavior: contain`), largura expandida horizontalmente (760px a 1140px com grids multi-coluna) e botão de fechar circular destacado e acessível.
+
 ---
 
 ## Tabela de Pontuação por Severidade (100 pontos base)
@@ -100,6 +106,7 @@ python scripts/system_integrity_agent.py
 | 8 | Otimização de CPU Worker e Fast Static Bypass | HIGH | -15 |
 | 9 | Integridade Sintática de Scripts nos Relatórios | CRITICAL | -20 |
 | 10 | Status em /api/auth/me, Botão 'Privilégios' e Hover Online | HIGH | -15 |
+| 11 | Lista Única Canônica, Reatividade em Cadeia e Viewport Clamping de Modais | CRITICAL | -25 |
 
 ---
 
@@ -117,3 +124,4 @@ python scripts/system_integrity_agent.py
 3. **Gestao_Privilegios_Zero_Flicker**: Acesso a relatórios salvo individualmente sem herança indesejada, rotulado estritamente como 'Privilégios', com Toast de confirmação e tags '🟢 Online'/'⚪ Offline' em Colaboradores e Panorama.
 4. **Protecao_CPU_Worker_Free_Tier**: Fast bypass na borda para static assets garantindo conformidade com limites de CPU da Cloudflare.
 5. **Integridade_Sintatica_Scripts**: Proibido tags `<script>` aninhadas ou blocos abertos dentro de HTML de relatórios analíticos.
+6. **Single_Source_Of_Truth_E_Modal_Clamping**: Lista única viva de ferramentas preservada e auditada no pre-deploy, propagação em cascata e restrição de altura vertical em 100% dos modais.

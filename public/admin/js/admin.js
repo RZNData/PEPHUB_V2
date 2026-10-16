@@ -1,5 +1,5 @@
 // Módulos e Ferramentas oficiais organizados por seção canônica (Regional Norte)
-// Inicializado com os módulos canônicos e atualizado dinamicamente via D1
+// Inicializado com os 14 módulos canônicos e atualizado dinamicamente via D1
 let SYSTEM_SECTIONS = [
   {
     "name": "Painéis & Relatórios Oficiais",
@@ -9,61 +9,71 @@ let SYSTEM_SECTIONS = [
         "id": "churn",
         "name": "Painel de Churn Safra",
         "short": "Safra",
-        "desc": "Acompanhamento de Churn Safra da Regional Norte"
+        "desc": "Acompanhamento de Churn Safra da Regional Norte",
+        "route": "/churn/"
       },
       {
         "id": "churn-bl-total",
         "name": "Painel de Churn Banda Larga Total",
         "short": "BL Total",
-        "desc": "Acompanhamento de Churn Horizontal BL Total (Residencial + PME)"
+        "desc": "Acompanhamento de Churn Horizontal BL Total (Residencial + PME)",
+        "route": "/churn-bl-total/"
       },
       {
         "id": "churn-bl-pme",
         "name": "Painel de Churn Banda Larga PME",
         "short": "BL PME",
-        "desc": "Acompanhamento de Churn Horizontal BL PME"
+        "desc": "Acompanhamento de Churn Horizontal BL PME",
+        "route": "/churn-bl-pme/"
       },
       {
         "id": "fpd",
         "name": "Painel de FPD 60/30 (First Payment Default)",
         "short": "FPD Regional",
-        "desc": "Inadimplência de primeira fatura (FPD 30 e FPD 60)"
+        "desc": "Inadimplência de primeira fatura (FPD 30 e FPD 60)",
+        "route": "/fpd/"
       },
       {
         "id": "fpd-residencial",
         "name": "FPD Residencial (Executivo Fixa)",
         "short": "FPD Residencial",
-        "desc": "Relatório Executivo Oficial de FPD 60 da Fixa por Canal, Cidade e Parceiro"
+        "desc": "Relatório Executivo Oficial de FPD 60 da Fixa por Canal, Cidade e Parceiro",
+        "route": "/fpd-residencial/"
       },
       {
         "id": "market-share-movel",
         "name": "Market Share Móvel",
         "short": "MS Móvel",
-        "desc": "Relatório Executivo Oficial de Market Share Móvel (Anatel · Telefonia Móvel & 5G)"
+        "desc": "Relatório Executivo Oficial de Market Share Móvel (Anatel · Telefonia Móvel & 5G)",
+        "route": "/market-share-movel/"
       },
       {
         "id": "market-share-residencial",
         "name": "Market Share Residencial",
         "short": "MS Residencial",
-        "desc": "Relatório Executivo Oficial de Market Share Residencial (Anatel · Banda Larga)"
+        "desc": "Relatório Executivo Oficial de Market Share Residencial (Anatel · Banda Larga)",
+        "route": "/market-share-residencial/"
       },
       {
         "id": "panorama-market-share",
         "name": "Panorama & Market Share",
         "short": "Panorama",
-        "desc": "Market share móvel e residencial Anatel e dinâmica concorrencial"
+        "desc": "Market share móvel e residencial Anatel e dinâmica concorrencial",
+        "route": "/panorama-market-share/"
       },
       {
         "id": "aprovacao-credito",
         "name": "Painel de Taxa de Aprovação de Crédito",
         "short": "Taxa Crédito",
-        "desc": "Taxa de aprovação por canal, parceiro e cidade"
+        "desc": "Taxa de aprovação por canal, parceiro e cidade",
+        "route": "/aprovacao-credito/"
       },
       {
         "id": "evolucao-carteira",
         "name": "Evolução de Carteira Móvel & B2B",
         "short": "Evolução Carteira",
-        "desc": "Evolução temporal, net adds, desdobramento por segmento e migrações da Regional Norte"
+        "desc": "Evolução temporal, net adds, desdobramento por segmento e migrações da Regional Norte",
+        "route": "/evolucao-carteira/"
       }
     ]
   },
@@ -75,13 +85,29 @@ let SYSTEM_SECTIONS = [
         "id": "divulgacao",
         "name": "Divulgação Corporativa (TVs)",
         "short": "TV Divulgação",
-        "desc": "Propostas de mídia, curadoria e exibição nas TVs da Regional"
+        "desc": "Propostas de mídia, curadoria e exibição nas TVs da Regional",
+        "route": "/pep-tools/divulgacao/"
       },
       {
         "id": "tv",
         "name": "Player TV (16:9 Fullscreen)",
         "short": "Player TV",
-        "desc": "Acesso direto ao reprodutor widescreen para recepções e salas"
+        "desc": "Acesso direto ao reprodutor widescreen para recepções e salas",
+        "route": "/pep-tools/divulgacao/tv.html"
+      },
+      {
+        "id": "aniversario",
+        "name": "Gerador de Card de Aniversário (TV 16:9)",
+        "short": "Cards Aniversário",
+        "desc": "Criação de homenagens e cards em resolução Full HD (1920x1080p 16:9) para transmissão nas TVs",
+        "route": "/pep-tools/aniversario/"
+      },
+      {
+        "id": "market-share",
+        "name": "Auxiliar de PPT (Estúdio de Apresentações)",
+        "short": "Auxiliar PPT",
+        "desc": "Assistente para criação de gráficos, infográficos, matrizes comparativas e exportação SVG/PNG para PowerPoint",
+        "route": "/pep-tools/market-share/"
       }
     ]
   }
@@ -95,7 +121,7 @@ function isPepToolsModule(m) {
   if (!m) return false;
   const sec = (m.section || '').toLowerCase();
   const id = (m.id || '').toLowerCase();
-  return sec.includes('pep') || sec.includes('ferramenta') || id === 'divulgacao' || id === 'tv';
+  return sec.includes('pep') || sec.includes('ferramenta') || id === 'divulgacao' || id === 'tv' || id === 'aniversario' || id === 'market-share';
 }
 
 function updateSystemCatalog(modules) {
@@ -114,12 +140,17 @@ function updateSystemCatalog(modules) {
     modules: []
   });
 
+  const seenIds = new Set();
+
   modules.forEach(m => {
     let secName = m.section || 'Painéis & Relatórios Oficiais';
     const cleanId = normalizeModuleId(m.id);
-    if (cleanId === 'divulgacao' || cleanId === 'tv' || secName.toLowerCase().includes('pep') || secName.toLowerCase().includes('ferramenta')) {
+    if (!cleanId || seenIds.has(cleanId)) return;
+    seenIds.add(cleanId);
+
+    if (cleanId === 'divulgacao' || cleanId === 'tv' || cleanId === 'aniversario' || cleanId === 'market-share' || secName.toLowerCase().includes('pep') || secName.toLowerCase().includes('ferramenta')) {
       secName = 'PeP Tools & Operações';
-    } else if (secName.toLowerCase().includes('painel') || secName.toLowerCase().includes('relat') || secName.toLowerCase().includes('indicador') || secName.toLowerCase().includes('estrat')) {
+    } else {
       secName = 'Painéis & Relatórios Oficiais';
     }
 
@@ -157,8 +188,8 @@ function populateBroadcastReports() {
   const sel = document.getElementById('bcReport');
   if (!sel) return;
   const currentVal = sel.value;
-  sel.innerHTML = '<option value="Todos os Relatórios & Plataforma Pephub">Todos os Relatórios &amp; Plataforma Pephub</option>' +
-    ALL_SYSTEM_MODULES.map(m => `<option value="${escapeHtml(m.name)}">${escapeHtml(m.name)} (${escapeHtml(m.short)})</option>`).join('');
+  sel.innerHTML = '<option value="Todos os Relatórios & Plataforma Pephub" data-id="" data-route="/?from=broadcast">Todos os Relatórios &amp; Plataforma Pephub</option>' +
+    ALL_SYSTEM_MODULES.map(m => `<option value="${escapeHtml(m.name)}" data-id="${escapeHtml(m.id)}" data-route="${escapeHtml(m.route || '')}">${escapeHtml(m.name)} (${escapeHtml(m.short)})</option>`).join('');
   if (currentVal) sel.value = currentVal;
 }
 
@@ -326,11 +357,14 @@ if (_legacyAdminLogout) {
   });
 }
 
-// Fechar modais
-document.querySelectorAll('.modal-close').forEach(btn => {
+// Fechar modais (botões no cabeçalho e botões Cancelar/Fechar com data-close)
+document.querySelectorAll('.modal-close, [data-close]').forEach(btn => {
   btn.addEventListener('click', (e) => {
     const modalId = e.currentTarget.dataset.close;
-    if (modalId) document.getElementById(modalId).classList.remove('on');
+    if (modalId) {
+      const modalEl = document.getElementById(modalId);
+      if (modalEl) modalEl.classList.remove('on');
+    }
   });
 });
 
@@ -344,10 +378,13 @@ function normalizeModuleId(id) {
   if (clean === 'fpd-residencial' || clean === 'fpd_residencial' || clean === 'fpd-executivo') return 'fpd-residencial';
   if (clean === 'divulgacao' || clean === 'pep_tools_divulgacao' || clean === 'peptools_divulgacao') return 'divulgacao';
   if (clean === 'tv' || clean === 'player_tv' || clean === 'tv_player') return 'tv';
+  if (clean === 'aniversario' || clean === 'card_aniversario' || clean === 'cards-aniversario' || clean === 'pep_tools_aniversario') return 'aniversario';
+  if (clean === 'market-share' || clean === 'market_share_studio' || clean === 'pep-tools-market-share' || clean === 'ppt-studio' || clean === 'market-share-studio') return 'market-share';
   if (clean === 'panorama-market-share' || clean === 'panorama_market_share' || clean === 'market-share-panorama') return 'panorama-market-share';
   if (clean === 'market-share-residencial' || clean === 'market_share_residencial' || clean === 'mkt-share-residencial') return 'market-share-residencial';
   if (clean === 'market-share-movel' || clean === 'market_share_movel' || clean === 'mkt-share-movel') return 'market-share-movel';
   if (clean === 'aprovacao-credito' || clean === 'aprovacao_credito' || clean === 'credito') return 'aprovacao-credito';
+  if (clean === 'evolucao-carteira' || clean === 'evolucao_carteira' || clean === 'evolucao') return 'evolucao-carteira';
   return clean;
 }
 
@@ -359,7 +396,8 @@ function getUserModules(u) {
   if (!u.modules_allowed || u.modules_allowed === 'none' || String(u.modules_allowed).trim() === '') {
     return [];
   }
-  return u.modules_allowed.split(',').map(normalizeModuleId).filter(Boolean);
+  const rawList = u.modules_allowed.split(',').map(normalizeModuleId).filter(Boolean);
+  return Array.from(new Set(rawList)).filter(id => ALL_MODULE_IDS.includes(id));
 }
 
 // Helper: Iniciais do nome
@@ -814,7 +852,6 @@ function openPrivilegesModal(userId) {
   document.getElementById('privAvatar').textContent = getInitials(user.nome_completo);
   document.getElementById('privStatus').value = user.status;
   document.getElementById('privRole').value = user.is_admin ? '1' : '0';
-  document.getElementById('privNotify').checked = Boolean(user.notify_updates);
 
   currentModalUserMods = getUserModules(user);
   renderModalModuleToggles();
@@ -947,7 +984,6 @@ document.getElementById('btnSavePrivileges').addEventListener('click', async () 
   const status = document.getElementById('privStatus').value;
   const is_admin = document.getElementById('privRole').value === '1';
   const modules_allowed = currentModalUserMods.length > 0 ? currentModalUserMods.join(',') : 'none';
-  const notify_updates = document.getElementById('privNotify').checked ? 1 : 0;
   const btn = document.getElementById('btnSavePrivileges');
   btn.disabled = true;
   btn.textContent = 'Salvando…';
@@ -956,7 +992,7 @@ document.getElementById('btnSavePrivileges').addEventListener('click', async () 
     const res = await fetch(`/api/admin/users/${userId}/privileges`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status, is_admin, modules_allowed, notify_updates })
+      body: JSON.stringify({ status, is_admin, modules_allowed })
     });
 
     if (res.ok) {
@@ -1345,35 +1381,314 @@ document.getElementById('searchLogs').addEventListener('input', () => {
   window._logSearchTimeout = setTimeout(loadAccessLogs, 300);
 });
 
-// Modal Broadcast
-document.getElementById('btnOpenBroadcast').addEventListener('click', () => {
-  document.getElementById('modalBroadcast').classList.add('on');
-});
+// ==========================================
+// AVISAR ATUALIZAÇÃO DE RELATÓRIO (BROADCAST COM SEGMENTAÇÃO)
+// ==========================================
+function openBroadcastModal(defaultReportId) {
+  populateBroadcastReports();
 
-document.getElementById('btnSendBroadcast').addEventListener('click', async () => {
-  const relatorio = document.getElementById('bcReport').value.trim();
+  const reportSel = document.getElementById('bcReport');
+  if (reportSel) {
+    if (defaultReportId) {
+      const opt = Array.from(reportSel.options).find(o => o.dataset.id === defaultReportId || o.value.toLowerCase().includes(defaultReportId.toLowerCase()));
+      if (opt) reportSel.value = opt.value;
+    }
+  }
+
+  onBroadcastReportChange();
+  onBroadcastTargetTypeChange();
+  document.getElementById('modalBroadcast').classList.add('on');
+}
+
+function onBroadcastReportChange() {
+  const sel = document.getElementById('bcReport');
+  const subjInput = document.getElementById('bcSubject');
+  const urlInput = document.getElementById('bcActionUrl');
+  if (!sel) return;
+
+  const selectedOpt = sel.options[sel.selectedIndex];
+  const repName = sel.value;
+  const repId = selectedOpt ? selectedOpt.dataset.id : '';
+  const repRoute = selectedOpt ? selectedOpt.dataset.route : '';
+
+  if (urlInput) {
+    urlInput.value = repRoute || (repId ? `/${repId}/` : '/');
+  }
+
+  if (subjInput && (!subjInput.dataset.touched || subjInput.value.startsWith('Novos Dados Consolidados') || subjInput.value.startsWith('[PEP HUB]'))) {
+    if (!repId || repName.startsWith('Todos os Relatórios')) {
+      subjInput.value = '[PEP HUB] Atualização Geral da Plataforma · Regional Norte';
+    } else {
+      subjInput.value = `[PEP HUB] Atualização Disponível: ${repName}`;
+    }
+  }
+
+  updateBroadcastPreview();
+}
+
+function onBroadcastTargetTypeChange() {
+  const type = document.getElementById('bcTargetType')?.value || 'all';
+  const usersBox = document.getElementById('bcTargetUsersBox');
+  const rolesBox = document.getElementById('bcTargetRolesBox');
+  const areasBox = document.getElementById('bcTargetAreasBox');
+  
+  if (usersBox) usersBox.style.display = type === 'users' ? 'block' : 'none';
+  if (rolesBox) rolesBox.style.display = type === 'roles' ? 'block' : 'none';
+  if (areasBox) areasBox.style.display = type === 'areas' ? 'block' : 'none';
+
+  populateBroadcastTargetOptions();
+  updateBroadcastTargetBadges();
+  updateBroadcastPreview();
+}
+
+let _bcTargetOptionsPopulated = false;
+async function populateBroadcastTargetOptions(forceReload = false) {
+  if (_bcTargetOptionsPopulated && !forceReload) return;
+
+  if (!allUsers || allUsers.length === 0) {
+    try {
+      const res = await fetch('/api/admin/users');
+      if (res.ok) {
+        const uData = await res.json();
+        allUsers = Array.isArray(uData) ? uData : (uData.users || []);
+      }
+    } catch (_) {}
+  }
+
+  const approvedUsers = (allUsers || []).filter(u => u.status === 'aprovado' || !u.status || u.status === 'ativo');
+
+  // 1. Popula lista de usuários
+  const usersListEl = document.getElementById('bcUsersList');
+  if (usersListEl) {
+    if (approvedUsers.length === 0) {
+      usersListEl.innerHTML = `<div style="font-size:11.5px;color:var(--ink3);padding:8px">Nenhum colaborador aprovado encontrado.</div>`;
+    } else {
+      usersListEl.innerHTML = approvedUsers.map(u => `
+        <label class="bc-user-item" data-search="${escapeHtml(((u.nome_completo||'') + ' ' + (u.login_claro||'') + ' ' + (u.email_claro||'') + ' ' + (u.area||'') + ' ' + (u.funcao||'')).toLowerCase())}" style="display:flex;align-items:center;justify-content:space-between;padding:5px 8px;border-radius:3px;cursor:pointer;border-bottom:1px solid #f1f5f9;font-size:11.5px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" class="chk-bc-user" value="${u.id}" onchange="updateBroadcastTargetBadges();updateBroadcastPreview();" style="margin:0;width:auto">
+            <div>
+              <strong style="color:var(--ink)">${escapeHtml(u.nome_completo || u.login_claro)}</strong>
+              <span style="font-size:10.5px;color:var(--ink3);margin-left:4px">(${escapeHtml(u.login_claro || u.email_claro || '-')})</span>
+            </div>
+          </div>
+          <div style="font-size:10.5px;color:var(--ink2)">
+            ${escapeHtml(u.area || 'Sem Área')} · ${escapeHtml(u.funcao || 'Colaborador')}
+          </div>
+        </label>
+      `).join('');
+    }
+  }
+
+  // 2. Popula lista de Cargos
+  const rolesListEl = document.getElementById('bcRolesList');
+  if (rolesListEl) {
+    const roleCounts = {};
+    approvedUsers.forEach(u => {
+      const r = String(u.funcao || '').trim();
+      if (r) roleCounts[r] = (roleCounts[r] || 0) + 1;
+    });
+    const sortedRoles = Object.keys(roleCounts).sort((a,b) => a.localeCompare(b, 'pt-BR'));
+    if (sortedRoles.length === 0) {
+      rolesListEl.innerHTML = `<div style="font-size:11.5px;color:var(--ink3);padding:8px">Nenhum cargo cadastrado.</div>`;
+    } else {
+      rolesListEl.innerHTML = sortedRoles.map(r => `
+        <label style="display:flex;align-items:center;gap:7px;padding:4px 6px;background:#f8fafc;border:1px solid var(--line2);border-radius:3px;cursor:pointer;font-size:11.5px">
+          <input type="checkbox" class="chk-bc-role" value="${escapeHtml(r)}" onchange="updateBroadcastTargetBadges();updateBroadcastPreview();" style="margin:0;width:auto">
+          <span style="color:var(--ink);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(r)}</span>
+          <span style="font-size:10px;font-weight:700;color:var(--purple);background:#f3e8ff;padding:1px 5px;border-radius:10px">${roleCounts[r]}</span>
+        </label>
+      `).join('');
+    }
+  }
+
+  // 3. Popula lista de Setores
+  const areasListEl = document.getElementById('bcAreasList');
+  if (areasListEl) {
+    const areaCounts = {};
+    approvedUsers.forEach(u => {
+      const a = String(u.area || '').trim();
+      if (a) areaCounts[a] = (areaCounts[a] || 0) + 1;
+    });
+    const sortedAreas = Object.keys(areaCounts).sort((a,b) => a.localeCompare(b, 'pt-BR'));
+    if (sortedAreas.length === 0) {
+      areasListEl.innerHTML = `<div style="font-size:11.5px;color:var(--ink3);padding:8px">Nenhum setor cadastrado.</div>`;
+    } else {
+      areasListEl.innerHTML = sortedAreas.map(a => `
+        <label style="display:flex;align-items:center;gap:7px;padding:4px 6px;background:#f8fafc;border:1px solid var(--line2);border-radius:3px;cursor:pointer;font-size:11.5px">
+          <input type="checkbox" class="chk-bc-area" value="${escapeHtml(a)}" onchange="updateBroadcastTargetBadges();updateBroadcastPreview();" style="margin:0;width:auto">
+          <span style="color:var(--ink);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(a)}</span>
+          <span style="font-size:10px;font-weight:700;color:#c98a15;background:#fef3c7;padding:1px 5px;border-radius:10px">${areaCounts[a]}</span>
+        </label>
+      `).join('');
+    }
+  }
+
+  _bcTargetOptionsPopulated = true;
+  updateBroadcastTargetBadges();
+}
+
+function updateBroadcastTargetBadges() {
+  const selUsers = document.querySelectorAll('.chk-bc-user:checked');
+  const selRoles = document.querySelectorAll('.chk-bc-role:checked');
+  const selAreas = document.querySelectorAll('.chk-bc-area:checked');
+
+  const uBadge = document.getElementById('bcSelectedUsersBadge');
+  const rBadge = document.getElementById('bcSelectedRolesBadge');
+  const aBadge = document.getElementById('bcSelectedAreasBadge');
+
+  if (uBadge) uBadge.textContent = `${selUsers.length} selecionado(s)`;
+  if (rBadge) rBadge.textContent = `${selRoles.length} cargo(s)`;
+  if (aBadge) aBadge.textContent = `${selAreas.length} setor(es)`;
+
+  const type = document.getElementById('bcTargetType')?.value || 'all';
+  const approvedUsers = (allUsers || []).filter(u => u.status === 'aprovado' || !u.status || u.status === 'ativo');
+  let eligibleCount = 0;
+
+  if (type === 'all') {
+    eligibleCount = approvedUsers.length;
+  } else if (type === 'admin') {
+    eligibleCount = approvedUsers.filter(u => Boolean(u.is_admin)).length;
+  } else if (type === 'regular') {
+    eligibleCount = approvedUsers.filter(u => !u.is_admin).length;
+  } else if (type === 'users') {
+    const userIds = Array.from(selUsers).map(c => c.value);
+    eligibleCount = approvedUsers.filter(u => userIds.includes(u.id)).length;
+  } else if (type === 'roles') {
+    const roles = Array.from(selRoles).map(c => c.value.toUpperCase());
+    eligibleCount = approvedUsers.filter(u => roles.includes(String(u.funcao || '').toUpperCase())).length;
+  } else if (type === 'areas') {
+    const areas = Array.from(selAreas).map(c => c.value.toUpperCase());
+    eligibleCount = approvedUsers.filter(u => areas.includes(String(u.area || '').toUpperCase())).length;
+  }
+
+  const summary = document.getElementById('bcAudienceSummary');
+  if (summary) {
+    summary.innerHTML = `O e-mail será transmitido para <strong>${eligibleCount}</strong> colaborador(es) aprovado(s) com e-mail corporativo.`;
+  }
+}
+
+function filterBroadcastUsersList(searchTerm) {
+  const term = String(searchTerm || '').toLowerCase().trim();
+  document.querySelectorAll('.bc-user-item').forEach(item => {
+    const s = item.dataset.search || '';
+    item.style.display = (!term || s.includes(term)) ? 'flex' : 'none';
+  });
+}
+
+function selectFilteredBroadcastUsers(select) {
+  document.querySelectorAll('.bc-user-item').forEach(item => {
+    if (item.style.display !== 'none') {
+      const chk = item.querySelector('.chk-bc-user');
+      if (chk) chk.checked = Boolean(select);
+    }
+  });
+  updateBroadcastTargetBadges();
+  updateBroadcastPreview();
+}
+
+function toggleAllBroadcastRoles(select) {
+  document.querySelectorAll('.chk-bc-role').forEach(chk => chk.checked = Boolean(select));
+  updateBroadcastTargetBadges();
+  updateBroadcastPreview();
+}
+
+function toggleAllBroadcastAreas(select) {
+  document.querySelectorAll('.chk-bc-area').forEach(chk => chk.checked = Boolean(select));
+  updateBroadcastTargetBadges();
+  updateBroadcastPreview();
+}
+
+function updateBroadcastPreview() {
+  const preview = document.getElementById('bcEmailPreview');
+  if (!preview) return;
+
+  const rep = document.getElementById('bcReport')?.value || 'Painel de Churn Safra';
+  const subj = document.getElementById('bcSubject')?.value || 'Atualização Disponível';
+  const msg = document.getElementById('bcMessage')?.value.trim();
+  const url = document.getElementById('bcActionUrl')?.value || '/churn/';
+  const label = document.getElementById('bcActionLabel')?.value || 'Abrir Painel Atualizado';
+
+  preview.innerHTML = `
+    <div style="font-weight:700;color:#1c2430;margin-bottom:6px;font-size:13px">Assunto: ${escapeHtml(subj)}</div>
+    <div style="font-size:12px;color:#475569;margin-bottom:10px">Prezado(a) <strong>[Nome do Colaborador]</strong>,</div>
+    <div style="font-size:12px;color:#1c2430;margin-bottom:10px">Informamos que o módulo analítico <strong>${escapeHtml(rep)}</strong> foi consolidado e está atualizado na plataforma regional.</div>
+    ${msg ? `<div style="background:#f1f5f9;border-left:3px solid #c0191f;padding:8px 12px;font-size:11.5px;color:#334155;margin-bottom:12px;border-radius:0 3px 3px 0">${escapeHtml(msg).replace(/\n/g, '<br>')}</div>` : ''}
+    <div style="text-align:center;margin:12px 0">
+      <span style="background:#1b2430;color:#fff;padding:8px 18px;border-radius:3px;font-weight:700;font-size:11.5px;display:inline-block">${escapeHtml(label)} →</span>
+      <div style="font-size:10px;color:#94a3b8;margin-top:4px">Link de destino: <code>${escapeHtml(url)}</code></div>
+    </div>
+  `;
+}
+
+async function submitBroadcast() {
+  const relatorioSel = document.getElementById('bcReport');
+  const relatorio = relatorioSel ? relatorioSel.value.trim() : '';
+  const selectedOpt = relatorioSel ? relatorioSel.options[relatorioSel.selectedIndex] : null;
+  const relatorio_id = selectedOpt ? selectedOpt.dataset.id : '';
   const assunto = document.getElementById('bcSubject').value.trim();
   const mensagem = document.getElementById('bcMessage').value.trim();
+  const action_url = document.getElementById('bcActionUrl').value.trim();
+  const action_label = document.getElementById('bcActionLabel').value.trim();
+  const target_type = document.getElementById('bcTargetType')?.value || 'all';
 
   if (!relatorio || !assunto) {
-    showToast('Preencha o nome do relatório e o assunto.', 'error');
+    showToast('Preencha o relatório e o assunto do comunicado.', 'error');
     return;
+  }
+
+  let target_users = null;
+  let target_roles = null;
+  let target_areas = null;
+
+  if (target_type === 'users') {
+    const checked = Array.from(document.querySelectorAll('.chk-bc-user:checked')).map(c => c.value);
+    if (checked.length === 0) {
+      showToast('Selecione pelo menos um colaborador para o envio.', 'error');
+      return;
+    }
+    target_users = checked;
+  } else if (target_type === 'roles') {
+    const checked = Array.from(document.querySelectorAll('.chk-bc-role:checked')).map(c => c.value);
+    if (checked.length === 0) {
+      showToast('Selecione pelo menos um cargo para o envio.', 'error');
+      return;
+    }
+    target_roles = checked;
+  } else if (target_type === 'areas') {
+    const checked = Array.from(document.querySelectorAll('.chk-bc-area:checked')).map(c => c.value);
+    if (checked.length === 0) {
+      showToast('Selecione pelo menos um setor/área para o envio.', 'error');
+      return;
+    }
+    target_areas = checked;
   }
 
   const btn = document.getElementById('btnSendBroadcast');
   btn.disabled = true;
-  btn.textContent = 'Enviando…';
+  btn.textContent = 'Disparando E-mails…';
 
   try {
     const res = await fetch('/api/admin/broadcast', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ relatorio, assunto, mensagem })
+      body: JSON.stringify({
+        relatorio,
+        relatorio_id,
+        assunto,
+        mensagem,
+        target_type,
+        target_users,
+        target_roles,
+        target_areas,
+        action_url,
+        action_label
+      })
     });
 
     const data = await res.json();
     if (res.ok) {
-      showToast(`Comunicado formal transmitido com sucesso para ${data.sent} colaboradores aprovados.`, 'success');
+      showToast(`E-mails de atualização transmitidos com sucesso para ${data.sent} colaborador(es).`, 'success');
       document.getElementById('modalBroadcast').classList.remove('on');
     } else {
       showToast(data.error || 'Erro ao enviar comunicado.', 'error');
@@ -1382,9 +1697,15 @@ document.getElementById('btnSendBroadcast').addEventListener('click', async () =
     showToast('Erro de conexão ao disparar comunicado.', 'error');
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Enviar Comunicado';
+    btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Disparar E-mails`;
   }
-});
+}
+
+// Vincula botão antigo do topo se ainda existir por cache
+const _btnOpenBroadcastLegacy = document.getElementById('btnOpenBroadcast');
+if (_btnOpenBroadcastLegacy) {
+  _btnOpenBroadcastLegacy.addEventListener('click', () => openBroadcastModal());
+}
 
 function escapeHtml(str) {
   if (!str) return '';
@@ -1651,14 +1972,15 @@ async function changeModuleStatus(modId, newStatus) {
     });
     if (res.ok) {
       showToast(`Status do relatório alterado para "${newStatus}".`, 'success');
-      loadModules();
+      await loadModules();
+      loadUsers();
     } else {
       showToast('Erro ao atualizar status do módulo.', 'error');
-      loadModules();
+      await loadModules();
     }
   } catch (err) {
     showToast('Erro de conexão ao alterar status do módulo.', 'error');
-    loadModules();
+    await loadModules();
   }
 }
 
@@ -3681,6 +4003,17 @@ window.onTestUserSelectChange = onTestUserSelectChange;
 window.submitSendTestEmail = submitSendTestEmail;
 window.openSimulateInboundModal = openSimulateInboundModal;
 window.submitSimulateInbound = submitSimulateInbound;
+
+window.openBroadcastModal = openBroadcastModal;
+window.onBroadcastReportChange = onBroadcastReportChange;
+window.onBroadcastTargetTypeChange = onBroadcastTargetTypeChange;
+window.filterBroadcastUsersList = filterBroadcastUsersList;
+window.selectFilteredBroadcastUsers = selectFilteredBroadcastUsers;
+window.toggleAllBroadcastRoles = toggleAllBroadcastRoles;
+window.toggleAllBroadcastAreas = toggleAllBroadcastAreas;
+window.updateBroadcastPreview = updateBroadcastPreview;
+window.updateBroadcastTargetBadges = updateBroadcastTargetBadges;
+window.submitBroadcast = submitBroadcast;
 
 // ==========================================
 // 12. CALIBRAÇÃO DO CHATBOT RAG & FEW-SHOT

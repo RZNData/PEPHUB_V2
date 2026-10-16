@@ -54,6 +54,7 @@ python scripts/layout_checker_agent.py public/churn-bl-total/index.html
 | 20 | Botões Padrão Churn Safra: Ação principal (.primary) e Segmented Controls (.tabs com .on) | WARNING | -5 |
 | 21 | Alinhamento numérico à direita em todas as linhas e subtotais (.grp-total-row td com text-align: right) | WARNING | -5 |
 | 22 | Comparativos de pontos percentuais estritamente em minúsculo ('p.p.', nunca 'P.P.') | WARNING | -5 |
+| 23 | Identidade Visual Padronizada dos Modais: Cabeçalho com Gradiente Claro (#8a0f18 a #f9b233), subtítulo corporativo em <small>, botão fechar circular translúcido, e botões de rodapé (.btn-secondary e .btn-primary) sem classes conflitantes | ERROR | -10 |
 
 ## Escala de Graus
 

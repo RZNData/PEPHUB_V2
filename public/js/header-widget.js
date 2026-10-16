@@ -214,20 +214,23 @@
       z-index: 99999; align-items: center; justify-content: center;
       font-family: "Segoe UI", Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
     }
-    #pephubActiveUsersModal.on { display: flex; animation: ouFade .16s ease-out; }
     .ou-modal-box {
-      background: #ffffff; border-radius: 4px; width: 92%; max-width: 720px; max-height: 86vh;
+      background: #ffffff; border-radius: 6px; width: 95%; max-width: 920px; max-height: calc(100vh - 48px);
       display: flex; flex-direction: column; overflow: hidden;
-      box-shadow: 0 24px 50px rgba(0,0,0,.35); border: 1px solid #dfe3e8;
+      box-shadow: 0 24px 60px rgba(0,0,0,.35); border: 1px solid #dfe3e8;
     }
     .ou-modal-hd {
-      background: #1c2430; color: #fff; padding: 15px 20px;
-      display: flex; align-items: center; justify-content: space-between;
+      background: #1c2430; color: #fff; padding: 14px 22px;
+      display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
     }
     .ou-modal-hd h3 { margin: 0; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
     .ou-modal-hd small { display: block; font-size: 11px; font-weight: 500; color: #aab4c0; margin-top: 1px; }
-    .ou-modal-x { background: none; border: none; color: #aab4c0; font-size: 22px; cursor: pointer; line-height: 1; padding: 0 2px; }
-    .ou-modal-x:hover { color: #fff; }
+    .ou-modal-x {
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #fff;
+      font-size: 20px; font-weight: 700; cursor: pointer; line-height: 1; width: 32px; height: 32px;
+      border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; transition: all .15s;
+    }
+    .ou-modal-x:hover { background: rgba(255,255,255,0.3); transform: scale(1.08); }
     .ou-kpis { display: flex; gap: 10px; padding: 12px 20px; background: #fff; border-bottom: 1px solid #e6e9ed; flex-wrap: wrap; }
     .ou-kpi { flex: 1; min-width: 120px; border: 1px solid #e6e9ed; border-radius: 3px; padding: 8px 12px; background: #f7f8fa; }
     .ou-kpi b { display: block; font-size: 22px; line-height: 1.1; color: #1c2430; }
@@ -783,16 +786,16 @@
     }
     .ph-modal-dialog {
       background: #ffffff !important;
-      border-radius: 4px !important;
+      border-radius: 6px !important;
       width: 100% !important;
-      max-width: 580px !important;
-      max-height: 90vh !important;
+      max-width: 880px !important;
+      max-height: calc(100vh - 48px) !important;
       display: flex !important;
       flex-direction: column !important;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.3) !important;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.38) !important;
       overflow: hidden !important;
       border: 1px solid #dfe3e8 !important;
-      animation: phPop .15s ease-out !important;
+      animation: phPop .18s cubic-bezier(0.16, 1, 0.3, 1) !important;
       font-family: "Segoe UI", Roboto, Arial, sans-serif !important;
     }
     @keyframes phPop {
@@ -806,7 +809,7 @@
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
-      flex: none !important;
+      flex-shrink: 0 !important;
     }
     .ph-modal-header-text small {
       display: block !important;
@@ -822,23 +825,30 @@
       letter-spacing: -0.2px !important;
     }
     .ph-modal-close-btn {
-      background: none !important;
-      border: none !important;
+      width: 32px !important;
+      height: 32px !important;
+      border-radius: 50% !important;
+      background: rgba(255, 255, 255, 0.18) !important;
+      border: 1px solid rgba(255, 255, 255, 0.35) !important;
       color: #ffffff !important;
       font-size: 20px !important;
       cursor: pointer !important;
-      opacity: 0.85 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
       line-height: 1 !important;
-      padding: 0 4px !important;
-      transition: opacity .15s !important;
+      padding: 0 !important;
+      transition: all .15s ease !important;
     }
     .ph-modal-close-btn:hover {
-      opacity: 1 !important;
+      background: rgba(255, 255, 255, 0.32) !important;
+      transform: scale(1.05) !important;
     }
     .ph-modal-content {
-      padding: 20px 24px !important;
+      padding: 22px 26px !important;
       overflow-y: auto !important;
-      flex: 1 !important;
+      overscroll-behavior: contain !important;
+      flex: 1 1 auto !important;
       font-size: 12.5px !important;
       color: #1c2430 !important;
       box-sizing: border-box !important;
@@ -851,7 +861,7 @@
       align-items: center !important;
       justify-content: space-between !important;
       gap: 10px !important;
-      flex: none !important;
+      flex-shrink: 0 !important;
     }
     .ph-btn-primary {
       background: #8a0f18 !important;
@@ -1023,21 +1033,27 @@
     }
     .ph-checkbox-grid {
       display: grid !important;
-      grid-template-columns: 1fr 1fr !important;
-      gap: 6px 12px !important;
-      margin: 10px 0 10px 24px !important;
-      padding: 10px 14px !important;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
+      gap: 8px 14px !important;
+      margin: 12px 0 16px 0 !important;
+      padding: 14px 16px !important;
       background: #f8fafc !important;
       border: 1px solid #e2e8f0 !important;
-      border-radius: 4px !important;
+      border-radius: 6px !important;
     }
     .ph-check-label {
       display: flex !important;
       align-items: center !important;
-      gap: 7px !important;
+      gap: 8px !important;
       font-size: 12px !important;
       color: #334155 !important;
       cursor: pointer !important;
+      padding: 5px 8px !important;
+      border-radius: 4px !important;
+      transition: background .15s ease !important;
+    }
+    .ph-check-label:hover {
+      background: #edf2f7 !important;
     }
 
     /* Modal de Popup Corporativo de Maior Prioridade (1º Logon do Dia) */
@@ -1051,8 +1067,9 @@
       z-index: 100000;
       align-items: center;
       justify-content: center;
-      padding: 18px;
+      padding: 20px 16px;
       font-family: "Segoe UI", Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+      box-sizing: border-box;
     }
     .pephub-daily-priority-modal.show {
       display: flex;
@@ -1064,9 +1081,10 @@
       background: #ffffff;
       border-radius: 6px;
       width: 100%;
-      max-width: 540px;
+      max-width: 720px;
+      max-height: calc(100vh - 48px);
       overflow: hidden;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
       border: 1px solid #dfe3e8;
       display: flex;
       flex-direction: column;
@@ -1075,6 +1093,7 @@
     .dp-modal-accent {
       height: 4px;
       background: linear-gradient(90deg, #8a0f18 0%, #c0191f 26%, #e23a1e 50%, #f47a1f 74%, #f9b233 100%);
+      flex-shrink: 0;
     }
     .dp-modal-hd {
       background: #1c2430;
@@ -1084,6 +1103,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      flex-shrink: 0;
     }
     .dp-modal-hd-left {
       display: flex;
@@ -1117,21 +1137,34 @@
       color: #cbd5e1;
     }
     .dp-modal-close {
-      background: none;
-      border: none;
-      color: #94a3b8;
-      font-size: 22px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      font-size: 18px;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       line-height: 1;
-      padding: 0 4px;
-      transition: color .15s;
+      padding: 0;
+      transition: all .15s ease;
     }
-    .dp-modal-close:hover { color: #ffffff; }
+    .dp-modal-close:hover {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      transform: scale(1.05);
+    }
     .dp-modal-bd {
       padding: 22px 24px;
       display: flex;
       gap: 16px;
       background: #ffffff;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      flex: 1 1 auto;
     }
     .dp-modal-icon-wrap {
       width: 44px;

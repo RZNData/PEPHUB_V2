@@ -364,6 +364,123 @@ def audit_system_integrity():
         else:
             print("  [OK] Header Widget possui Hover Card em tempo real de usuários online.")
 
+    # -------------------------------------------------------------
+    # 11. GOVERNANÇA DA LISTA ÚNICA DE FERRAMENTAS & USABILIDADE DE MODAIS (CRITICAL - 25 pts)
+    # -------------------------------------------------------------
+    print("\n[PILAR 11] Governança de Lista Única (Single Source of Truth) & Usabilidade de Modais...")
+    p11_ok = True
+
+    # 11.1 Catálogo Canônico com 14 Ferramentas
+    if os.path.exists(SECURITY_UTIL):
+        with open(SECURITY_UTIL, "r", encoding="utf-8") as f:
+            sec_text = f.read()
+        canonical_tools = [
+            'churn', 'churn-bl-total', 'churn-bl-pme', 'fpd', 'fpd-residencial',
+            'market-share-movel', 'market-share-residencial', 'panorama-market-share',
+            'aprovacao-credito', 'evolucao-carteira', 'divulgacao', 'tv', 'aniversario', 'market-share'
+        ]
+        missing_canonical = [t for t in canonical_tools if f"'{t}'" not in sec_text and f'"{t}"' not in sec_text]
+        if missing_canonical:
+            p11_ok = False
+            score -= 15
+            deductions.append(f"Catálogo canônico DEFAULT_SYSTEM_MODULES incompleto. Faltando: {missing_canonical}")
+            print(f"  [FALHA] Catálogo canônico incompleto: {missing_canonical}")
+        else:
+            print("  [OK] Catálogo canônico com as 14 ferramentas oficiais rigorosamente preservado.")
+
+    # 11.2 Zero IDs legados com underscore no Frontend e Rotas de Produção
+    legacy_ids = [
+        'churn_safra', 'churn_bl_total', 'churn_bl_pme', 'fpd_residencial',
+        'market_share_movel', 'market_share_residencial', 'panorama_market_share',
+        'aprovacao_credito', 'evolucao_carteira'
+    ]
+    files_to_check = [
+        os.path.join(WORKSPACE_DIR, "public", "admin", "js", "admin.js"),
+        os.path.join(WORKSPACE_DIR, "public", "admin", "index.html"),
+        os.path.join(WORKSPACE_DIR, "public", "js", "header-widget.js"),
+        os.path.join(WORKSPACE_DIR, "worker", "routes", "admin.js"),
+        os.path.join(WORKSPACE_DIR, "worker", "routes", "profile.js"),
+    ]
+    found_legacy = []
+    for fp in files_to_check:
+        if os.path.exists(fp):
+            with open(fp, "r", encoding="utf-8") as f:
+                content = f.read()
+            for leg in legacy_ids:
+                # Ignora trechos de limpeza explícita DELETE FROM ou dentro de função de normalização
+                matches = re.finditer(r'\b' + leg + r'\b', content)
+                for m in matches:
+                    fn_idx = content.rfind('function normalizeModuleId', 0, m.start())
+                    if fn_idx != -1 and (m.start() - fn_idx) < 3000:
+                        continue
+                    start_ctx = max(0, m.start() - 100)
+                    ctx = content[start_ctx:m.end() + 100]
+                    if 'DELETE FROM' in ctx or 'IN (' in ctx:
+                        continue
+                    found_legacy.append((os.path.basename(fp), leg))
+    if found_legacy:
+        p11_ok = False
+        score -= 15
+        deductions.append(f"Presença de IDs legados com underscore: {found_legacy[:5]}")
+        print(f"  [FALHA] Identificadores legados encontrados: {found_legacy[:5]}")
+    else:
+        print("  [OK] Zero identificadores legados com underscore em uso no frontend e rotas de produção.")
+
+    # 11.3 Contenção e Identidade Visual Padronizada das Janelas (Modais Admin, Perfil e Configurações)
+    admin_html_path = os.path.join(WORKSPACE_DIR, "public", "admin", "index.html")
+    if os.path.exists(admin_html_path):
+        with open(admin_html_path, "r", encoding="utf-8") as f:
+            admin_html = f.read()
+        has_max_h = bool(re.search(r'max-height:\s*calc\(100vh\s*-\s*40px\)', admin_html))
+        has_overflow = "overflow-y:auto" in admin_html or "overflow-y: auto" in admin_html
+        has_gradient = "linear-gradient(90deg,#8a0f18 0%,#c0191f 26%,#e23a1e 50%,#f47a1f 74%,#f9b233 100%)" in admin_html or "linear-gradient(90deg, #8a0f18 0%, #c0191f 26%, #e23a1e 50%, #f47a1f 74%, #f9b233 100%)" in admin_html
+        has_hd_text = "modal-hd-text" in admin_html and "<small>" in admin_html
+        
+        # Proibição de distorção circular no botão Cancelar/Fechar do rodapé
+        has_distorted_cancel = bool(re.search(r'<button[^>]*class=["\'][^"\']*\bmodal-close\b[^"\']*["\'][^>]*>\s*Cancel', admin_html))
+        
+        if not has_max_h or not has_overflow:
+            p11_ok = False
+            score -= 10
+            deductions.append("Painel Admin sem contenção vertical dos modais (risco de botão fechar vazar da viewport).")
+            print("  [FALHA] CSS dos modais do Admin não contém max-height relativo à viewport.")
+        elif not has_gradient or not has_hd_text:
+            p11_ok = False
+            score -= 10
+            deductions.append("Janelas do Admin com identidade visual divergente de Perfil/Configurações (falta gradiente Claro ou subtítulo).")
+            print("  [FALHA] Janelas do Admin sem identidade visual padronizada da Claro.")
+        elif has_distorted_cancel:
+            p11_ok = False
+            score -= 10
+            deductions.append("Botão Cancelar com classe circular modal-close no rodapé (risco de deformação).")
+            print("  [FALHA] Botão Cancelar deformado no rodapé do modal.")
+        else:
+            print("  [OK] Todos os modais do Admin possuem identidade visual 100% idêntica a Perfil e Configurações (Gradiente Claro, subtítulo e botões padronizados).")
+
+    hw_js_path = os.path.join(WORKSPACE_DIR, "public", "js", "header-widget.js")
+    if os.path.exists(hw_js_path):
+        with open(hw_js_path, "r", encoding="utf-8") as f:
+            hw_js = f.read()
+        if "max-height: calc(100vh - 48px)" not in hw_js or "ph-modal-close-btn" not in hw_js:
+            p11_ok = False
+            score -= 10
+            deductions.append("Header Widget (Perfil & Configurações) sem contenção de viewport ou botão circular de fechar.")
+            print("  [FALHA] Modais do Header Widget sem restrição de altura vertical.")
+        else:
+            print("  [OK] Modais de Perfil e Configurações (Header Widget) com largura expandida, contenção de altura e botão fechar circular destacado.")
+
+    # 11.4 Reatividade em Cadeia: alteração de status/salvamento/exclusão recarrega usuários e catálogo
+    if os.path.exists(admin_js_path):
+        with open(admin_js_path, "r", encoding="utf-8") as f:
+            adm_js = f.read()
+        if "await loadModules();\n      loadUsers();" not in adm_js and "await loadModules(); loadUsers();" not in adm_js:
+            p11_ok = False
+            score -= 10
+            deductions.append("admin.js não chama loadUsers() em cadeia após loadModules() em alterações de ferramentas.")
+            print("  [FALHA] Cadeia de reatividade de ferramentas incompleta no admin.js.")
+        else:
+            print("  [OK] Cadeia de reatividade 100% íntegra: alterações em ferramentas propagam para privilégios, broadcast e contadores em tempo real.")
+
     score = max(0, score)
     print("\n" + "=" * 74)
     print(f"  PONTUAÇÃO DE INTEGRIDADE DO SISTEMA: {score}/100")

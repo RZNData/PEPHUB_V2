@@ -380,38 +380,43 @@ export async function logAccess(env, request, user, recurso) {
 
 // Módulos oficiais ativos da plataforma Pephub (Regional Norte)
 export const ALL_SYSTEM_MODULES = [
-  'churn_bl_pme',
-  'churn_bl_total',
-  'churn_safra',
-  'aprovacao_credito',
+  'churn',
+  'churn-bl-total',
+  'churn-bl-pme',
   'fpd',
-  'fpd_residencial',
-  'market_share_movel',
-  'market_share_residencial',
-  'panorama_market_share',
-  'evolucao_carteira',
+  'fpd-residencial',
+  'market-share-movel',
+  'market-share-residencial',
+  'panorama-market-share',
+  'aprovacao-credito',
+  'evolucao-carteira',
   'divulgacao',
-  'tv'
+  'tv',
+  'aniversario',
+  'market-share'
 ];
 export const ALL_DEFAULT_MODULES_STR = ALL_SYSTEM_MODULES.join(',');
 
 export const DEFAULT_SYSTEM_MODULES = [
-  ['churn_bl_pme', 'Painel de Churn Banda Larga PME', 'Painel de Churn', 'Churn', 'Acompanhamento de Churn Horizontal BL PME', '/churn-bl-pme/', 'ativo', 2],
-  ['churn_bl_total', 'Painel de Churn Banda Larga Total', 'Painel de Churn', 'Churn', 'Acompanhamento de Churn Horizontal BL Total (Residencial + PME)', '/churn-bl-total/', 'ativo', 3],
-  ['churn_safra', 'Painel de Churn Safra', 'Painel de Churn', 'Churn', 'Acompanhamento de Churn Safra da Regional Norte', '/churn/', 'ativo', 4],
-  ['aprovacao_credito', 'Painel de Taxa de Aprovação de Crédito', 'Painel de Taxa d', 'Crédito', 'Taxa de aprovação por canal, parceiro e cidade', '/aprovacao-credito/', 'ativo', 1],
-  ['fpd', 'Panorama FPD', 'Panorama FPD', 'Inadimplência', 'Painel Analítico de FPD (Mapas Geoespaciais, Matriz de Safras, Esteira e Dimensões)', '/fpd/', 'ativo', 6],
-  ['fpd_residencial', 'FPD Executivo', 'FPD Executivo', 'Inadimplência', 'Relatório Executivo Oficial de FPD 60 da Fixa por Canal, Cidade e Parceiro', '/fpd-residencial/', 'ativo', 7],
-  ['market_share_movel', 'Market Share Móvel', 'Market Share Móv', 'Market Share', 'Relatório Executivo Oficial de Market Share Móvel (Anatel · Telefonia Móvel & 5G)', '/market-share-movel/', 'ativo', 8],
-  ['market_share_residencial', 'Market Share Residencial', 'Market Share Res', 'Market Share', 'Relatório Executivo Oficial de Market Share Residencial (Anatel · Banda Larga)', '/market-share-residencial/', 'ativo', 9],
-  ['panorama_market_share', 'Panorama & Market Share', 'Panorama & Marke', 'Market Share', 'Market share móvel e residencial Anatel e dinâmica concorrencial', '/panorama-market-share/', 'ativo', 10],
-  ['evolucao_carteira', 'Evolução de Carteira Móvel & B2B', 'Evolução Carteira', 'Painéis & Relatórios Oficiais', 'Evolução temporal, net adds, desdobramento por segmento e migrações da Regional Norte', '/evolucao-carteira/', 'ativo', 10],
-  ['divulgacao', 'Divulgação Corporativa (TVs)', 'TV Divulgação', 'PeP Tools & Operações', 'Propostas de mídia, curadoria e exibição nas TVs da Regional', '/pep-tools/divulgacao/', 'ativo', 7],
-  ['tv', 'Player TV (16:9 Fullscreen)', 'Player TV', 'PeP Tools & Operações', 'Acesso direto ao reprodutor widescreen para recepções e salas', '/pep-tools/divulgacao/tv.html', 'ativo', 8]
+  ['churn', 'Painel de Churn Safra', 'Safra', 'Painéis & Relatórios Oficiais', 'Acompanhamento de Churn Safra da Regional Norte', '/churn/', 'ativo', 1],
+  ['churn-bl-total', 'Painel de Churn Banda Larga Total', 'BL Total', 'Painéis & Relatórios Oficiais', 'Acompanhamento de Churn Horizontal BL Total (Residencial + PME)', '/churn-bl-total/', 'ativo', 2],
+  ['churn-bl-pme', 'Painel de Churn Banda Larga PME', 'BL PME', 'Painéis & Relatórios Oficiais', 'Acompanhamento de Churn Horizontal BL PME', '/churn-bl-pme/', 'ativo', 3],
+  ['fpd', 'Painel de FPD 60/30 (First Payment Default)', 'FPD Regional', 'Painéis & Relatórios Oficiais', 'Inadimplência de primeira fatura (FPD 30 e FPD 60)', '/fpd/', 'ativo', 4],
+  ['fpd-residencial', 'FPD Residencial (Executivo Fixa)', 'FPD Residencial', 'Painéis & Relatórios Oficiais', 'Relatório Executivo Oficial de FPD 60 da Fixa por Canal, Cidade e Parceiro', '/fpd-residencial/', 'ativo', 5],
+  ['market-share-movel', 'Market Share Móvel', 'MS Móvel', 'Painéis & Relatórios Oficiais', 'Relatório Executivo Oficial de Market Share Móvel (Anatel · Telefonia Móvel & 5G)', '/market-share-movel/', 'ativo', 6],
+  ['market-share-residencial', 'Market Share Residencial', 'MS Residencial', 'Painéis & Relatórios Oficiais', 'Relatório Executivo Oficial de Market Share Residencial (Anatel · Banda Larga)', '/market-share-residencial/', 'ativo', 7],
+  ['panorama-market-share', 'Panorama & Market Share', 'Panorama', 'Painéis & Relatórios Oficiais', 'Market share móvel e residencial Anatel e dinâmica concorrencial', '/panorama-market-share/', 'ativo', 8],
+  ['aprovacao-credito', 'Painel de Taxa de Aprovação de Crédito', 'Taxa Crédito', 'Painéis & Relatórios Oficiais', 'Taxa de aprovação por canal, parceiro e cidade', '/aprovacao-credito/', 'ativo', 9],
+  ['evolucao-carteira', 'Evolução de Carteira Móvel & B2B', 'Evolução Carteira', 'Painéis & Relatórios Oficiais', 'Evolução temporal, net adds, desdobramento por segmento e migrações da Regional Norte', '/evolucao-carteira/', 'ativo', 10],
+  ['divulgacao', 'Divulgação Corporativa (TVs)', 'TV Divulgação', 'PeP Tools & Operações', 'Propostas de mídia, curadoria e exibição nas TVs da Regional', '/pep-tools/divulgacao/', 'ativo', 11],
+  ['tv', 'Player TV (16:9 Fullscreen)', 'Player TV', 'PeP Tools & Operações', 'Acesso direto ao reprodutor widescreen para recepções e salas', '/pep-tools/divulgacao/tv.html', 'ativo', 12],
+  ['aniversario', 'Gerador de Card de Aniversário (TV 16:9)', 'Cards Aniversário', 'PeP Tools & Operações', 'Criação de homenagens e cards em resolução Full HD (1920x1080p 16:9) para transmissão nas TVs', '/pep-tools/aniversario/', 'ativo', 13],
+  ['market-share', 'Auxiliar de PPT (Estúdio de Apresentações)', 'Auxiliar PPT', 'PeP Tools & Operações', 'Assistente para criação de gráficos, infográficos, matrizes comparativas e exportação SVG/PNG para PowerPoint', '/pep-tools/market-share/', 'ativo', 14]
 ];
 
 export async function ensureSystemModulesSeeded(env) {
   if (!env || !env.DB) return;
+  await env.DB.prepare("DELETE FROM system_modules WHERE id IN ('churn_safra', 'churn_bl_total', 'churn_bl_pme', 'aprovacao_credito', 'fpd_residencial', 'market_share_movel', 'market_share_residencial', 'panorama_market_share', 'evolucao_carteira')").run().catch(() => {});
   for (const [mid, mname, mshort, msec, mdesc, mroute, mstat, mord] of DEFAULT_SYSTEM_MODULES) {
     await env.DB.prepare(`
       INSERT OR REPLACE INTO system_modules (id, name, short_name, section, description, route, status, sort_order)
@@ -430,6 +435,8 @@ export function normalizeModuleId(id) {
   if (clean === 'fpd-residencial' || clean === 'fpd_residencial' || clean === 'fpd-executivo') return 'fpd-residencial';
   if (clean === 'divulgacao' || clean === 'pep_tools_divulgacao' || clean === 'peptools_divulgacao') return 'divulgacao';
   if (clean === 'tv' || clean === 'player_tv' || clean === 'tv_player') return 'tv';
+  if (clean === 'aniversario' || clean === 'card_aniversario' || clean === 'cards-aniversario' || clean === 'pep_tools_aniversario') return 'aniversario';
+  if (clean === 'market-share' || clean === 'market_share_studio' || clean === 'pep-tools-market-share' || clean === 'ppt-studio' || clean === 'market-share-studio') return 'market-share';
   if (clean === 'panorama-market-share' || clean === 'panorama_market_share' || clean === 'market-share-panorama') return 'panorama-market-share';
   if (clean === 'market-share-residencial' || clean === 'market_share_residencial' || clean === 'mkt-share-residencial') return 'market-share-residencial';
   if (clean === 'market-share-movel' || clean === 'market_share_movel' || clean === 'mkt-share-movel') return 'market-share-movel';
@@ -1132,6 +1139,9 @@ export function checkReportAccess(user, moduleKey) {
   const mods = raw.split(',').map(m => normalizeModuleId(m.trim())).filter(Boolean);
   if (mods.includes('all')) return true;
   if (mods.includes(target)) return true;
+  if ((mods.includes('pep-tools') || mods.includes('peptools')) && ['divulgacao', 'tv', 'aniversario', 'market-share'].includes(target)) {
+    return true;
+  }
 
   // Permissão estrita e granular: concede apenas módulos explicitamente selecionados
   return false;

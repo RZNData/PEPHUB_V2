@@ -323,9 +323,18 @@ export default {
       if (!user || user.status !== 'aprovado') {
         return await enforceAuthRedirect(request, env, url, pathname + url.search);
       }
-      const isDivulgacao = pathname.startsWith('/pep-tools/divulgacao');
-      const moduleKey = isDivulgacao ? 'divulgacao' : 'pep-tools';
-      const moduleName = isDivulgacao ? 'Divulgação Corporativa' : 'PeP Tools';
+      let moduleKey = 'pep-tools';
+      let moduleName = 'PeP Tools';
+      if (pathname.startsWith('/pep-tools/divulgacao')) {
+        moduleKey = 'divulgacao';
+        moduleName = 'Divulgação Corporativa';
+      } else if (pathname.startsWith('/pep-tools/aniversario')) {
+        moduleKey = 'aniversario';
+        moduleName = 'Gerador de Card de Aniversário';
+      } else if (pathname.startsWith('/pep-tools/market-share')) {
+        moduleKey = 'market-share';
+        moduleName = 'Auxiliar de PPT';
+      }
 
       if (!user.is_admin && (await getSystemControl(env, 'suspend_portal_access') || await isModuleSuspended(env, moduleKey))) {
         return renderMaintenanceResponse(moduleName);

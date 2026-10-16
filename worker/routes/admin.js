@@ -11,6 +11,7 @@ import {
   hashPassword,
   sendEmail,
   ALL_SYSTEM_MODULES,
+  DEFAULT_SYSTEM_MODULES,
   ALL_DEFAULT_MODULES_STR,
   normalizeModuleId,
   invalidateSystemControlsCache,
@@ -21,6 +22,7 @@ import {
   ensureSessionPresenceColumns,
   ONLINE_WINDOW_SECONDS,
 } from '../utils/security.js';
+import { isNotificationEligible } from './notifications.js';
 
 export async function handleAdminRoutes(request, env, url, pathname) {
   // GET /api/portal/modules (Lista de módulos e status para o portal público/autenticado)
@@ -536,47 +538,84 @@ export async function handleAdminRoutes(request, env, url, pathname) {
         return json(logs.results || []);
       }
 
-      // POST /api/admin/broadcast (Notificação de Atualização de Relatório)
+      // POST /api/admin/broadcast (Disparo de E-mail de Atualização com Segmentação Personalizada)
       if (pathname === '/api/admin/broadcast' && request.method === 'POST') {
-        const { relatorio, assunto, mensagem } = await request.json();
+        const body = await request.json().catch(() => ({}));
+        const {
+          relatorio,
+          relatorio_id,
+          assunto,
+          mensagem,
+          target_type = 'all',
+          target_users = null,
+          target_roles = null,
+          target_areas = null,
+          action_url = '',
+          action_label = 'Abrir Relatório Atualizado',
+          respect_opt_in = false
+        } = body;
+
         if (!relatorio || !assunto) {
           return json({ error: 'Relatório e Assunto são obrigatórios.' }, 400);
         }
 
+        // Determina a URL oficial de destino
+        let targetRoute = action_url ? action_url.trim() : '';
+        if (!targetRoute) {
+          const cleanId = normalizeModuleId(relatorio_id || relatorio);
+          const found = DEFAULT_SYSTEM_MODULES.find(m => m[0] === cleanId || normalizeModuleId(m[0]) === cleanId || m[1].toLowerCase() === String(relatorio).toLowerCase());
+          targetRoute = found ? found[5] : '/';
+        }
+        const fullActionUrl = targetRoute.startsWith('http') ? targetRoute : `${baseUrl}${targetRoute.startsWith('/') ? '' : '/'}${targetRoute}`;
+
         const approvedUsers = await env.DB.prepare(`
-          SELECT email_claro, nome_completo FROM users
-          WHERE status = 'aprovado' AND notify_updates = 1
+          SELECT id, email_claro, nome_completo, login_claro, area, funcao, is_admin, notify_updates, modules_allowed
+          FROM users
+          WHERE status = 'aprovado'
         `).all();
 
-        const recipients = approvedUsers.results || [];
-        let sentCount = 0;
+        const allApproved = approvedUsers.results || [];
+        const mockNotifItem = {
+          target_type,
+          target_users,
+          target_roles,
+          target_areas
+        };
 
+        const recipients = allApproved.filter(u => {
+          if (!u.email_claro) return false;
+          if (respect_opt_in && u.notify_updates === 0) return false;
+          return isNotificationEligible(mockNotifItem, u);
+        });
+
+        let sentCount = 0;
         for (const u of recipients) {
           const updateHtml = `
-            <div style="font-family:'Segoe UI',Roboto,Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;border:1px solid #dfe3e8;border-radius:3px;overflow:hidden">
-              <div style="background:linear-gradient(90deg,#8a0f18 0%,#c0191f 26%,#e23a1e 50%,#f47a1f 74%,#f9b233 100%);padding:16px 22px;color:#fff">
-                <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:600;opacity:.9">Regional Norte</div>
-                <h2 style="margin:4px 0 0;font-size:18px;font-weight:700">Atualização de Base e Indicadores</h2>
+            <div style="font-family:'Segoe UI',Roboto,Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;border:1px solid #dfe3e8;border-radius:4px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.06)">
+              <div style="background:linear-gradient(90deg,#8a0f18 0%,#c0191f 26%,#e23a1e 50%,#f47a1f 74%,#f9b233 100%);padding:18px 24px;color:#fff">
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;opacity:.9">Regional Norte · Comunicação Oficial</div>
+                <h2 style="margin:4px 0 0;font-size:18px;font-weight:700">Atualização de Base & Indicadores</h2>
               </div>
-              <div style="padding:22px;color:#1c2430;font-size:13px;line-height:1.6">
+              <div style="padding:24px;color:#1c2430;font-size:13px;line-height:1.6">
                 <p style="margin-top:0">Prezado(a) <strong>${u.nome_completo}</strong>,</p>
-                <p>Informamos que o módulo analítico <strong>${relatorio}</strong> foi consolidado e atualizado na plataforma regional.</p>
+                <p>Informamos que o módulo analítico <strong>${relatorio}</strong> foi consolidado e está atualizado na plataforma regional.</p>
                 
                 ${mensagem ? `
-                  <div style="background:#f7f8fa;border-left:3px solid #c0191f;padding:12px 14px;margin:16px 0;font-size:12.5px;color:#27323f">
+                  <div style="background:#f7f8fa;border-left:3px solid #c0191f;padding:12px 16px;margin:18px 0;font-size:12.5px;color:#27323f;border-radius:0 3px 3px 0">
                     ${mensagem.replace(/\n/g, '<br>')}
                   </div>
                 ` : ''}
 
-                <div style="margin:24px 0;text-align:center">
-                  <a href="${baseUrl}/churn/" style="background:#1b2430;color:#ffffff;padding:11px 24px;text-decoration:none;font-weight:600;font-size:12.5px;border-radius:3px;display:inline-block">
-                    Abrir Painel Atualizado
+                <div style="margin:26px 0;text-align:center">
+                  <a href="${fullActionUrl}" style="background:#1b2430;color:#ffffff;padding:12px 26px;text-decoration:none;font-weight:700;font-size:12.5px;border-radius:3px;display:inline-block;letter-spacing:.2px">
+                    ${action_label || 'Abrir Relatório Atualizado'} →
                   </a>
                 </div>
 
-                <p style="font-size:11.5px;color:#8b95a3;border-top:1px solid #eceef1;padding-top:12px">
-                  Central de Inteligência Operacional Comercial — Regional Norte.
-                </p>
+                <div style="font-size:11.5px;color:#8b95a3;border-top:1px solid #eceef1;padding-top:14px;margin-top:20px">
+                  <p style="margin:0">Central de Inteligência Operacional & Governança — Regional Norte.</p>
+                  <p style="margin:4px 0 0;font-size:10.5px">Você recebeu este e-mail por ser um colaborador cadastrado na plataforma Pephub.</p>
+                </div>
               </div>
             </div>
           `;
@@ -585,13 +624,15 @@ export async function handleAdminRoutes(request, env, url, pathname) {
             to: u.email_claro,
             subject: `[Pephub Regional] ${assunto}`,
             html: updateHtml,
-            text: `O relatório ${relatorio} foi atualizado. Acesse: ${baseUrl}/churn/`,
+            text: `O módulo ${relatorio} foi atualizado. Acesse: ${fullActionUrl}`,
+            userId: u.id,
+            userName: u.nome_completo
           });
           sentCount++;
         }
 
-        await logAccess(env, request, currentUser, `ADMIN_BROADCAST:${relatorio}`);
-        return json({ success: true, sent: sentCount });
+        await logAccess(env, request, currentUser, `ADMIN_BROADCAST:${relatorio}:SENT_${sentCount}`);
+        return json({ success: true, sent: sentCount, total_recipients: recipients.length });
       }
 
       // GET /api/admin/system-controls (Listagem de travas e controles do sistema)
