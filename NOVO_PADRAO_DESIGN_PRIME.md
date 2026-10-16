@@ -1,4 +1,4 @@
-# PEP HUB NEXUS / PRIME — Padrão Corporativo Disruptivo & Executivo (v4.0)
+# PEP HUB NEO-EXECUTIVE — Padrão Corporativo Moderno & Luminoso (v4.5)
 
 > **Documento de Especificação Técnica e Identidade Visual para a Regional Norte**  
 > *Versão de Homologação em Branch de Teste (`test/nova-identidade-visual`)*  
@@ -8,125 +8,85 @@
 
 ---
 
-## 1. Visão Geral & Filosofia de Design Disruptivo
+## 1. Visão Geral & Filosofia de Design Neo-Executivo
 
-O **PEP HUB NEXUS (PRIME v4.0)** representa uma recriação profunda na arquitetura de UI/UX de todo o ecossistema analítico da Regional Norte. Inspirado nas plataformas mais inovadoras do mundo tech e financeiro de alta densidade (Linear App, Raycast, Vercel Dashboard, Apple macOS Pro e Bloomberg Next-Gen), o modelo une uma **estética futurista de comando escuro (Dark Executive Canvas)** à solidez e autoridade corporativa da Claro.
+O **PEP HUB NEO-EXECUTIVE (v4.5)** resolve com precisão matemática os problemas de fadiga visual e contraste, unindo a autoridade institucional da Claro a um design contemporâneo, limpo, arejado e de altíssima legibilidade (estilo Stripe Dashboard, Apple Pro Services, Linear Light e GitHub Enterprise):
 
-### Pilares da Recriação:
-1. **Dark Executive Canvas & Atmosfera Imersiva**:
-   - Superfície principal em **Obsidian & Carbon** (`#06080e`), enriquecida com iluminação volumétrica ambiente por malhas radiais sutis (`radial-gradient` Ruby `#e11d4812` e Blue Sky `#38bdf806`).
-   - Elimina o cansaço visual de fundos brancos/cinzas estáticos em telas operacionais usadas durante longas jornadas.
-2. **Telemetria Cockpit HUD em Tempo Real**:
-   - O sub-header tradicional foi recriado como uma esteira de telemetria de voo:
-     - `● D1 CORE ONLINE`: Status do banco de dados na borda da Cloudflare com beacon pulsante neon.
-     - `EDGE LATENCY: 14ms`: Métricas de performance imediata.
-     - `ZERO-TRUST ENFORCED`: Confirmação do Server-Side Gate e integridade de sessão.
-     - `REGIONAL NORTE [AM·PA·MA·AP·RR]`: Escopo geográfico explícito.
-3. **Bento Grid Modular (Cockpit Executivo)**:
-   - Introdução do padrão **Bento Grid** no topo da Central Administrativa e dos Relatórios, trazendo cartões modulares com elevações translúcidas (`backdrop-filter: blur(20px)`), ícones temáticos luminosos, bordas com iluminação ao passar o mouse e valores métricos destacados em fonte monoespaçada.
-4. **Segmented Control Island (Navegação em Pilares)**:
-   - Os pilares de governança foram transformados em um dock flutuante de vidro escuro, com pílulas segmentadas, ícones iluminados e feedback tátil/visual imediato sem recarregamento da página.
-5. **Tipografia Executiva de Três Camadas**:
-   - **Outfit**: Headings, títulos de módulos e identidades de marca com peso expressivo e kerning refinado.
-   - **Plus Jakarta Sans**: Corpo de texto, formulários e rótulos com altíssima legibilidade.
-   - **JetBrains Mono**: Números tabulares (`tabular-nums`), deltas analíticos (`p.p.`), timestamps e telemetria.
-6. **Autenticação Split-Screen com Efeito Aurora**:
-   - Telas de acesso (`/login/`, `/register/`, etc.) integradas ao Dark Canvas, combinando canvas animado com formulário em vidro jateado e foco luminoso.
+### Diretrizes Centrais:
+1. **Canvas Luminoso e Arejado (`#f8fafc`)**:
+   - Fundo principal em **Slate 50** com gradiente sutil quase imperceptível. Elimina a opressão de telas escuras em ambientes de escritório corporativo e proporciona uma experiência repousante durante jornadas de trabalho prolongadas.
+2. **Contraste Absoluto (Padrão WCAG AAA)**:
+   - Todo texto sobre superfícies e cartões utiliza **Obsidian Ink** de altíssima densidade:
+     - Títulos e Números: `#0f172a` (Slate 900)
+     - Texto Corrente e Descrições: `#334155` (Slate 700)
+     - Rótulos e Metadados: `#64748b` (Slate 500)
+   - Elimina 100% de qualquer colisão de texto claro sobre fundo claro em caixas de metadados (`.card-meta`), tabelas e formulários.
+3. **Moldura Executiva Superior Obsidian & Ruby**:
+   - Header superior em **Obsidian Navy escuro (`#0b1120`)**, emoldurando o topo da aplicação com peso executivo e sofisticação, acompanhado da sub-barra de telemetria operacional com beacons pulsantes neon.
+4. **Superfícies em Branco Puro com Sombras Suaves em Camadas**:
+   - Cartões de relatórios, Bento Grid e painéis de dados construídos em `#ffffff` puro, com bordas finas `#e2e8f0` e elevação suave em hover (`translateY(-3px)` e sombra expandida).
+5. **Tipografia Executiva Tripla**:
+   - **Outfit**: Display, títulos de relatórios e identidade da marca.
+   - **Plus Jakarta Sans**: Textos de interface, formulários e navegação.
+   - **JetBrains Mono**: Números tabulares (`tabular-nums`), deltas (`p.p.`) e telemetria.
 
 ---
 
 ## 2. Tokens de Design (CSS Custom Properties)
 
-A folha de estilos unificada fica localizada em [public/css/pephub-prime.css](file:///c:/Users/F138138/DEV/Churn_Safra/public/css/pephub-prime.css) e padroniza as seguintes variáveis globais:
+A folha de estilos unificada fica localizada em [public/css/pephub-prime.css](file:///c:/Users/F138138/DEV/Churn_Safra/public/css/pephub-prime.css):
 
-### 2.1 Superfícies & Cores Neutras (Dark Canvas)
+### 2.1 Superfícies & Cores Neutras (Luminous Light Canvas)
 | Token | Valor Hex/RGBA | Finalidade |
 | :--- | :--- | :--- |
-| `--prime-bg` | `#06080e` | Fundo geral imersivo (Obsidian Dark) |
-| `--prime-bg-elevated` | `#0a0e18` | Fundo de sub-barras e cabeçalhos |
-| `--prime-surface` | `#0d121f` | Superfície primária de painéis, tabelas e cartões |
-| `--prime-surface-glass` | `rgba(13, 18, 31, 0.78)` | Superfície em vidro jateado translúcido com blur de 20px |
-| `--prime-surface-hover` | `#151d30` | Hover suave em linhas e cartões |
-| `--prime-border` | `rgba(255, 255, 255, 0.08)` | Bordas sutis estruturais estilo lâmina |
-| `--prime-border-hover` | `rgba(225, 29, 72, 0.4)` | Destaque de borda em hover com glow Ruby |
-| `--prime-border-active` | `#e11d48` | Borda de foco e estado selecionado |
+| `--prime-bg` | `#f8fafc` | Fundo principal da página (Slate 50) |
+| `--prime-surface` | `#ffffff` | Superfície primária de cartões, painéis e tabelas |
+| `--prime-surface-subtle` | `#f1f5f9` | Cabeçalhos de tabelas, drawers e caixas auxiliares |
+| `--prime-surface-card-meta` | `#f8fafc` | Caixa interna de metadados dos relatórios |
+| `--prime-border` | `#e2e8f0` | Bordas estruturais de contorno nítidas |
+| `--prime-border-hover` | `#cbd5e1` | Destaque de borda em hover |
 
-### 2.2 Tipografia & Tinta
+### 2.2 Tipografia & Tinta (Contraste Máximo)
 | Token | Valor Hex | Finalidade |
 | :--- | :--- | :--- |
-| `--prime-ink-primary` | `#f8fafc` | Texto principal, títulos e valores de destaque (Slate 50) |
-| `--prime-ink-secondary` | `#94a3b8` | Rótulos de KPI, subtítulos e dados auxiliares (Slate 400) |
-| `--prime-ink-muted` | `#64748b` | Placeholders, notas técnicas e legendas (Slate 500) |
-| `--prime-ink-inverse` | `#06080e` | Texto escuro sobre botões e badges claros |
+| `--prime-ink-primary` | `#0f172a` | Títulos e valores numéricos em destaque (Slate 900) |
+| `--prime-ink-body` | `#334155` | Descrições e parágrafos de texto (Slate 700) |
+| `--prime-ink-secondary` | `#475569` | Subtítulos e metadados contextuais (Slate 600) |
+| `--prime-ink-muted` | `#64748b` | Kickers, tags e notas técnicas (Slate 500) |
 
-### 2.3 Identidade Claro Ruby & Semântica Analítica Neon
+### 2.3 Identidade Claro Ruby & Semântica Analítica
 | Token | Valor Hex/RGBA | Finalidade |
 | :--- | :--- | :--- |
-| `--prime-brand` | `#e11d48` | Claro Ruby / Rose 600 corporativo |
-| `--prime-brand-glow` | `rgba(225, 29, 72, 0.3)` | Halo luminoso em botões e elementos ativos |
-| `--prime-green` | `#10b981` | Sucesso, Retenção, Meta Atingida, Beacon Online |
-| `--prime-red` | `#f43f5e` | Churn, Bloqueios Críticos, Cancelamento |
-| `--prime-amber` | `#f59e0b` | Atenção, Parcial, Safra em Foco |
-| `--prime-blue` | `#38bdf8` | Links, Seleções, Contratos Ativos, Latência |
-| `--prime-purple` | `#a855f7` | Inteligência Artificial, RAG, Few-Shot Gabaritos |
+| `--prime-brand` | `#e11d48` | Claro Ruby corporativo para CTAs e destaques |
+| `--prime-brand-hover` | `#be123c` | Hover em botões primários |
+| `--prime-green` | `#059669` | Sucesso, Retenção, Meta Atingida (`#ecfdf5` bg) |
+| `--prime-red` | `#e11d48` | Churn e Alertas Críticos (`#fff1f2` bg) |
+| `--prime-amber` | `#d97706` | Atenção e Safra em Foco (`#fffbeb` bg) |
+| `--prime-blue` | `#2563eb` | Contratos Ativos e Seleções (`#eff6ff` bg) |
 
 ---
 
-## 3. Guia de Componentes Chave
+## 3. Resolução Específica dos Problemas de Contraste
 
-### 3.1 Cockpit Bento Grid
-```html
-<div class="bento-grid">
-  <div class="bento-card">
-    <div class="bento-header">
-      <span class="bento-label">Colaboradores & Acessos</span>
-      <div class="bento-icon"><svg>...</svg></div>
-    </div>
-    <div class="bento-value">142</div>
-    <div class="bento-subtext">
-      <span class="telemetry-beacon"></span>
-      <span>98.6% com acesso regular homologado</span>
-    </div>
-  </div>
-</div>
-```
-
-### 3.2 Telemetry Pills com Beacon Pulsante
-```html
-<span class="telemetry-pill">
-  <span class="telemetry-beacon"></span> D1 CORE ONLINE
-</span>
-<span class="telemetry-pill">EDGE: 14ms</span>
-<span class="telemetry-pill">ZERO-TRUST ENFORCED</span>
-```
-
-### 3.3 Botões com Efeito Specular Glow
-```html
-<button class="btn-primary">
-  <svg>...</svg> Salvar Alterações
-</button>
-<button class="btn-secondary">Cancelar</button>
-```
+1. **Caixas Internas dos Cartões (`.card-meta`)**:
+   - Fundo alterado para `#f8fafc` com borda fina `#e2e8f0`.
+   - Rótulos (`span`): `#64748b` em maiúsculas (100% legíveis).
+   - Valores (`strong`): `#0f172a` em negrito intenso (100% legíveis).
+2. **Descrições de Relatórios (`.card-desc`)**:
+   - Cor padronizada em `#334155` com altura de linha de 1.6, eliminando qualquer texto apagado.
+3. **Tabelas de Dados**:
+   - Cabeçalhos `th` com fundo `#f8fafc`, texto `#475569` em maiúsculas e borda dupla inferior `#e2e8f0`.
+   - Células `td` em branco puro com texto `#1e293b` e hover em `#f8fafc`.
+4. **Pilares de Governança no Admin**:
+   - Abas com fundo `#ffffff` e texto `#0f172a`.
+   - Aba ativa com indicador sublinhado em Claro Ruby `#e11d48` e fundo sutil `#fff1f2`.
 
 ---
 
-## 4. Regras Corporativas Inegociáveis
+## 4. Como Visualizar no Navegador
 
-1. **Notação de Pontos Percentuais:**
-   - Estritamente `p.p.` em minúsculo, com espaço não-quebrável antes da unidade (`+0,42 p.p.`).
-2. **Alinhamento Numérico:**
-   - Todo dado quantitativo, contagem, valor em reais ou percentual deve ter alinhamento à direita (`class="num"` ou `style="text-align:right"`) e utilizar `font-variant-numeric: tabular-nums`.
-3. **Zero Dependências:**
-   - Nenhum bundle externo de Tailwind, React, Bootstrap ou bibliotecas volumosas. Apenas CSS puro de alto desempenho e JavaScript Vanilla.
-4. **Respeito aos IDs de Sistema:**
-   - Todas as classes e IDs existentes nos arquivos de lógica (`admin.js`, `header-widget.js`, `app-mobile.js`) devem ser mantidos sem refatoração que quebre funcionalidades.
-
----
-
-## 5. Como Testar no Navegador Local
-
-O servidor de preview rápido e auto-autenticado já está ativo:
-- **Central Administrativa:** [http://localhost:8787/admin/](http://localhost:8787/admin/)
-- **Portal Executivo:** [http://localhost:8787/](http://localhost:8787/)
-- **Painel Churn Safra:** [http://localhost:8787/churn/](http://localhost:8787/churn/)
-- **Tela de Login Corporativo:** [http://localhost:8787/login/](http://localhost:8787/login/)
+O servidor de preview já está rodando localmente:
+- 🏠 **Portal Principal:** [http://localhost:8787/](http://localhost:8787/)
+- ⚙️ **Central Administrativa:** [http://localhost:8787/admin/](http://localhost:8787/admin/)
+- 📊 **Painel Churn Safra:** [http://localhost:8787/churn/](http://localhost:8787/churn/)
+- 🔐 **Tela de Login:** [http://localhost:8787/login/](http://localhost:8787/login/)
